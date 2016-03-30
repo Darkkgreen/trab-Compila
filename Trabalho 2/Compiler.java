@@ -16,12 +16,124 @@ public class Compiler {
         return e;
     }
 
-    //Program ::= VarDecList ':' Expr
+    //Program ::= Decl
     private Program program(){
       return null;
     }
 
-    // Unary ::= '+' | '-' | '!'
+    //Decl ::= 'v' 'm' '(' ')' StmtBlock
+    private void decl(){
+      if(token == 'v'){
+        nextToken();
+        if(token == 'm'){
+          nextToken();
+          if(token == '('){
+            nextToken();
+            if(token == ')'){
+              nextToken();
+              stmtBlock();
+            }
+            else
+              error();  
+          }else
+            error();
+        }else
+          error();
+      }else
+        error();
+    }
+
+    //StmtBlock ::= '{' { VariableDecl } { Stmt } '{'
+    private void stmtBlock(){
+      if(token == '{'){
+        nextToken();
+        while(token == 'a') //TESTING
+          variableDecl();
+        stmt();
+        if(token == '}'){
+          nextToken();
+        }else
+          error();
+      }else
+        error();
+    }
+
+    //VariableDecl ::= Variable ';'
+    private void variableDecl(){
+      //variable();
+      if(token == 'a')
+        nextToken();
+      if(token == ';')
+        nextToken();
+      else
+        error();
+    }
+
+    //Stmt ::= Expr ';' | ifStmt | WhileStmt | BreakStmt | PrintStmt
+    private void stmt(){
+      if(token == 'e'){
+        nextToken();
+        if(token == ';')
+          System.out.println("I fucking love potatoes");
+        else error();
+      }else error();
+    }
+
+    //RelOp ::= '=' | '#' | '<' | '>'
+    private char RelOp(){
+      char ret = ' ';
+      switch(token){
+        case '=':
+        case '#':
+        case '<':
+        case '>':
+          ret = token;
+          nextToken();
+          break;
+        default:
+          error();
+          break;
+      }
+
+      return ret;
+    }
+
+    //AddOp ::= '+' | '-'
+    private char addOp(){
+      char ret = ' ';
+      switch(token){
+        case '+':
+        case '-':
+          ret = token;
+          nextToken();
+          break;
+        default:
+          error();
+          break;
+      }
+
+      return ret;
+    }
+
+    //MulOp ::= '*' | '/' | '%'
+    private char mulOp(){
+      char ret = ' ';
+      switch(token){
+        case '*':
+        case '/':
+        case '%':
+          ret = token;
+          nextToken();
+          break;
+        default:
+          error();
+          break;
+      }
+
+      return ret;
+    }
+
+    // Unary ::= '+' | '-' | '!' -- FEITO
     private char unary(){
       char ret = ' ';
       switch(token){
@@ -39,7 +151,7 @@ public class Compiler {
       return ret;
     }
 
-    //number ::= '0'| '1' | ... | '9'
+    //number ::= '0'| '1' | ... | '9' -- FEITO
     private NumberExpr digit() {
       NumberExpr ret = null;
       if(token >= '0' && token <= '9'){
@@ -51,15 +163,34 @@ public class Compiler {
       return ret;
     }
 
-    // Letter ::= 'A' | 'B' | ... | 'Z' | 'a' | 'b' | ... | 'z'
+    // Letter ::= 'A' | 'B' | ... | 'Z' | 'a' | 'b' | ... | 'z' -- FEITO
     private char letter(){
       char ret = ' ';
-      if((token >= 'A' && token <= 'Z')||(token >= 'a' && token <= 'z')){
-        ret = token;
-        nextToken();
-      }else{
-        error();
+      switch(token){
+        case 'v':
+        case 'm':
+        case 'i':
+        case 'd':
+        case 'c':
+        case 'f':
+        case 'e':
+        case 'w':
+        case 'b':
+        case 'p':
+        case 'r':
+        case 's':
+        case 't':
+          error();
+          break;
+        default:
+          if((token >= 'A' && token <= 'Z')||(token >= 'a' && token <= 'z')){
+            ret = token;
+            nextToken();
+          }else{
+            error();
+          }
       }
+
       return ret;
     }
 
