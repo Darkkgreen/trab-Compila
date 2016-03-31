@@ -8,16 +8,16 @@ public class Compiler {
         tokenPos = 0;
         nextToken();
 
-
         Program e = program();
         if (tokenPos != input.length)
-          error();
+          error("compile");
 
         return e;
     }
 
     //Program ::= Decl
     private Program program(){
+      decl();
       return null;
     }
 
@@ -34,49 +34,123 @@ public class Compiler {
               stmtBlock();
             }
             else
-              error();  
+              error("decl");
           }else
-            error();
+            error("decl");
         }else
-          error();
+          error("decl");
       }else
-        error();
+        error("decl");
     }
 
-    //StmtBlock ::= '{' { VariableDecl } { Stmt } '{'
+    //StmtBlock ::= '{' { VariableDecl } { Stmt } '}'
     private void stmtBlock(){
       if(token == '{'){
         nextToken();
-        while(token == 'a') //TESTING
-          variableDecl();
-        stmt();
+        while(variableDecl() == true);
+        while(stmt() == true);
         if(token == '}'){
           nextToken();
-        }else
-          error();
+        }else{
+          System.out.println(token);
+          error("stmtBlock");
+        }
       }else
-        error();
+        error("stmtBlock");
     }
 
     //VariableDecl ::= Variable ';'
-    private void variableDecl(){
-      //variable();
-      if(token == 'a')
+    private boolean variableDecl(){
+      if(variable() && token == ';'){
         nextToken();
-      if(token == ';')
-        nextToken();
-      else
-        error();
+        return true;
+      }else
+        error("variableDecl");
+      return false;
     }
 
-    //Stmt ::= Expr ';' | ifStmt | WhileStmt | BreakStmt | PrintStmt
-    private void stmt(){
-      if(token == 'e'){
+    // Variable ::= Type Ident
+    private boolean variable(){
+      if((type() != true)||(ident()!=true))
+        error("variable");
+      else
+        return true;
+      return false;
+    }
+
+    // Type ::= StdType | ArrayType
+    private boolean type(){
+      if(stdType() || arrayType()){
+        return true;
+      }else
+        error("type");
+      return false;
+    }
+
+    // StdType ::= 'i' | 'd' | 'e'
+    private boolean stdType(){
+      switch(token){
+        case 'i':
+        case 'd':
+        case 'c':
+          nextToken();
+          return true;
+        default:
+          break;
+      }
+
+      return false;
+    }
+
+    // ArrayType ::= StdType '[' ']'
+    private boolean arrayType(){
+      if(stdType() != true)
+        error("arrayType 1");
+
+      if(token=='['){
         nextToken();
-        if(token == ';')
-          System.out.println("I fucking love potatoes");
-        else error();
-      }else error();
+        if(token == ']'){
+          nextToken();
+          return true;
+        }else
+          error("arrayType 2");
+      }else
+        error("arrayType 3");
+
+      return false;
+    }
+
+    // Stmt ::= Expr ';' | ifStmt | WhileStmt | BreakStmt | PrintStmt
+    //
+    //
+    //
+    //
+    //
+
+    // Ident ::= Letter { Letter | Digit}
+    private boolean ident() {
+      if(letter() != ' '){
+        while(token != ';'){
+          // solução pra que tenha numeros e letras misturados
+          if(token >= '0' && token <= '9'){
+            digit();
+          }
+          if((token >= 'A' && token <= 'Z')||(token >= 'a' && token <= 'z')){
+            letter();
+          }
+
+        } // pode exibir erro se não tiver mais variaveis
+        return true;
+      }else
+        error("ident");
+
+      return false;
+    }
+
+
+    //Stmt ::= Expr ';' | ifStmt | WhileStmt | BreakStmt | PrintStmt
+    private boolean stmt(){
+      return false;
     }
 
     //RelOp ::= '=' | '#' | '<' | '>'
@@ -91,7 +165,7 @@ public class Compiler {
           nextToken();
           break;
         default:
-          error();
+          error("relOp");
           break;
       }
 
@@ -108,7 +182,7 @@ public class Compiler {
           nextToken();
           break;
         default:
-          error();
+          error("addOp");
           break;
       }
 
@@ -126,7 +200,7 @@ public class Compiler {
           nextToken();
           break;
         default:
-          error();
+          error("mulOp");
           break;
       }
 
@@ -144,7 +218,7 @@ public class Compiler {
           nextToken();
           break;
         default:
-          error();
+          error("unary");
           break;
       }
 
@@ -152,13 +226,13 @@ public class Compiler {
     }
 
     //number ::= '0'| '1' | ... | '9' -- FEITO
-    private NumberExpr digit() {
-      NumberExpr ret = null;
+    private char digit() {
+      char ret = ' ';
       if(token >= '0' && token <= '9'){
-        ret = new NumberExpr(token);
+        ret = token;
         nextToken();
       }else{
-        error();
+        error("digit");
       }
       return ret;
     }
@@ -180,14 +254,15 @@ public class Compiler {
         case 'r':
         case 's':
         case 't':
-          error();
+          System.out.println(token+" is reserved");
+          error("letter 1");
           break;
         default:
           if((token >= 'A' && token <= 'Z')||(token >= 'a' && token <= 'z')){
             ret = token;
             nextToken();
           }else{
-            error();
+            error("letter 2");
           }
       }
 
@@ -208,7 +283,7 @@ public class Compiler {
       System.out.print(" " + token + " ");
     }
 
-    private void error() {
+    private void error(String function) {
         if ( tokenPos == 0 )
           tokenPos = 1;
         else
@@ -216,7 +291,7 @@ public class Compiler {
             tokenPos = input.length;
 
         String strInput = new String( input, tokenPos - 1, input.length - tokenPos + 1 );
-        String strError = "Error at \"" + strInput + "\"";
+        String strError = "Error at \"" + strInput + "\" in "+function+"";
         System.out.println( strError );
         throw new RuntimeException(strError);
     }
