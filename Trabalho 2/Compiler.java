@@ -117,6 +117,8 @@ public class Compiler {
     // Stmt ::= Expr ';' | ifStmt | WhileStmt | BreakStmt | PrintStmt
     private boolean stmt(){
       if((expr() == true && token == ';') || ifStmt() || whileStmt() || breakStmt() || printStmt()){
+        if(token == ';')
+            nextToken();
         return true;
       }
 
@@ -234,8 +236,7 @@ public class Compiler {
 
     // SimExpr ::= [Unary] Term { AddOp Term }
     private boolean simExpr(){
-      if(!unary()){
-          
+      if(unary()){  
       }
 
       if(term()){
@@ -270,16 +271,12 @@ public class Compiler {
     // Factor ::= LValue '=' Expr | LValue | '(' Expr ')' | 'r' '(' ')' | 's' '(' ')' | 't' '(' ')'
     private boolean factor(){
       if(lValue()){
-        if(token == '='){
-          if(expr()){
-            return true;
-          }
-        }else{
-            return false;
-        }
-        nextToken();
+            if(token == ':'){
+              if(expr()){
+                return true;
+              }
+            }
         return true;
-
       }else if(token == '('){
         if(expr()){
           if(token == ')'){
@@ -338,19 +335,9 @@ public class Compiler {
 
     // Ident ::= Letter { Letter | Digit}
     private boolean ident() {
-      //if(letter() != ' '){
-        if(letter()){
-            while(token != ';'){
-              // solução pra que tenha numeros e letras misturados
-              if(token >= '0' && token <= '9'){
-                digit();
-              }
-              if((token >= 'A' && token <= 'Z')||(token >= 'a' && token <= 'z')){
-                letter();
-              }
-            } // pode exibir erro se não tiver mais variaveis
-            return true;
-        }
+      if(letter() || digit()){
+        return true;
+      }
 
       return false;
     }
@@ -367,7 +354,6 @@ public class Compiler {
           nextToken();
           return true;
         default:
-          error("relOp");
           return false;
       }
     }
@@ -382,7 +368,6 @@ public class Compiler {
           nextToken();
           return true;
         default:
-          error("addOp");
           return false;
       }
     }
@@ -398,7 +383,6 @@ public class Compiler {
           nextToken();
           return true;
         default:
-          error("mulOp");
           return false;
       }
     }
@@ -421,12 +405,12 @@ public class Compiler {
     // Digit ::= '0'| '1' | ... | '9'
     private boolean digit() {
       char ret = ' ';
+
       if(token >= '0' && token <= '9'){
         ret = token;
         nextToken();
         return true;
       }else{
-        error("digit");
         return false;
       }
     }
@@ -434,6 +418,7 @@ public class Compiler {
     // Letter ::= 'A' | 'B' | ... | 'Z' | 'a' | 'b' | ... | 'z'
     private boolean letter(){
       char ret = ' ';
+
       switch(token){
         case 'v':
         case 'm':
@@ -455,7 +440,6 @@ public class Compiler {
             nextToken();
             return true;
           }else{
-            error("letter 2");
             return false;
           }
       }
