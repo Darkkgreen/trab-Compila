@@ -11,7 +11,6 @@ public class Compiler {
         Program e = program();
         if (tokenPos != input.length)
           error("compile");
-
         return e;
     }
 
@@ -34,13 +33,13 @@ public class Compiler {
               stmtBlock();
             }
             else
-              error("decl");
+              error("Decl");
           }else
-            error("decl");
+            error("Decl");
         }else
-          error("decl");
+          error("Decl");
       }else
-        error("decl");
+        error("Decl");
     }
 
     //StmtBlock ::= '{' { VariableDecl } { Stmt } '}'
@@ -65,29 +64,26 @@ public class Compiler {
         nextToken();
         return true;
       }else
-        error("variableDecl");
-      return false;
+        return false;
     }
 
     // Variable ::= Type Ident
     private boolean variable(){
-      if((type() != true)||(ident()!=true))
-        error("variable");
-      else
+      if((type() == true) && (ident() == true))
         return true;
-      return false;
+      else
+        return false;
     }
 
     // Type ::= StdType | ArrayType
     private boolean type(){
-      if(stdType() || arrayType()){
+      if(arrayType()){
         return true;
       }else
-        error("type");
-      return false;
+        return false;
     }
 
-    // StdType ::= 'i' | 'd' | 'e'
+    // StdType ::= 'i' | 'd' | 'c'
     private boolean stdType(){
       switch(token){
         case 'i':
@@ -96,65 +92,271 @@ public class Compiler {
           nextToken();
           return true;
         default:
-          break;
+          return false;
+      }
+    }
+
+    // ArrayType ::= StdType '[' ']'
+    private boolean arrayType(){
+      if(stdType() == true){
+        if(token=='['){
+          nextToken();
+          if(token == ']'){
+            nextToken();
+            return true;
+          }else{
+              return false;
+          }
+        }
+        
+        return true;
+      }
+      return false;
+    }
+
+    // Stmt ::= Expr ';' | ifStmt | WhileStmt | BreakStmt | PrintStmt
+    private boolean stmt(){
+      if((expr() == true && token == ';') || ifStmt() || whileStmt() || breakStmt() || printStmt()){
+        return true;
       }
 
       return false;
     }
 
-    // ArrayType ::= StdType '[' ']'
-    private boolean arrayType(){
-      if(stdType() != true)
-        error("arrayType 1");
-
-      if(token=='['){
+    //IfStmt ::= 'f' '(' Expr ')' '{' { Stmt } '}' [ 'e' '{' { Stmt } '}' ]
+    private boolean ifStmt(){
+      if(token == 'f'){
         nextToken();
-        if(token == ']'){
+        if(token == '('){
           nextToken();
-          return true;
-        }else
-          error("arrayType 2");
-      }else
-        error("arrayType 3");
+          if(expr()){
+            if(token == ')'){
+              nextToken();
+              if(token == '{'){
+                nextToken();
+                while(stmt() == true)
+                if(token == '}'){
+                  nextToken();
+                  if(token == 'e'){ //aqui entra a parte opcional
+                    nextToken();
+                    if(token == '{'){
+                      nextToken();
+                      while(stmt() == true)
+                      if(token == '}'){
+                        nextToken();
+                        return true;
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+      return false;
+    }
+
+    //WhileStmt ::= 'w' '(' Expr ')' '{' { Stmt } '}'
+    private boolean whileStmt(){
+      if(token == 'w'){
+        nextToken();
+        if(token == '('){
+          if(expr()){
+            if(token == ')'){
+              nextToken();
+              if(token == '{'){
+                nextToken();
+                while(stmt() == true)
+                if(token == '}'){
+                  nextToken();
+                  return true;
+                }
+              }
+            }
+          }
+        }
+      }
 
       return false;
     }
 
-    // Stmt ::= Expr ';' | ifStmt | WhileStmt | BreakStmt | PrintStmt
-    //
-    //
-    //
-    //
-    //
+    //BreakStmt ::= 'b' ';'
+    private boolean breakStmt(){
+      if(token == 'b'){
+        nextToken();
+        if(token == ';'){
+          nextToken();
+          return true;
+        }
+      }
+
+      return false;
+    }
+
+    //PrintStmt ::= 'p' '(' Expr { ',' Expr }')'
+    private boolean printStmt(){
+      if(token == 'p'){
+        nextToken();
+        if(token == '('){
+          if(expr()){
+            while(token == ','){
+              nextToken();
+              if(expr()){
+                  nextToken();
+              }
+            }
+
+            if(token == ')'){
+              nextToken();
+              return true;
+            }
+          }
+        }
+      }
+
+      return false;
+    }
+
+    // Expr ::= SimExpr [ RelOp Expr ]
+    private boolean expr(){
+      if(simExpr()){
+        if(relOp()){
+          if(!expr()){
+            return false;
+          }
+        }
+        return true;
+      }else
+        return false;
+
+    }
+
+    // SimExpr ::= [Unary] Term { AddOp Term }
+    private boolean simExpr(){
+      if(!unary()){
+          
+      }
+
+      if(term()){
+        while(addOp()){
+          if(!term()){
+            error("SimExpr 2");
+            return false;
+          }
+        }
+
+        return true;
+      }
+
+      return false;
+    }
+
+    // Term ::= Factor { MulOp Factor }
+    private boolean term(){
+      if(factor()){
+        while(mulOp() == true){
+          if(!factor()){
+            error("Term");
+          }
+        }
+
+        return true;
+      }
+
+      return false;
+    }
+
+    // Factor ::= LValue '=' Expr | LValue | '(' Expr ')' | 'r' '(' ')' | 's' '(' ')' | 't' '(' ')'
+    private boolean factor(){
+      if(lValue()){
+        if(token == '='){
+          if(expr()){
+            return true;
+          }
+        }else{
+            return false;
+        }
+        nextToken();
+        return true;
+
+      }else if(token == '('){
+        if(expr()){
+          if(token == ')'){
+            nextToken();
+            return true;
+          }
+        }
+
+      }else if(token == 'r'){
+        if(token == '('){
+          nextToken();
+          if(token == ')'){
+            nextToken();
+            return true;
+          }
+        }
+
+      }else if(token == 's'){
+        if(token == '('){
+          nextToken();
+          if(token == ')'){
+            nextToken();
+            return true;
+          }
+        }
+
+      }else if(token == 't'){
+        if(token == '('){
+          nextToken();
+          if(token == ')'){
+            nextToken();
+            return true;
+          }
+        }
+      }
+
+      return false;
+    }
+
+    // LValue ::= Ident | Ident '[' Expr ']'
+    private boolean lValue(){
+      if(ident()){
+        if(token == '['){
+          nextToken();
+          if(expr()){
+            if(token == ']'){
+              nextToken();
+              return true;
+            }
+          }
+        }else
+          return true;
+      }
+      return false;
+    }
 
     // Ident ::= Letter { Letter | Digit}
     private boolean ident() {
-      if(letter() != ' '){
-        while(token != ';'){
-          // solução pra que tenha numeros e letras misturados
-          if(token >= '0' && token <= '9'){
-            digit();
-          }
-          if((token >= 'A' && token <= 'Z')||(token >= 'a' && token <= 'z')){
-            letter();
-          }
+      //if(letter() != ' '){
+        if(letter()){
+            while(token != ';'){
+              // solução pra que tenha numeros e letras misturados
+              if(token >= '0' && token <= '9'){
+                digit();
+              }
+              if((token >= 'A' && token <= 'Z')||(token >= 'a' && token <= 'z')){
+                letter();
+              }
+            } // pode exibir erro se não tiver mais variaveis
+            return true;
+        }
 
-        } // pode exibir erro se não tiver mais variaveis
-        return true;
-      }else
-        error("ident");
-
-      return false;
-    }
-
-
-    //Stmt ::= Expr ';' | ifStmt | WhileStmt | BreakStmt | PrintStmt
-    private boolean stmt(){
       return false;
     }
 
     //RelOp ::= '=' | '#' | '<' | '>'
-    private char RelOp(){
+    private boolean relOp(){
       char ret = ' ';
       switch(token){
         case '=':
@@ -163,34 +365,30 @@ public class Compiler {
         case '>':
           ret = token;
           nextToken();
-          break;
+          return true;
         default:
           error("relOp");
-          break;
+          return false;
       }
-
-      return ret;
     }
 
     //AddOp ::= '+' | '-'
-    private char addOp(){
+    private boolean addOp(){
       char ret = ' ';
       switch(token){
         case '+':
         case '-':
           ret = token;
           nextToken();
-          break;
+          return true;
         default:
           error("addOp");
-          break;
+          return false;
       }
-
-      return ret;
     }
 
     //MulOp ::= '*' | '/' | '%'
-    private char mulOp(){
+    private boolean mulOp(){
       char ret = ' ';
       switch(token){
         case '*':
@@ -198,17 +396,15 @@ public class Compiler {
         case '%':
           ret = token;
           nextToken();
-          break;
+          return true;
         default:
           error("mulOp");
-          break;
+          return false;
       }
-
-      return ret;
     }
 
-    // Unary ::= '+' | '-' | '!' -- FEITO
-    private char unary(){
+    // Unary ::= '+' | '-' | '!'
+    private boolean unary(){
       char ret = ' ';
       switch(token){
         case '+':
@@ -216,29 +412,27 @@ public class Compiler {
         case '!':
           ret = token;
           nextToken();
-          break;
+          return true;
         default:
-          error("unary");
-          break;
+          return false;
       }
-
-      return ret;
     }
 
-    //number ::= '0'| '1' | ... | '9' -- FEITO
-    private char digit() {
+    // Digit ::= '0'| '1' | ... | '9'
+    private boolean digit() {
       char ret = ' ';
       if(token >= '0' && token <= '9'){
         ret = token;
         nextToken();
+        return true;
       }else{
         error("digit");
+        return false;
       }
-      return ret;
     }
 
-    // Letter ::= 'A' | 'B' | ... | 'Z' | 'a' | 'b' | ... | 'z' -- FEITO
-    private char letter(){
+    // Letter ::= 'A' | 'B' | ... | 'Z' | 'a' | 'b' | ... | 'z'
+    private boolean letter(){
       char ret = ' ';
       switch(token){
         case 'v':
@@ -254,19 +448,17 @@ public class Compiler {
         case 'r':
         case 's':
         case 't':
-          System.out.println(token+" is reserved");
-          error("letter 1");
-          break;
+          return false;
         default:
           if((token >= 'A' && token <= 'Z')||(token >= 'a' && token <= 'z')){
             ret = token;
             nextToken();
+            return true;
           }else{
             error("letter 2");
+            return false;
           }
       }
-
-      return ret;
     }
 
     private void nextToken() {
