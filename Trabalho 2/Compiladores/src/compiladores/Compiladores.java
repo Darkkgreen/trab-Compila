@@ -19,7 +19,7 @@ public class Compiladores {
    public static void main(String[] args) {
       //char []input = "a = 1  b = 3 : (- (+ a 2) b)".toCharArray();
       //char []input = "vm(){ i a; d a; c a; c u;}".toCharArray();
-      char []input = "vm(){a + x + l = (!y + h);}".toCharArray();
+      char []input = "vm(){a + b + c = (!d + e);}".toCharArray();
       //char[] input = "vm(){ i[] a; d a; f(a=z){ a; } e{ z; } }".toCharArray();
       //char []input = "vm(){ i[] a; d a; p(a,z)}".toCharArray();
       //char []input = "vm(){ i aa12; d[] aa2; c aa;}".toCharArray();
