@@ -300,6 +300,7 @@ public class Compiler {
 	 }
 	 return true;
       } else if (token == '(') {
+         nextToken();
 	 if (expr()) {
 	    if (token == ')') {
 	       nextToken();
