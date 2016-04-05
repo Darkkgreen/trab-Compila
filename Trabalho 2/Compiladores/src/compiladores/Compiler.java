@@ -70,63 +70,79 @@ public class Compiler {
 
    //VariableDecl ::= Variable ';'
    private boolean variableDecl() {
-      if (variable() && token == ';') {
+      Variable retorno;
+      if ((retorno = variable()) && token == ';') {
 	 nextToken();
-	 return true;
+	 return retorno;
       } else {
-	 return false;
+	 return null;
       }
    }
 
    // Variable ::= Type Ident
    private boolean variable() {
       if (type() == true) {
-	 if (ident()) {
+	 if (ident() == true) {
 	    return true;
-	 }
+	 }else{
+             error("Variable");
+         }
       }
       return false;
 
    }
 
    // Type ::= StdType | ArrayType
-   private boolean type() {
-      if (arrayType()) {
-	 return true;
+   private Type type() {
+      ArrayType auxiliar;
+      Type retorno;
+      if ((auxiliar = arrayType()) != null) {
+         if(auxiliar.isTipoArray())
+             retorno = new Type(auxiliar,null);
+         else
+             retorno = new Type(null, auxiliar.getTipo());
+	 return retorno;
       } else {
-	 return false;
+	 return null;
       }
    }
 
    // StdType ::= 'i' | 'd' | 'c'
-   private boolean stdType() {
+   private StdType stdType() {
+      StdType tipo = null;
+      
       switch (token) {
 	 case 'i':
 	 case 'd':
 	 case 'c':
+            tipo = new StdType(token);
 	    nextToken();
-	    return true;
+	    return tipo;
 	 default:
-	    return false;
+	    return null;
       }
    }
 
    // ArrayType ::= StdType '[' ']'
-   private boolean arrayType() {
-      if (stdType() == true) {
+   private ArrayType arrayType() {
+      ArrayType retorno = null;
+      StdType std = null;
+      
+      if ((std = stdType()) != null) {
 	 if (token == '[') {
 	    nextToken();
 	    if (token == ']') {
+               retorno = new ArrayType(std, true);
 	       nextToken();
-	       return true;
+	       return retorno;
 	    } else {
-	       return false;
+	       return null;
 	    }
 	 }
-
-	 return true;
+         retorno = new ArrayType(std, false);
+	 return retorno;
       }
-      return false;
+      return null;
    }
 
    // Stmt ::= Expr ';' | ifStmt | WhileStmt | BreakStmt | PrintStmt
@@ -457,7 +473,6 @@ public class Compiler {
 	 case 'r':
 	 case 's':
 	 case 't':
-            System.out.println("Erro: Foi utilizado letras reservadas!");
 	    return false;
 	 default:
 	    if ((token >= 'A' && token <= 'Z') || (token >= 'a' && token <= 'z')) {
