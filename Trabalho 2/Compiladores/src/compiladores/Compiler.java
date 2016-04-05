@@ -52,9 +52,12 @@ public class Compiler {
 	private void stmtBlock() {
 		ArrayList<Variable> ret = null;
 		Variable aux = null;
+                
 		if (token == '{') {
 			nextToken();
 			while ((aux = variableDecl()) != null) {
+                            ret.add(aux);
+                            aux = null;
 			}
 			while (stmt() == true);
 
@@ -65,7 +68,6 @@ public class Compiler {
 		if (token == '}') {
 			nextToken();
 		} else {
-			System.out.println(token);
 			error("stmtBlock");
 		}
 
@@ -172,16 +174,23 @@ public class Compiler {
 												if (token == '}') {
 													nextToken();
 													return true;
-												}
+												}else
+                                                                                                    error("IfStmt");
 											}
-										}
+										}else
+                                                                                    error("IfStmt");
 									}
-								}
+								}else
+                                                                    error("IfStmt");
 							}
-						}
-					}
-				}
-			}
+						}else
+                                                    error("IfStmt");
+					}else
+                                            error("IfStmt");
+				}else
+                                    error("IfStmt");
+			}else
+                            error("IfStmt");
 		}
 		return false;
 	}
@@ -201,12 +210,17 @@ public class Compiler {
 								if (token == '}') {
 									nextToken();
 									return true;
-								}
+								}else
+                                                                    error("WhileStmt");
 							}
-						}
-					}
-				}
-			}
+						}else
+                                                    error("WhileStmt");
+					}else
+                                            error("WhileStmt");
+				}else
+                                    error("WhileStmt");
+			}else
+                            error("WhileStmt");
 		}
 
 		return false;
@@ -219,7 +233,8 @@ public class Compiler {
 			if (token == ';') {
 				nextToken();
 				return true;
-			}
+			}else
+                            error("BreakStmt");
 		}
 
 		return false;
@@ -236,15 +251,19 @@ public class Compiler {
 						nextToken();
 						if (expr()) {
 							nextToken();
-						}
+						}else
+                                                    error("PrintStmt");
 					}
 
 					if (token == ')') {
 						nextToken();
 						return true;
-					}
-				}
-			}
+					}else
+                                            error("PrintStmt");
+				}else
+                                    error("PrintStmt");
+			}else
+                            error("PrintStmt");
 		}
 
 		return false;
@@ -255,7 +274,7 @@ public class Compiler {
 		if (simExpr()) {
 			if (relOp()) {
 				if (!expr()) {
-					return false;
+                                        error("SimExpr");
 				}
 			}
 			return true;
@@ -274,7 +293,6 @@ public class Compiler {
 			while (addOp()) {
 				if (!term()) {
 					error("SimExpr 2");
-					return false;
 				}
 			}
 
@@ -299,10 +317,11 @@ public class Compiler {
 		return false;
 	}
 
-	// Factor ::= LValue '=' Expr | LValue | '(' Expr ')' | 'r' '(' ')' | 's' '(' ')' | 't' '(' ')'
+	// Factor ::= LValue ':' Expr | LValue | '(' Expr ')' | 'r' '(' ')' | 's' '(' ')' | 't' '(' ')'
 	private boolean factor() {
 		if (lValue()) {
 			if (token == ':') {
+                            nextToken();
 				if (expr()) {
 					return true;
 				}
@@ -318,6 +337,7 @@ public class Compiler {
 			}
 
 		} else if (token == 'r') {
+                        nextToken();
 			if (token == '(') {
 				nextToken();
 				if (token == ')') {
@@ -327,6 +347,7 @@ public class Compiler {
 			}
 
 		} else if (token == 's') {
+                        nextToken();
 			if (token == '(') {
 				nextToken();
 				if (token == ')') {
@@ -336,6 +357,7 @@ public class Compiler {
 			}
 
 		} else if (token == 't') {
+                        nextToken();
 			if (token == '(') {
 				nextToken();
 				if (token == ')') {
