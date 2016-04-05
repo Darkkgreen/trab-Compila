@@ -13,10 +13,24 @@ public class Type {
 	private boolean array;
 	private char type;
 
-	Type(char type, boolean array){
+	public boolean isArray() {
+		return array;
+	}
+
+	public void setArray(boolean array) {
+		this.array = array;
+	}
+
+	public char getType() {
+		return type;
+	}
+
+	public void setType(char type) {
+		this.type = type;
+	}
+
+	public Type(char type, boolean array){
 		this.array = array;
 		this.type = type;
 	}
-		
-	
 }

@@ -49,26 +49,30 @@ public class Compiler {
 	}
 
 	//StmtBlock ::= '{' { VariableDecl } { Stmt } '}'
-	private void stmtBlock() {
-		ArrayList<Variable> ret = null;
+	private Program stmtBlock() {
+		Expr expr = null;
+		ArrayList<Variable> ret = new ArrayList<Variable>();
 		Variable aux = null;
 		if (token == '{') {
 			nextToken();
 			while ((aux = variableDecl()) != null) {
+				ret.add(aux);
 			}
-			while (stmt() == true);
+			//while (stmt() == true);
 
 		} else {
 			error("stmtBlock");
 		}
 
 		if (token == '}') {
+			Program program = new Program(ret, expr);
 			nextToken();
+			return program;
 		} else {
 			System.out.println(token);
 			error("stmtBlock");
 		}
-
+		return null;
 	}
 
 	//VariableDecl ::= Variable ';'
@@ -76,34 +80,33 @@ public class Compiler {
 		Variable aux = variable();	
 		if ((aux != null) && token == ';') {
 			nextToken();
-			return true;
+			return aux;
 		} else {
-			return false;
+			return null;
 		}
 	}
 
 	// Variable ::= Type Ident
 	private Variable variable() {
 		Variable aux = null;
+		Type type = null;
+		String name = null;
 
-		if (type() == true) {
-			if (ident()) {
-				return true;
-			} else {
+		type = type();
+		if (type != null) {
+			name = ident();
+			if(name != null){
+				aux = new Variable(name, type);
+				return aux;
+			}else
 				error("variable");
-			}
 		}
-		return false;
-
+		return null;
 	}
 
 	// Type ::= StdType | ArrayType
-	private boolean type() {
-		if (arrayType()) {
-			return true;
-		} else {
-			return false;
-		}
+	private Type type() {
+		return arrayType();
 	}
 
 	// StdType ::= 'i' | 'd' | 'c'
@@ -121,21 +124,25 @@ public class Compiler {
 	}
 
 	// ArrayType ::= StdType '[' ']'
-	private boolean arrayType() {
-		if (stdType() == true) {
+	private Type arrayType() {
+		Type type = null;
+		type = stdType();
+		if (type != null) {
 			if (token == '[') {
 				nextToken();
 				if (token == ']') {
+					type.setArray(true);
 					nextToken();
-					return true;
+					return type;
 				} else {
-					return false;
+					return type;
 				}
 			}
-
-			return true;
+			// como o construtor de type ja define false,
+			// nada é feito
+			return type;
 		}
-		return false;
+		return type;
 	}
 
 	// Stmt ::= Expr ';' | ifStmt | WhileStmt | BreakStmt | PrintStmt
@@ -367,12 +374,30 @@ public class Compiler {
 	}
 
 	// Ident ::= Letter { Letter | Digit}
-	private boolean ident() {
-		if (letter() == true) {
-			while (letter() || digit());
-			return true;
+	private String ident() {
+		String name = null;
+		String aux;
+		boolean flag = false;
+
+
+		name = letter();
+		if (name != null) {
+			while (!flag){
+				aux = letter();
+				if(aux != null)
+					name.concat(aux);
+				else
+					flag = true;
+
+				aux = digit();
+				if(flag == true)
+					if(aux == null)
+						break;
+				name.concat(aux);
+			}
+			return name;
 		}
-		return false;
+		return null;
 	}
 
 	//RelOp ::= '=' | '#' | '<' | '>'
@@ -436,21 +461,21 @@ public class Compiler {
 	}
 
 	// Digit ::= '0'| '1' | ... | '9'
-	private boolean digit() {
-		char ret = ' ';
+	private String digit() {
+		String ret;
 
 		if (token >= '0' && token <= '9') {
-			ret = token;
+			ret = Character.toString(token);
 			nextToken();
-			return true;
+			return ret;
 		} else {
-			return false;
+			return null;
 		}
 	}
 
 	// Letter ::= 'A' | 'B' | ... | 'Z' | 'a' | 'b' | ... | 'z'
-	private boolean letter() {
-		char ret = ' ';
+	private String letter() {
+		String ret;
 
 		switch (token) {
 			case 'v':
@@ -466,14 +491,14 @@ public class Compiler {
 			case 'r':
 			case 's':
 			case 't':
-				return false;
+				return null;
 			default:
 				if ((token >= 'A' && token <= 'Z') || (token >= 'a' && token <= 'z')) {
-					ret = token;
+					ret = Character.toString(token);
 					nextToken();
-					return true;
+					return ret;
 				} else {
-					return false;
+					return null;
 				}
 		}
 	}
