@@ -159,7 +159,7 @@ public class Compiler {
             Stmt stmt = null;
             
 		if ((((aux = expr()) != null) && (token == ';')) || (se = ifStmt()) != null || (enquanto = whileStmt()) != null || (parada = breakStmt()) || (imprime = printStmt()) != null) {
-			Stmt novo = new Stmt(se, enquanto, parada, imprime, aux);
+			stmt = new Stmt(se, enquanto, parada, imprime, aux);
                         if (token == ';') {
 				nextToken();
 			}
@@ -291,7 +291,6 @@ public class Compiler {
 						if ((aux = expr()) != null) {
                                                     listaExp.add(aux);
                                                     aux = null;
-                                                    nextToken();
 						}else
                                                     error("PrintStmt");
 					}
