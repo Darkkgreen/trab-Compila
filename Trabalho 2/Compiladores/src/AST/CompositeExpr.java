@@ -14,8 +14,25 @@ public class CompositeExpr extends Expr{
 	private String relOp;
 	private CompositeExpr expr;
 
+	public CompositeExpr(SimExpr simexpr, String relOp, CompositeExpr expr) {
+		this.simexpr = simexpr;
+		this.relOp = relOp;
+		this.expr = expr;
+	}
+
+	public SimExpr getSimexpr() {
+		return simexpr;
+	}
+
+	public String getRelOp() {
+		return relOp;
+	}
+
+	public CompositeExpr getExpr() {
+		return expr;
+	}
+
 	public void genC() {
 		// não implementado
 	}
-	
 }
