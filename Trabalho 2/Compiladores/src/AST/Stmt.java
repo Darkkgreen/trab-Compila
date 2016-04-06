@@ -14,12 +14,14 @@ public class Stmt {
     private WhileStmt enquanto;
     private boolean parada;
     private PrintStmt escrever;
+    private Expr expressao;
 
-    public Stmt(IfStmt se, WhileStmt enquanto, boolean parada, PrintStmt escrever) {
+    public Stmt(IfStmt se, WhileStmt enquanto, boolean parada, PrintStmt escrever, Expr expressao) {
         this.se = se;
         this.enquanto = enquanto;
         this.parada = parada;
         this.escrever = escrever;
+        this.expressao = expressao;
     }
 
     public IfStmt getSe() {
@@ -52,5 +54,13 @@ public class Stmt {
 
     public void setEscrever(PrintStmt escrever) {
         this.escrever = escrever;
+    }
+    
+    public Expr getExpressao() {
+        return expressao;
+    }
+
+    public void setExpressao(Expr expressao) {
+        this.expressao = expressao;
     }
 }
