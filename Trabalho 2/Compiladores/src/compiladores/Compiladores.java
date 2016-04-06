@@ -18,14 +18,14 @@ public class Compiladores {
     */
    public static void main(String[] args) {
       //char []input = "vm(){ia; ix; io; in; ij;}".toCharArray();
-      //char []input = "vm(){r()*s();}".toCharArray();
       //char []input = "vm(){ i a; d a; c a; c u;}".toCharArray();
       //char []input = "vm(){a + b + c = (!d + e);}".toCharArray();
       //char[] input = "vm(){ i[] a; d a; f(a=z){ a; } e{ z; } }".toCharArray();
       //char []input = "vm(){ i[] a; d a; p(a,z)}".toCharArray();
-  //    char []input = "vm(){ i aa12; d[] aa2; c aa;}".toCharArray();
+      //char []input = "vm(){ w(a=z){ a; } }".toCharArray();
+       char []input = "vm(){ w(a:z){ b; } }".toCharArray();
+      //char []input = "vm(){ i aa12; d[] aa2; c aa;}".toCharArray();
       //caso com letra reservada
-      char []input = "vm(){ i AbzZa3; }".toCharArray();
       //char []input = "vm(){ i AzZa3; }".toCharArray();
 
       Compiler compiler = new Compiler();
