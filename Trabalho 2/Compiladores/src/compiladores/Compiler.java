@@ -50,24 +50,27 @@ public class Compiler {
 
 	//StmtBlock ::= '{' { VariableDecl } { Stmt } '}'
 	private Program stmtBlock() {
-		Expr expr = null;
 		ArrayList<Variable> ret = new ArrayList<Variable>();
+                ArrayList<Stmt> stmt = new ArrayList<Stmt>();
 		Variable aux = null;
+                Stmt auxiliarStmt = null;
                 
 		if (token == '{') {
 			nextToken();
 			while ((aux = variableDecl()) != null) {
-				ret.add(aux);
-                            	aux = null;
+                            ret.add(aux);
+                            aux = null;
 			}
-			while (stmt() == true);
-
+			while ((auxiliarStmt = stmt()) != null){
+                            stmt.add(auxiliarStmt);
+                            auxiliarStmt = null;
+                        }
 		} else {
 			error("stmtBlock");
 		}
 
 		if (token == '}') {
-			Program program = new Program(ret, expr);
+			Program program = new Program(ret, stmt);
 			nextToken();
 			return program;
 		} else {
@@ -147,48 +150,67 @@ public class Compiler {
 	}
 
 	// Stmt ::= Expr ';' | ifStmt | WhileStmt | BreakStmt | PrintStmt
-	private boolean stmt() {
-		if (((expr()!= null) && (token == ';')) || ifStmt() || whileStmt() || breakStmt() || printStmt()) {
-			if (token == ';') {
+	private Stmt stmt() {
+            IfStmt se = null;
+            WhileStmt enquanto= null;
+            boolean parada = false;
+            PrintStmt imprime = null;
+            CompositeExpr aux = null;
+            Stmt stmt = null;
+            
+		if ((((aux = expr()) != null) && (token == ';')) || (se = ifStmt()) != null || (enquanto = whileStmt()) != null || (parada = breakStmt()) || (imprime = printStmt()) != null) {
+			Stmt novo = new Stmt(se, enquanto, parada, imprime, aux);
+                        if (token == ';') {
 				nextToken();
 			}
-			return true;
+			return stmt;
 		}
 
-		return false;
+		return null;
 	}
 
 	//IfStmt ::= 'f' '(' Expr ')' '{' { Stmt } '}' [ 'e' '{' { Stmt } '}' ]
-	private boolean ifStmt() {
+	private IfStmt ifStmt() {
+            Expr auxiliarExp = null;
+            ArrayList<Stmt> principal = new ArrayList<Stmt>();
+            ArrayList<Stmt> opcional = new ArrayList<Stmt>();
+            Stmt auxiliarStmt = null;
+            IfStmt ifstmt = null;
+            
 		if (token == 'f') {
 			nextToken();
 			if (token == '(') {
 				nextToken();
-				if (expr() != null) {
+				if ((auxiliarExp = expr()) != null) {
 					if (token == ')') {
 						nextToken();
 						if (token == '{') {
 							nextToken();
-							while (stmt() == true) {
+							while ((auxiliarStmt = stmt()) != null) {
+                                                                principal.add(auxiliarStmt);
+                                                                auxiliarStmt = null;
 								if (token == '}') {
 									nextToken();
 									if (token == 'e') { //aqui entra a parte opcional
 										nextToken();
 										if (token == '{') {
 											nextToken();
-											while (stmt() == true) {
+											while ((auxiliarStmt = stmt()) != null) {
+                                                                                            opcional.add(auxiliarStmt);
+                                                                                            auxiliarStmt = null;
 												if (token == '}') {
 													nextToken();
-													return true;
 												}else
                                                                                                     error("IfStmt");
 											}
 										}else
                                                                                     error("IfStmt");
-									}
+									}       
 								}else
                                                                     error("IfStmt");
 							}
+                                                        ifstmt = new IfStmt(auxiliarExp, principal, opcional);
+                                                        return ifstmt;
 						}else
                                                     error("IfStmt");
 					}else
@@ -198,27 +220,33 @@ public class Compiler {
 			}else
                             error("IfStmt");
 		}
-		return false;
+		return null;
 	}
 
 	//WhileStmt ::= 'w' '(' Expr ')' '{' { Stmt } '}'
-	private boolean whileStmt() {
+	private WhileStmt whileStmt() {
+            Expr auxiliarExp = null;
+            ArrayList<Stmt> arrayPrinc = new ArrayList<Stmt>();
+            Stmt auxiliarSt = null;
+            
 		if (token == 'w') {
 			nextToken();
 			if (token == '(') {
 				nextToken();
-				if (expr() != null) {
+				if ((auxiliarExp = expr()) != null) {
 					if (token == ')') {
 						nextToken();
 						if (token == '{') {
 							nextToken();
-							while (stmt() == true) {
-								if (token == '}') {
-									nextToken();
-									return true;
-								}else
-                                                                    error("WhileStmt");
+							while ((auxiliarSt = stmt()) != null) {
+                                                            arrayPrinc.add(auxiliarSt);
+                                                            auxiliarSt = null;
 							}
+                                                        if (token == '}') {
+                                                            nextToken();
+                                                            WhileStmt enquanto = new WhileStmt(arrayPrinc, auxiliarExp);
+                                                            return enquanto;
+                                                        }
 						}else
                                                     error("WhileStmt");
 					}else
@@ -229,7 +257,7 @@ public class Compiler {
                             error("WhileStmt");
 		}
 
-		return false;
+		return null;
 	}
 
 	//BreakStmt ::= 'b' ';'
@@ -247,23 +275,31 @@ public class Compiler {
 	}
 
 	//PrintStmt ::= 'p' '(' Expr { ',' Expr }')'
-	private boolean printStmt() {
+	private PrintStmt printStmt() {
+            ArrayList<Expr> listaExp = new ArrayList<Expr>();
+            Expr aux;
+            
 		if (token == 'p') {
 			nextToken();
 			if (token == '(') {
 				nextToken();
-				if (expr() != null) {
+				if ((aux = expr()) != null) {
+                                    listaExp.add(aux);
+                                    aux = null;
 					while (token == ',') {
 						nextToken();
-						if (expr() != null) {
-							nextToken();
+						if ((aux = expr()) != null) {
+                                                    listaExp.add(aux);
+                                                    aux = null;
+                                                    nextToken();
 						}else
                                                     error("PrintStmt");
 					}
 
 					if (token == ')') {
 						nextToken();
-						return true;
+                                                PrintStmt imprime = new PrintStmt(listaExp);
+						return imprime;
 					}else
                                             error("PrintStmt");
 				}else
@@ -272,7 +308,7 @@ public class Compiler {
                             error("PrintStmt");
 		}
 
-		return false;
+		return null;
 	}
 
 	// Expr ::= SimExpr [ RelOp Expr ]

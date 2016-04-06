@@ -5,24 +5,26 @@
  */
 package AST;
 
+import java.util.ArrayList;
+
 /**
  *
  * @author Charizard
  */
 public class WhileStmt {
-    private Stmt stmt;
+    private ArrayList<Stmt> stmt;
     private Expr expr;
 
-    public WhileStmt(Stmt stmt, Expr expr) {
+    public WhileStmt(ArrayList<Stmt> stmt, Expr expr) {
         this.stmt = stmt;
         this.expr = expr;
     }
     
-    public Stmt getStmt() {
+    public ArrayList<Stmt> getStmt() {
         return stmt;
     }
 
-    public void setStmt(Stmt stmt) {
+    public void setStmt(ArrayList<Stmt> stmt) {
         this.stmt = stmt;
     }
 

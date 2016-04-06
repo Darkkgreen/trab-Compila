@@ -5,16 +5,18 @@
  */
 package AST;
 
+import java.util.ArrayList;
+
 /**
  *
  * @author Charizard
  */
 public class IfStmt {
     private Expr expr;
-    private Stmt stmt;
-    private Stmt opcional; //aqui entra o e
+    private ArrayList<Stmt> stmt;
+    private ArrayList<Stmt> opcional; //aqui entra o e
 
-    public IfStmt(Expr expr, Stmt stmt, Stmt opcional) {
+    public IfStmt(Expr expr, ArrayList<Stmt> stmt, ArrayList<Stmt> opcional) {
         this.expr = expr;
         this.stmt = stmt;
         this.opcional = opcional;
@@ -27,22 +29,20 @@ public class IfStmt {
     public void setExpr(Expr expr) {
         this.expr = expr;
     }
-
-    public Stmt getStmt() {
+    
+    public ArrayList<Stmt> getStmt() {
         return stmt;
     }
 
-    public void setStmt(Stmt stmt) {
+    public void setStmt(ArrayList<Stmt> stmt) {
         this.stmt = stmt;
     }
 
-    public Stmt getOpcional() {
+    public ArrayList<Stmt> getOpcional() {
         return opcional;
     }
 
-    public void setOpcional(Stmt opcional) {
+    public void setOpcional(ArrayList<Stmt> opcional) {
         this.opcional = opcional;
     }
-    
-    
 }
