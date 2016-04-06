@@ -349,9 +349,6 @@ public class Compiler {
 				if(aux2 != null){
 					if(addop == null)
 						addop = new ArrayList<String>();
-					else{
-						break;
-					}
 					addop.add(aux);
 					termAux2 = term();
 					if(termAux2 != null){
