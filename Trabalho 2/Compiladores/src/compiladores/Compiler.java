@@ -57,12 +57,8 @@ public class Compiler {
 		if (token == '{') {
 			nextToken();
 			while ((aux = variableDecl()) != null) {
-<<<<<<< HEAD
 				ret.add(aux);
-=======
-                            ret.add(aux);
-                            aux = null;
->>>>>>> 4e13b41addf4ad008d272fd91b0c4e36b620aa82
+                            	aux = null;
 			}
 			//while (stmt() == true);
 
@@ -280,69 +276,120 @@ public class Compiler {
 	}
 
 	// Expr ::= SimExpr [ RelOp Expr ]
-	private boolean expr() {
-		if (simExpr()) {
-			if (relOp()) {
-				if (!expr()) {
+	private CompositeExpr expr() {
+		CompositeExpr expr = null;
+		SimExpr aux = null;
+		String relop = null;
+
+		aux = simExpr();
+		if (aux != null) {
+			relop = relOp();
+			if (relop != null) {
+				expr = expr();
+				if (expr == null) {
                                         error("SimExpr");
 				}
 			}
-			return true;
+			return new CompositeExpr(aux, relop, expr);
 		} else {
-			return false;
+			error("expr");
+			return null; 
 		}
 
 	}
 
 	// SimExpr ::= [Unary] Term { AddOp Term }
-	private boolean simExpr() {
-		if (unary()) {
-		}
-
-		if (term()) {
-			while (addOp()) {
-				if (!term()) {
-					error("SimExpr 2");
+	private SimExpr simExpr() {
+		String aux= null;
+		String aux2 = null;
+		Term termAux = null;
+		Term termAux2 = null;
+		ArrayList<String> addop = null;
+		ArrayList<Term> termList = null;
+		aux = unary();	
+	
+		termAux = term();
+		if (termAux != null) {
+			while (true) {
+				aux2 = addOp();
+				if(aux2 != null){
+					if(addop == null)
+						addop = new ArrayList<String>();
+					else{
+						break;
+					}
+					addop.add(aux);
+					termAux2 = term();
+					if(termAux2 != null){
+						if(termList == null)
+							termList = new ArrayList<Term>();
+						termList.add(termAux);
+					}else{
+						error("SimExpr1");
+						break;
+					}
 				}
 			}
-
-			return true;
+			return new SimExpr(aux, termAux, addop, termList);
 		}
 
-		return false;
+		return null;
 	}
 
 	// Term ::= Factor { MulOp Factor }
-	private boolean term() {
-		if (factor()) {
-			while (mulOp() == true) {
-				if (!factor()) {
-					error("Term");
-				}
+	private Term term() {
+		Factor aux = null;
+		Factor aux3 = null;
+		String aux2 = null;
+		ArrayList<String> mulop = null;
+		ArrayList<Factor> factorList = null;
+
+		aux = factor();
+		if (aux != null) {
+			while (true) {
+				aux2 = mulOp();
+				if(aux2 != null){
+					if(mulop == null)
+						mulop = new ArrayList<String>();
+					mulop.add(aux2);
+					aux3 = factor();
+					if(aux3 != null){
+						if(factorList == null)
+							factorList = new ArrayList<Factor>();
+						factorList.add(aux3);
+					}else
+						error("Term");
+				}else
+					break;
 			}
 
-			return true;
+			return new Term(aux, mulop, factorList);
 		}
 
-		return false;
+		return null;
 	}
 
 	// Factor ::= LValue ':' Expr | LValue | '(' Expr ')' | 'r' '(' ')' | 's' '(' ')' | 't' '(' ')'
-	private boolean factor() {
-		if (lValue()) {
+	private Factor factor() {
+		LValue aux = null;
+		aux = lValue();
+		CompositeExpr aux2 = null;
+		if (aux != null) {
 			if (token == ':') {
                             nextToken();
-				if (expr()) {
-					return true;
+			        aux2 = expr();
+				if (aux2 != null) {
+					return new Factor(aux, aux2, null);
 				}
 			}
-			return true;
+			return new Factor(aux, null, null);
 		} else if (token == '(') {
 			nextToken();
-			if (expr()) {
+			aux2 = expr();
+			if (aux2 != null) {
 				if (token == ')') {
 					nextToken();
-					return true;
+					return new Factor(null, aux2, null); 
 				}
 			}
 
@@ -352,7 +399,7 @@ public class Compiler {
 				nextToken();
 				if (token == ')') {
 					nextToken();
-					return true;
+					return new Factor(aux, null, "r()".toString());
 				}
 			}
 
@@ -362,7 +409,7 @@ public class Compiler {
 				nextToken();
 				if (token == ')') {
 					nextToken();
-					return true;
+					return new Factor(aux, null, "s()".toString());
 				}
 			}
 
@@ -372,30 +419,35 @@ public class Compiler {
 				nextToken();
 				if (token == ')') {
 					nextToken();
-					return true;
+					return new Factor(aux, null, "t()".toString());
 				}
 			}
 		}
 
-		return false;
+		return null;
 	}
 
 	// LValue ::= Ident | Ident '[' Expr ']'
-	private boolean lValue() {
-		if (ident()) {
+	private LValue lValue() {
+		String aux = null;
+		Expr aux2 = null;
+		aux = ident();
+		if (aux != null) {
 			if (token == '[') {
 				nextToken();
-				if (expr()) {
+				aux2 = expr();
+				if (aux2 != null) {
 					if (token == ']') {
+						
 						nextToken();
-						return true;
+						return new LValue(aux, aux2);
 					}
 				}
 			} else {
-				return true;
+				return new LValue(aux, null);
 			}
 		}
-		return false;
+		return null;
 	}
 
 	// Ident ::= Letter { Letter | Digit}
@@ -426,7 +478,7 @@ public class Compiler {
 	}
 
 	//RelOp ::= '=' | '#' | '<' | '>'
-	private boolean relOp() {
+	private String relOp() {
 		char ret = ' ';
 		switch (token) {
 			case '=':
@@ -435,28 +487,28 @@ public class Compiler {
 			case '>':
 				ret = token;
 				nextToken();
-				return true;
+				return Character.toString(ret);
 			default:
-				return false;
+				return null;
 		}
 	}
 
 	//AddOp ::= '+' | '-'
-	private boolean addOp() {
+	private String addOp() {
 		char ret = ' ';
 		switch (token) {
 			case '+':
 			case '-':
 				ret = token;
 				nextToken();
-				return true;
+				return Character.toString(ret);
 			default:
-				return false;
+				return null;
 		}
 	}
 
 	//MulOp ::= '*' | '/' | '%'
-	private boolean mulOp() {
+	private String mulOp() {
 		char ret = ' ';
 		switch (token) {
 			case '*':
@@ -464,14 +516,14 @@ public class Compiler {
 			case '%':
 				ret = token;
 				nextToken();
-				return true;
+				return Character.toString(ret);
 			default:
-				return false;
+				return null;
 		}
 	}
 
 	// Unary ::= '+' | '-' | '!'
-	private boolean unary() {
+	private String unary() {
 		char ret = ' ';
 		switch (token) {
 			case '+':
@@ -479,9 +531,9 @@ public class Compiler {
 			case '!':
 				ret = token;
 				nextToken();
-				return true;
+				return Character.toString(ret);
 			default:
-				return false;
+				return null;
 		}
 	}
 

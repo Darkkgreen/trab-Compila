@@ -1,23 +1,21 @@
+/*
+ * To change this license header, choose License Headers in Project Properties.
+ * To change this template file, choose Tools | Templates
+ * and open the template in the editor.
+ */
 package AST;
 
-public class CompositeExpr extends Expr {
+/**
+ *
+ * @author ricke
+ */
+public class CompositeExpr extends Expr{
+	private SimExpr simexpr;
+	private String relOp;
+	private CompositeExpr expr;
 
-	private char op;
-	private Expr esq, dir;
-
-	public CompositeExpr(char o, Expr e, Expr d){
-		this.op = o;
-		this.esq = e;
-		this.dir = d;
+	public void genC() {
+		// não implementado
 	}
-
-	public void genC(){
-		System.out.print('(');
-		esq.genC();
-		System.out.print(op);
-		dir.genC();
-		System.out.print(')');
-	}
-
-
+	
 }
