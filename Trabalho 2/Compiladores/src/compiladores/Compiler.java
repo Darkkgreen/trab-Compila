@@ -60,7 +60,7 @@ public class Compiler {
 				ret.add(aux);
                             	aux = null;
 			}
-			//while (stmt() == true);
+			while (stmt() == true);
 
 		} else {
 			error("stmtBlock");
@@ -148,7 +148,7 @@ public class Compiler {
 
 	// Stmt ::= Expr ';' | ifStmt | WhileStmt | BreakStmt | PrintStmt
 	private boolean stmt() {
-		if (((expr() == true) && (token == ';')) || ifStmt() || whileStmt() || breakStmt() || printStmt()) {
+		if (((expr()!= null) && (token == ';')) || ifStmt() || whileStmt() || breakStmt() || printStmt()) {
 			if (token == ';') {
 				nextToken();
 			}
@@ -164,7 +164,7 @@ public class Compiler {
 			nextToken();
 			if (token == '(') {
 				nextToken();
-				if (expr()) {
+				if (expr() != null) {
 					if (token == ')') {
 						nextToken();
 						if (token == '{') {
@@ -207,7 +207,7 @@ public class Compiler {
 			nextToken();
 			if (token == '(') {
 				nextToken();
-				if (expr()) {
+				if (expr() != null) {
 					if (token == ')') {
 						nextToken();
 						if (token == '{') {
@@ -252,10 +252,10 @@ public class Compiler {
 			nextToken();
 			if (token == '(') {
 				nextToken();
-				if (expr()) {
+				if (expr() != null) {
 					while (token == ',') {
 						nextToken();
-						if (expr()) {
+						if (expr() != null) {
 							nextToken();
 						}else
                                                     error("PrintStmt");
@@ -292,7 +292,6 @@ public class Compiler {
 			}
 			return new CompositeExpr(aux, relop, expr);
 		} else {
-			error("expr");
 			return null; 
 		}
 
@@ -328,7 +327,8 @@ public class Compiler {
 						error("SimExpr1");
 						break;
 					}
-				}
+				}else
+					break;
 			}
 			return new SimExpr(aux, termAux, addop, termList);
 		}
