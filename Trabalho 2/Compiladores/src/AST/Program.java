@@ -3,25 +3,25 @@ import java.util.ArrayList;
 
 public class Program{
 
-	private Expr expr;
-	private ArrayList<Variable> listV;
+	private ArrayList<Stmt> listS;
+	private ArrayList<Variable> listV; // esquerda
 
-	public Program(ArrayList<Variable> listV, Expr expr){
+	public Program(ArrayList<Variable> listV, ArrayList<Stmt> listS){
 		this.listV = listV;
-		this.expr = expr;
+		this.listS = listS;
 	}
 
-	public void genC(){
-		System.out.println("void main () {");
-		System.out.print("\t");
-
-
-		for(Variable v:listV){
-			v.genC();
-		}
-
-		expr.genC();
-		System.out.println("\n }");
-	}
+//	public void genC(){
+//		System.out.println("void main () {");
+//		System.out.print("\t");
+//
+//
+//		for(Variable v:listV){
+//			v.genC();
+//		}
+//
+//		expr.genC();
+//		System.out.println("\n }");
+//	}
 
 }
