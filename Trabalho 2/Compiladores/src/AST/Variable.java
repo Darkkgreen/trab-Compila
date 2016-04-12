@@ -1,5 +1,6 @@
 package AST;
 
+<<<<<<< HEAD
 public class Variable extends Expr{
 	private Type type;
 	private String name; // nome da variável no caso feita pelo indent

@@ -6,7 +6,6 @@
 package AST;
 
 import java.util.ArrayList;
-
 /**
  *
  * @author Charizard
@@ -29,7 +28,7 @@ public class IfStmt {
     public void setExpr(Expr expr) {
         this.expr = expr;
     }
-    
+
     public ArrayList<Stmt> getStmt() {
         return stmt;
     }

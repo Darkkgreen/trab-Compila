@@ -1,0 +1,7 @@
+Oi Tiemi,
+
+para compilar os arquivos digite no terminal nesta pasta raiz.
+
+javac compiladores/*.java
+
+Obrigado!

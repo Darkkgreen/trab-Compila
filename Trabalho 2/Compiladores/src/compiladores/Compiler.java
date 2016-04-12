@@ -54,7 +54,7 @@ public class Compiler {
                 ArrayList<Stmt> stmt = new ArrayList<Stmt>();
 		Variable aux = null;
                 Stmt auxiliarStmt = null;
-                
+
 		if (token == '{') {
 			nextToken();
 			while ((aux = variableDecl()) != null) {
@@ -81,7 +81,7 @@ public class Compiler {
 
 	//VariableDecl ::= Variable ';'
 	private Variable variableDecl() {
-		Variable aux = variable();	
+		Variable aux = variable();
 		if ((aux != null) && token == ';') {
 			nextToken();
 			return aux;
@@ -157,7 +157,7 @@ public class Compiler {
             PrintStmt imprime = null;
             CompositeExpr aux = null;
             Stmt stmt = null;
-            
+
 		if ((((aux = expr()) != null) && (token == ';')) || (se = ifStmt()) != null || (enquanto = whileStmt()) != null || (parada = breakStmt()) || (imprime = printStmt()) != null) {
 			stmt = new Stmt(se, enquanto, parada, imprime, aux);
                         if (token == ';') {
@@ -176,7 +176,7 @@ public class Compiler {
             ArrayList<Stmt> opcional = new ArrayList<Stmt>();
             Stmt auxiliarStmt = null;
             IfStmt ifstmt = null;
-            
+
 		if (token == 'f') {
 			nextToken();
 			if (token == '(') {
@@ -205,7 +205,7 @@ public class Compiler {
 											}
 										}else
                                                                                     error("IfStmt");
-									}       
+									}
 								}else
                                                                     error("IfStmt");
 							}
@@ -228,7 +228,7 @@ public class Compiler {
             Expr auxiliarExp = null;
             ArrayList<Stmt> arrayPrinc = new ArrayList<Stmt>();
             Stmt auxiliarSt = null;
-            
+
 		if (token == 'w') {
 			nextToken();
 			if (token == '(') {
@@ -278,7 +278,7 @@ public class Compiler {
 	private PrintStmt printStmt() {
             ArrayList<Expr> listaExp = new ArrayList<Expr>();
             Expr aux;
-            
+
 		if (token == 'p') {
 			nextToken();
 			if (token == '(') {
@@ -327,7 +327,7 @@ public class Compiler {
 			}
 			return new CompositeExpr(aux, relop, expr);
 		} else {
-			return null; 
+			return null;
 		}
 
 	}
@@ -340,8 +340,8 @@ public class Compiler {
 		Term termAux2 = null;
 		ArrayList<String> addop = null;
 		ArrayList<Term> termList = null;
-		aux = unary();	
-	
+		aux = unary();
+
 		termAux = term();
 		if (termAux != null) {
 			while (true) {
@@ -421,7 +421,7 @@ public class Compiler {
 			if (aux2 != null) {
 				if (token == ')') {
 					nextToken();
-					return new Factor(null, aux2, null); 
+					return new Factor(null, aux2, null);
 				}
 			}
 
@@ -470,7 +470,7 @@ public class Compiler {
 				aux2 = expr();
 				if (aux2 != null) {
 					if (token == ']') {
-						
+
 						nextToken();
 						return new LValue(aux, aux2);
 					}

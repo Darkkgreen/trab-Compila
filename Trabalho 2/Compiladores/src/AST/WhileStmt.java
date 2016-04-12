@@ -6,7 +6,6 @@
 package AST;
 
 import java.util.ArrayList;
-
 /**
  *
  * @author Charizard
@@ -19,7 +18,7 @@ public class WhileStmt {
         this.stmt = stmt;
         this.expr = expr;
     }
-    
+
     public ArrayList<Stmt> getStmt() {
         return stmt;
     }
@@ -35,5 +34,5 @@ public class WhileStmt {
     public void setExpr(Expr expr) {
         this.expr = expr;
     }
-    
+
 }

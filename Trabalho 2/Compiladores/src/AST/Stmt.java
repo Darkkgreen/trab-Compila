@@ -55,7 +55,6 @@ public class Stmt {
     public void setEscrever(PrintStmt escrever) {
         this.escrever = escrever;
     }
-    
     public Expr getExpressao() {
         return expressao;
     }
