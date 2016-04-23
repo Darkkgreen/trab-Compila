@@ -507,7 +507,8 @@ public class Compiler {
 				if(flag == true)
 					if(aux == null)
 						break;
-				name.concat(aux);
+				if(aux != null)
+					name.concat(aux);
 			}
 			return name;
 		}

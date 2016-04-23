@@ -26,7 +26,6 @@ public class Compiladores {
        char []input = "vm(){ w(a:z){ b; } }".toCharArray();
       //char []input = "vm(){ i aa12; d[] aa2; c aa;}".toCharArray();
       //caso com letra reservada
-      //char []input = "vm(){ i AbzZa3; }".toCharArray();
       //char []input = "vm(){ i AzZa3; }".toCharArray();
 
       Compiler compiler = new Compiler();
