@@ -66,7 +66,7 @@ public class Compiler {
                             auxiliarStmt = null;
                         }
 		} else {
-			error("stmtBlock");
+			error("stmtBlock 1");
 		}
 
 		if (token == '}') {
@@ -74,7 +74,7 @@ public class Compiler {
 			nextToken();
 			return program;
 		} else {
-			error("stmtBlock");
+			error("stmtBlock 2");
 		}
 		return null;
 	}
@@ -82,9 +82,16 @@ public class Compiler {
 	//VariableDecl ::= Variable ';'
 	private Variable variableDecl() {
 		Variable aux = variable();	
-		if ((aux != null) && token == ';') {
+		if (aux != null) {
+                    if(token == ';')
+                    {
 			nextToken();
 			return aux;
+                    }else
+                    {
+                        error("VariableDecl");
+                        return null;
+                    }
 		} else {
 			return null;
 		}
@@ -139,7 +146,8 @@ public class Compiler {
 					nextToken();
 					return type;
 				} else {
-					return type;
+                                        error("ArrayType");
+					return null;
 				}
 			}
 			// como o construtor de type ja define false,
@@ -200,14 +208,12 @@ public class Compiler {
                                                                                             auxiliarStmt = null;
 												if (token == '}') {
 													nextToken();
-												}else
-                                                                                                    error("IfStmt");
+												}
 											}
 										}else
                                                                                     error("IfStmt");
 									}       
-								}else
-                                                                    error("IfStmt");
+								}
 							}
                                                         ifstmt = new IfStmt(auxiliarExp, principal, opcional);
                                                         return ifstmt;
@@ -349,9 +355,6 @@ public class Compiler {
 				if(aux2 != null){
 					if(addop == null)
 						addop = new ArrayList<String>();
-					else{
-						break;
-					}
 					addop.add(aux);
 					termAux2 = term();
 					if(termAux2 != null){
@@ -359,7 +362,6 @@ public class Compiler {
 							termList = new ArrayList<Term>();
 						termList.add(termAux);
 					}else{
-						error("SimExpr1");
 						break;
 					}
 				}else
