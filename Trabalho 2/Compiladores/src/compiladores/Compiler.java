@@ -520,7 +520,8 @@ public class Compiler {
 					flag3 = false;
 			}while (!((flag1 == false)&&(flag2 == false)&&(flag3 == false)));
 			return name;
-		}
+		}else
+			error("ident: Variable must begin with a letter");
 		return null;
 	}
 //

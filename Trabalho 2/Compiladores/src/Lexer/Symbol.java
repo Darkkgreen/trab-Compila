@@ -40,7 +40,13 @@ public enum Symbol {
       AND  ("&&"),
       REMAINDER("%"),
       NOT("!"),
-
+      
+      READINTEGER("readInteger"),
+      READDOUBLE("readDouble"),
+      READCHAR("readChar"),
+      PRINT("print"),
+      BREAK("break"),
+      WHILE("while"),
       UNDERSCORE("_"),
       LEFTSQUARE("["),
       RIGHTSQUARE("]"),

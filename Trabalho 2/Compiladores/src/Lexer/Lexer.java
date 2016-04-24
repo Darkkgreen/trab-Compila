@@ -40,6 +40,12 @@ public class Lexer {
 		keywordsTable.put("or", Symbol.OR);
 		keywordsTable.put("not", Symbol.NOT);
 
+		keywordsTable.put("readInteger", Symbol.READINTEGER);
+		keywordsTable.put("readDouble", Symbol.READDOUBLE);
+		keywordsTable.put("readChar", Symbol.READCHAR);
+		keywordsTable.put("print", Symbol.PRINT);
+		keywordsTable.put("break", Symbol.BREAK);
+		keywordsTable.put("while", Symbol.WHILE);
 		keywordsTable.put("void", Symbol.VOID);
 		keywordsTable.put("main", Symbol.MAIN);
 		keywordsTable.put("int", Symbol.INTEGER);
