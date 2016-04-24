@@ -45,7 +45,7 @@ public class Lexer {
 		keywordsTable.put("int", Symbol.INTEGER);
 		keywordsTable.put("double", Symbol.DOUBLE);
 		keywordsTable.put("char", Symbol.CHAR);
-		
+
 	}
 
 	public void nextToken() {
@@ -62,12 +62,24 @@ public class Lexer {
 		}
 		if (ch == '\0') {
 			token = Symbol.EOF;
-		} else 
-			if (input[tokenPos] == '/' && input[tokenPos + 1] == '/') {
+		} else if (input[tokenPos] == '/' && input[tokenPos + 1] == '/') {
 			// comment found
 			while (input[tokenPos] != '\0' && input[tokenPos] != '\n') {
+				System.out.print(input[tokenPos]);
 				tokenPos++;
 			}
+
+			nextToken();
+		} else if (input[tokenPos] == '/' && input[tokenPos + 1] == '*') {
+			// comment found
+			while (input[tokenPos] != '\0' && (input[tokenPos] != '*' || input[tokenPos+1] != '/')){
+				System.out.print(input[tokenPos]);
+				tokenPos++;
+			}
+			System.out.print(input[tokenPos]);
+			tokenPos++;
+			System.out.print(input[tokenPos]);
+			tokenPos++;
 			nextToken();
 		} else if (Character.isLetter(ch)) {
 			// get an identifier or keyword
@@ -111,7 +123,7 @@ public class Lexer {
 		} else {
 			System.out.print(input[tokenPos]);
 			tokenPos++;
-			
+
 			switch (ch) {
 				case '+':
 					token = Symbol.PLUS;
@@ -197,7 +209,7 @@ public class Lexer {
 				default:
 					System.out.println("Invalid Character: '" + ch + "'");
 				//error.signal("Invalid Character: '" + ch + "'");
-			}
+				}
 		}
 		lastTokenPos = tokenPos - 1;
 	}
