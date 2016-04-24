@@ -30,9 +30,9 @@ public enum Symbol {
       READ("read"),
       WRITE("write"),
       COLON(":"),
-      INTEGER("integer"),
+
       BOOLEAN("boolean"),
-      CHAR("char"),
+
       CHARACTER("character"),
       TRUE("true"),
       FALSE("false"),
@@ -40,7 +40,10 @@ public enum Symbol {
       AND  ("&&"),
       REMAINDER("%"),
       NOT("!"),
-      
+
+      CHAR("char"),      
+      DOUBLE("double"),
+      INTEGER("int"),      
       LEFTBRACKET("{"),
       RIGHTBRACKET("}"),
       VOID("void"),

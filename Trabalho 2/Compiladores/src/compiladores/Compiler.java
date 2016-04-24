@@ -9,6 +9,7 @@ public class Compiler {
 	public Program compile(char[] p_input) {
 		lexer = new Lexer(p_input);
 		lexer.nextToken();
+		variableNames = new ArrayList<String>();
 		
 		Program e = program();
 		
@@ -82,12 +83,10 @@ public class Compiler {
 	private Variable variableDecl() {
 		Variable aux = variable();	
 		if (aux != null) {
-                    if(token == ';')
-                    {
-			nextToken();
+                    if(lexer.token == Symbol.SEMICOLON){
+			lexer.nextToken();
 			return aux;
-                    }else
-                    {
+                    }else{
                         error("VariableDecl");
                         return null;
                     }
@@ -98,6 +97,7 @@ public class Compiler {
 
 	// Variable ::= Type Ident
 	private Variable variable() {
+		
 		Variable aux = null;
 		Type type = null;
 		String name = null;
@@ -106,6 +106,9 @@ public class Compiler {
 		if (type != null) {
 			name = ident();
 			if(name != null){
+				if(variableNames.contains(name)){
+					error("variable SAME NAME");
+				}
 				aux = new Variable(name, type);
 				return aux;
 			}else
@@ -121,16 +124,13 @@ public class Compiler {
 
 	// StdType ::= 'i' | 'd' | 'c'
 	private Type stdType() {
-		switch (token) {
-			case 'i':
-			case 'd':
-			case 'c':
-				Type type = new Type(token, false);
-				nextToken();
-				return type;
-			default:
-				return null;
+		if((lexer.token == Symbol.INTEGER)||(lexer.token == Symbol.CHAR)||(lexer.token == Symbol.DOUBLE)){
+			Type type = new Type(lexer.token, false);
+			lexer.nextToken();
+			return type;
 		}
+		
+		return null;
 	}
 
 	// ArrayType ::= StdType '[' ']'
@@ -631,5 +631,6 @@ public class Compiler {
 	}
 	
 	private Lexer lexer;
+	public ArrayList<String> variableNames;
 
 }
