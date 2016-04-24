@@ -11,17 +11,19 @@ public class Program{
 		this.listS = listS;
 	}
 
-//	public void genC(){
-//		System.out.println("void main () {");
-//		System.out.print("\t");
-//
-//
-//		for(Variable v:listV){
-//			v.genC();
-//		}
-//
+	public void genC(){
+		System.out.println();
+		System.out.println("void main () {");
+		System.out.print("\t");
+
+
+		for(Variable v:listV){
+			v.genC();
+			System.out.print("\t");
+		}
+
 //		expr.genC();
-//		System.out.println("\n }");
-//	}
+		System.out.println("\n}");
+	}
 
 }

@@ -40,6 +40,12 @@ public class Lexer {
 		keywordsTable.put("or", Symbol.OR);
 		keywordsTable.put("not", Symbol.NOT);
 
+		keywordsTable.put("void", Symbol.VOID);
+		keywordsTable.put("main", Symbol.MAIN);
+		keywordsTable.put("int", Symbol.INTEGER);
+		keywordsTable.put("double", Symbol.DOUBLE);
+		keywordsTable.put("char", Symbol.CHAR);
+		
 	}
 
 	public void nextToken() {
@@ -51,11 +57,13 @@ public class Lexer {
 			if (ch == '\n') {
 				lineNumber++;
 			}
+			System.out.print(input[tokenPos]);
 			tokenPos++;
 		}
 		if (ch == '\0') {
 			token = Symbol.EOF;
-		} else if (input[tokenPos] == '/' && input[tokenPos + 1] == '/') {
+		} else 
+			if (input[tokenPos] == '/' && input[tokenPos + 1] == '/') {
 			// comment found
 			while (input[tokenPos] != '\0' && input[tokenPos] != '\n') {
 				tokenPos++;
@@ -65,6 +73,7 @@ public class Lexer {
 			// get an identifier or keyword
 			StringBuffer ident = new StringBuffer();
 			while (Character.isLetter(input[tokenPos])) {
+				System.out.print(input[tokenPos]);
 				ident.append(input[tokenPos]);
 				tokenPos++;
 			}
@@ -76,13 +85,15 @@ public class Lexer {
 			} else {
 				token = value;
 			}
-			if (Character.isDigit(input[tokenPos])) {
-				System.out.println("Word followed by a number");
-			}
+			//if (Character.isDigit(input[tokenPos])) {
+			//	System.out.println("Word followed by a number");
+			//}
+			//System.out.println(value);
 		} else if (Character.isDigit(ch)) {
 			// get a number
 			StringBuffer number = new StringBuffer();
 			while (Character.isDigit(input[tokenPos])) {
+				System.out.print(input[tokenPos]);
 				number.append(input[tokenPos]);
 				tokenPos++;
 			}
@@ -90,14 +101,17 @@ public class Lexer {
 			try {
 				numberValue = Integer.valueOf(number.toString()).intValue();
 			} catch (NumberFormatException e) {
-				System.out.println("Number out of limits");
+				//System.out.println("Number out of limits");
 			}
+			stringValue = number.toString();
 			if (numberValue >= MaxValueInteger) {
-				System.out.println("Number out of limits");
+				//System.out.println("Number out of limits");
 			}
 
 		} else {
+			System.out.print(input[tokenPos]);
 			tokenPos++;
+			
 			switch (ch) {
 				case '+':
 					token = Symbol.PLUS;
@@ -141,11 +155,26 @@ public class Lexer {
 						token = Symbol.ASSIGN;
 					}
 					break;
+				case '_':
+					token = Symbol.UNDERSCORE;
+					break;
 				case '(':
 					token = Symbol.LEFTPAR;
 					break;
 				case ')':
 					token = Symbol.RIGHTPAR;
+					break;
+				case '[':
+					token = Symbol.LEFTSQUARE;
+					break;
+				case ']':
+					token = Symbol.RIGHTSQUARE;
+					break;
+				case '{':
+					token = Symbol.LEFTBRACKET;
+					break;
+				case '}':
+					token = Symbol.RIGHTBRACKET;
 					break;
 				case ',':
 					token = Symbol.COMMA;
@@ -167,7 +196,7 @@ public class Lexer {
 					break;
 				default:
 					System.out.println("Invalid Character: '" + ch + "'");
-					//error.signal("Invalid Character: '" + ch + "'");
+				//error.signal("Invalid Character: '" + ch + "'");
 			}
 		}
 		lastTokenPos = tokenPos - 1;
@@ -182,10 +211,8 @@ public class Lexer {
 		int i = lastTokenPos;
 		if (i == 0) {
 			i = 1;
-		} else {
-			if (i >= input.length) {
-				i = input.length;
-			}
+		} else if (i >= input.length) {
+			i = input.length;
 		}
 
 		StringBuffer line = new StringBuffer();
@@ -221,7 +248,7 @@ public class Lexer {
 	private int numberValue;
 	private char charValue;
 
-	private int tokenPos;
+	public int tokenPos;
 	//  input[lastTokenPos] is the last character of the last token
 	private int lastTokenPos;
 	// program given as input - source code

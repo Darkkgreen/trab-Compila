@@ -30,16 +30,27 @@ public enum Symbol {
       READ("read"),
       WRITE("write"),
       COLON(":"),
-      INTEGER("integer"),
+
       BOOLEAN("boolean"),
-      CHAR("char"),
+
       CHARACTER("character"),
       TRUE("true"),
       FALSE("false"),
       OR   ("||"),
       AND  ("&&"),
       REMAINDER("%"),
-      NOT("!");
+      NOT("!"),
+
+      UNDERSCORE("_"),
+      LEFTSQUARE("["),
+      RIGHTSQUARE("]"),
+      CHAR("char"),      
+      DOUBLE("double"),
+      INTEGER("int"),      
+      LEFTBRACKET("{"),
+      RIGHTBRACKET("}"),
+      VOID("void"),
+      MAIN("main");
 
       Symbol(String name) {
           this.name = name;
