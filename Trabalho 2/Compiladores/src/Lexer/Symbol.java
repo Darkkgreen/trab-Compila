@@ -41,6 +41,8 @@ public enum Symbol {
       REMAINDER("%"),
       NOT("!"),
       
+      LEFTBRACKET("{"),
+      RIGHTBRACKET("}"),
       VOID("void"),
       MAIN("main");
 

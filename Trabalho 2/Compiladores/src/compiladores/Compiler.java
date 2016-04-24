@@ -32,9 +32,10 @@ public class Compiler {
 				lexer.nextToken();
 				if(lexer.token == Symbol.LEFTPAR){
 					lexer.nextToken();
-					if(lexer.token == Symbol.RIGHTPAR)
+					if(lexer.token == Symbol.RIGHTPAR){
+						lexer.nextToken();
 						stmtBlock();
-					else
+					}else
 						error("DECL RIGHT PAR");
 				}else
 					error("DECL LEFT PAR");
@@ -53,8 +54,8 @@ public class Compiler {
 		Variable aux = null;
                 Stmt auxiliarStmt = null;
                 
-		if (token == '{') {
-			nextToken();
+		if (lexer.token == Symbol.LEFTBRACKET) {
+			lexer.nextToken();
 			while ((aux = variableDecl()) != null) {
                             ret.add(aux);
                             aux = null;
@@ -67,9 +68,9 @@ public class Compiler {
 			error("stmtBlock 1");
 		}
 
-		if (token == '}') {
+		if (lexer.token == Symbol.RIGHTBRACKET) {
 			Program program = new Program(ret, stmt);
-			nextToken();
+			lexer.nextToken();
 			return program;
 		} else {
 			error("stmtBlock 2");
@@ -628,11 +629,7 @@ public class Compiler {
 		System.out.println(strError);
 		throw new RuntimeException(strError);
 	}
-
-	//private char token;
-	private Symbol token;
-	private int tokenPos;
-	private char[] input;
+	
 	private Lexer lexer;
 
 }

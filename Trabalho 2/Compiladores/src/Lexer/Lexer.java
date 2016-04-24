@@ -150,6 +150,12 @@ public class Lexer {
 				case ')':
 					token = Symbol.RIGHTPAR;
 					break;
+				case '{':
+					token = Symbol.LEFTBRACKET;
+					break;
+				case '}':
+					token = Symbol.RIGHTBRACKET;
+					break;
 				case ',':
 					token = Symbol.COMMA;
 					break;
