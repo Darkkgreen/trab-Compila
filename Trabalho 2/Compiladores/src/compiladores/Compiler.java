@@ -103,7 +103,6 @@ public class Compiler {
 
 	// Variable ::= Type Ident
 	private Variable variable() {
-
 		Variable aux = null;
 		Type type = null;
 		String name = null;
@@ -154,7 +153,7 @@ public class Compiler {
 					lexer.nextToken();
 					return type;
 				} else {
-					error("ArrayType");
+					error("Missing right square in Array declaration");
 					return null;
 				}
 			}
@@ -189,146 +188,146 @@ public class Compiler {
 
 		return null;
 	}
-//
-//	//IfStmt ::= 'f' '(' Expr ')' '{' { Stmt } '}' [ 'e' '{' { Stmt } '}' ]
-//	private IfStmt ifStmt() {
-//            Expr auxiliarExp = null;
-//            ArrayList<Stmt> principal = new ArrayList<Stmt>();
-//            ArrayList<Stmt> opcional = new ArrayList<Stmt>();
-//            Stmt auxiliarStmt = null;
-//            IfStmt ifstmt = null;
-//            
-//		if (token == 'f') {
-//			nextToken();
-//			if (token == '(') {
-//				nextToken();
-//				if ((auxiliarExp = expr()) != null) {
-//					if (token == ')') {
-//						nextToken();
-//						if (token == '{') {
-//							nextToken();
-//							while ((auxiliarStmt = stmt()) != null) {
-//                                                                principal.add(auxiliarStmt);
-//                                                                auxiliarStmt = null;
-//								if (token == '}') {
-//									nextToken();
-//									if (token == 'e') { //aqui entra a parte opcional
-//										nextToken();
-//										if (token == '{') {
-//											nextToken();
-//											while ((auxiliarStmt = stmt()) != null) {
-//                                                                                            opcional.add(auxiliarStmt);
-//                                                                                            auxiliarStmt = null;
-//												if (token == '}') {
-//													nextToken();
-//												}
-//											}
-//										}else
-//                                                                                    error("IfStmt");
-//									}       
-//								}
-//							}
-//                                                        ifstmt = new IfStmt(auxiliarExp, principal, opcional);
-//                                                        return ifstmt;
-//						}else
-//                                                    error("IfStmt");
-//					}else
-//                                            error("IfStmt");
-//				}else
-//                                    error("IfStmt");
-//			}else
-//                            error("IfStmt");
-//		}
-//		return null;
-//	}
-//
-//	//WhileStmt ::= 'w' '(' Expr ')' '{' { Stmt } '}'
-//	private WhileStmt whileStmt() {
-//            Expr auxiliarExp = null;
-//            ArrayList<Stmt> arrayPrinc = new ArrayList<Stmt>();
-//            Stmt auxiliarSt = null;
-//            
-//		if (token == 'w') {
-//			nextToken();
-//			if (token == '(') {
-//				nextToken();
-//				if ((auxiliarExp = expr()) != null) {
-//					if (token == ')') {
-//						nextToken();
-//						if (token == '{') {
-//							nextToken();
-//							while ((auxiliarSt = stmt()) != null) {
-//                                                            arrayPrinc.add(auxiliarSt);
-//                                                            auxiliarSt = null;
-//							}
-//                                                        if (token == '}') {
-//                                                            nextToken();
-//                                                            WhileStmt enquanto = new WhileStmt(arrayPrinc, auxiliarExp);
-//                                                            return enquanto;
-//                                                        }
-//						}else
-//                                                    error("WhileStmt");
-//					}else
-//                                            error("WhileStmt");
-//				}else
-//                                    error("WhileStmt");
-//			}else
-//                            error("WhileStmt");
-//		}
-//
-//		return null;
-//	}
-//
-//	//BreakStmt ::= 'b' ';'
-//	private boolean breakStmt() {
-//		if (token == 'b') {
-//			nextToken();
-//			if (token == ';') {
-//				nextToken();
-//				return true;
-//			}else
-//                            error("BreakStmt");
-//		}
-//
-//		return false;
-//	}
-//
-//	//PrintStmt ::= 'p' '(' Expr { ',' Expr }')'
-//	private PrintStmt printStmt() {
-//            ArrayList<Expr> listaExp = new ArrayList<Expr>();
-//            Expr aux;
-//            
-//		if (token == 'p') {
-//			nextToken();
-//			if (token == '(') {
-//				nextToken();
-//				if ((aux = expr()) != null) {
-//                                    listaExp.add(aux);
-//                                    aux = null;
-//					while (token == ',') {
-//						nextToken();
-//						if ((aux = expr()) != null) {
-//                                                    listaExp.add(aux);
-//                                                    aux = null;
-//						}else
-//                                                    error("PrintStmt");
-//					}
-//
-//					if (token == ')') {
-//						nextToken();
-//                                                PrintStmt imprime = new PrintStmt(listaExp);
-//						return imprime;
-//					}else
-//                                            error("PrintStmt");
-//				}else
-//                                    error("PrintStmt");
-//			}else
-//                            error("PrintStmt");
-//		}
-//
-//		return null;
-//	}
-//
+
+	//IfStmt ::= 'f' '(' Expr ')' '{' { Stmt } '}' [ 'e' '{' { Stmt } '}' ]
+	private IfStmt ifStmt() {
+            Expr auxiliarExp = null;
+            ArrayList<Stmt> principal = new ArrayList<Stmt>();
+            ArrayList<Stmt> opcional = new ArrayList<Stmt>();
+            Stmt auxiliarStmt = null;
+            IfStmt ifstmt = null;
+            
+		if (lexer.token == Symbol.IF) {
+			lexer.nextToken();
+			if (lexer.token == Symbol.LEFTPAR) {
+				lexer.nextToken();
+				if ((auxiliarExp = expr()) != null) {
+					if (lexer.token == Symbol.RIGHTPAR) {
+						lexer.nextToken();
+						if (lexer.token == Symbol.LEFTBRACKET) {
+							lexer.nextToken();
+							while ((auxiliarStmt = stmt()) != null) {
+                                                                principal.add(auxiliarStmt);
+                                                                auxiliarStmt = null;
+								if (lexer.token == Symbol.RIGHTBRACKET) {
+									lexer.nextToken();
+									if (lexer.token == Symbol.ELSE) { //aqui entra a parte opcional
+										lexer.nextToken();
+										if (lexer.token == Symbol.LEFTBRACKET) {
+											lexer.nextToken();
+											while ((auxiliarStmt = stmt()) != null) {
+                                                                                            opcional.add(auxiliarStmt);
+                                                                                            auxiliarStmt = null;
+												if (lexer.token == Symbol.RIGHTBRACKET) {
+													lexer.nextToken();
+												}
+											}
+										}else
+                                                                                    error("Else left bracket error");
+									}       
+								}
+							}
+                                                        ifstmt = new IfStmt(auxiliarExp, principal, opcional);
+                                                        return ifstmt;
+						}else
+                                                    error("Missing left bracket before if statement");
+					}else
+                                            error("Missing right parenthesis after if expression");
+				}else
+                                    error("Missing if expression");
+			}else
+                            error("Missing left parenthesis before if expression");
+		}
+		return null;
+	}
+
+	//WhileStmt ::= 'w' '(' Expr ')' '{' { Stmt } '}'
+	private WhileStmt whileStmt() {
+            Expr auxiliarExp = null;
+            ArrayList<Stmt> arrayPrinc = new ArrayList<Stmt>();
+            Stmt auxiliarSt = null;
+            
+		if (lexer.token == Symbol.WHILE) {
+			lexer.nextToken();
+			if (lexer.token == Symbol.LEFTPAR) {
+				lexer.nextToken();
+				if ((auxiliarExp = expr()) != null) {
+					if (lexer.token == Symbol.RIGHTPAR) {
+						lexer.nextToken();
+						if (lexer.token == Symbol.LEFTBRACKET) {
+							lexer.nextToken();
+							while ((auxiliarSt = stmt()) != null) {
+                                                            arrayPrinc.add(auxiliarSt);
+                                                            auxiliarSt = null;
+							}
+                                                        if (lexer.token == Symbol.RIGHTBRACKET) {
+                                                            lexer.nextToken();
+                                                            WhileStmt enquanto = new WhileStmt(arrayPrinc, auxiliarExp);
+                                                            return enquanto;
+                                                        }else
+                                                            error("Missing right bracket after while statement");
+						}
+					}else
+                                            error("Missing right parenthesis after while expression");
+				}else
+                                    error("Missing while expression");
+			}else
+                            error("Missing left parenthesis before while expression");
+		}
+
+		return null;
+	}
+
+	//BreakStmt ::= 'b' ';'
+	private boolean breakStmt() {
+		if (lexer.token == Symbol.BREAK) {
+			lexer.nextToken();
+			if (lexer.token == Symbol.SEMICOLON) {
+				lexer.nextToken();
+				return true;
+			}else
+                            error("Missing semicolon");
+		}
+
+		return false;
+	}
+
+	//PrintStmt ::= 'p' '(' Expr { ',' Expr }')'
+	private PrintStmt printStmt() {
+            ArrayList<Expr> listaExp = new ArrayList<Expr>();
+            Expr aux;
+            
+		if (lexer.token == Symbol.PRINT) {
+			lexer.nextToken();
+			if (lexer.token == Symbol.LEFTPAR) {
+				lexer.nextToken();
+				if ((aux = expr()) != null) {
+                                    listaExp.add(aux);
+                                    aux = null;
+					while (lexer.token == Symbol.COMMA) {
+						lexer.nextToken();
+						if ((aux = expr()) != null) {
+                                                    listaExp.add(aux);
+                                                    aux = null;
+						}else
+                                                    error("Missing expression after comma");
+					}
+
+					if (lexer.token == Symbol.RIGHTPAR) {
+						lexer.nextToken();
+                                                PrintStmt imprime = new PrintStmt(listaExp);
+						return imprime;
+					}else
+                                            error("Missing right parenthesis after ");
+				}else
+                                    error("Missing print expression");
+			}else
+                            error("Missing left parenthesis before expression");
+		}
+
+		return null;
+	}
+
 	// Expr ::= SimExpr [ RelOp Expr ]
 	private CompositeExpr expr() {
 		CompositeExpr expr = null;
