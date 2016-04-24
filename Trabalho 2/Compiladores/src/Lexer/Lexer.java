@@ -131,12 +131,31 @@ public class Lexer {
 			tokenPos++;
 
 			switch (ch) {
+				// unary, addOP
 				case '+':
 					token = Symbol.PLUS;
 					break;
 				case '-':
 					token = Symbol.MINUS;
 					break;
+				// unary
+				case '!':
+					if(input[tokenPos] == '='){
+						token = Symbol.NEQ;
+						tokenPos++;
+					}else
+						token = Symbol.NOT;
+					break;
+				// addOP
+				case '|':
+					if(input[tokenPos] == '|'){
+						token = Symbol.OR;
+						tokenPos++;
+					}else
+						token = Symbol.PIPE;
+					break;
+				
+				// mulop
 				case '*':
 					token = Symbol.MULT;
 					break;
@@ -146,6 +165,13 @@ public class Lexer {
 				case '%':
 					token = Symbol.REMAINDER;
 					break;
+				case '&':
+					if(input[tokenPos] == '&'){
+						token = Symbol.AND;
+						tokenPos++;
+					}else
+						token = Symbol.AND;
+					break;					
 				case '<':
 					if (input[tokenPos] == '=') {
 						tokenPos++;
@@ -201,7 +227,11 @@ public class Lexer {
 					token = Symbol.SEMICOLON;
 					break;
 				case ':':
-					token = Symbol.COLON;
+					if(input[tokenPos] == '='){
+						tokenPos++;
+						token = Symbol.DEFINITION;
+					}else
+						token = Symbol.COLON;
 					break;
 				case '\'':
 					token = Symbol.CHARACTER;

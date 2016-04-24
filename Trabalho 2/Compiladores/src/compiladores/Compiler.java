@@ -11,9 +11,9 @@ public class Compiler {
 		lexer = new Lexer(p_input);
 		lexer.nextToken();
 		variableNames = new ArrayList<String>();
-		
+
 		Program e = program();
-		
+
 		// ver isso daqui pode estar errado
 //		if (tokenPos != input.length) {
 //			error("compile");
@@ -29,44 +29,48 @@ public class Compiler {
 	//Decl ::= 'v' 'm' '(' ')' StmtBlock
 	private Program decl() {
 		Program ret = null;
-		if(lexer.token == Symbol.VOID){
+		if (lexer.token == Symbol.VOID) {
 			lexer.nextToken();
-			if(lexer.token == Symbol.MAIN){
+			if (lexer.token == Symbol.MAIN) {
 				lexer.nextToken();
-				if(lexer.token == Symbol.LEFTPAR){
+				if (lexer.token == Symbol.LEFTPAR) {
 					lexer.nextToken();
-					if(lexer.token == Symbol.RIGHTPAR){
+					if (lexer.token == Symbol.RIGHTPAR) {
 						lexer.nextToken();
 						ret = stmtBlock();
-					}else
+					} else {
 						error("DECL RIGHT PAR");
-				}else
+					}
+				} else {
 					error("DECL LEFT PAR");
-			}else
+				}
+			} else {
 				error("DECL MAIN");
-		}else
-		error("DECL VOID");
-		
+			}
+		} else {
+			error("DECL VOID");
+		}
+
 		return ret;
 	}
 
 	//StmtBlock ::= '{' { VariableDecl } { Stmt } '}'
 	private Program stmtBlock() {
 		ArrayList<Variable> ret = new ArrayList<Variable>();
-                ArrayList<Stmt> stmt = new ArrayList<Stmt>();
+		ArrayList<Stmt> stmt = new ArrayList<Stmt>();
 		Variable aux = null;
-                Stmt auxiliarStmt = null;
-                
+		Stmt auxiliarStmt = null;
+
 		if (lexer.token == Symbol.LEFTBRACKET) {
 			lexer.nextToken();
 			while ((aux = variableDecl()) != null) {
-                            ret.add(aux);
-                            aux = null;
+				ret.add(aux);
+				aux = null;
 			}
-//			while ((auxiliarStmt = stmt()) != null){
-//                            stmt.add(auxiliarStmt);
-//                            auxiliarStmt = null;
-//                        }
+			while ((auxiliarStmt = stmt()) != null) {
+				stmt.add(auxiliarStmt);
+				auxiliarStmt = null;
+			}
 		} else {
 			error("stmtBlock: expected {");
 		}
@@ -83,15 +87,15 @@ public class Compiler {
 
 	//VariableDecl ::= Variable ';'
 	private Variable variableDecl() {
-		Variable aux = variable();	
+		Variable aux = variable();
 		if (aux != null) {
-                    if(lexer.token == Symbol.SEMICOLON){
-			lexer.nextToken();
-			return aux;
-                    }else{
-                        error("VariableDecl");
-                        return null;
-                    }
+			if (lexer.token == Symbol.SEMICOLON) {
+				lexer.nextToken();
+				return aux;
+			} else {
+				error("VariableDecl");
+				return null;
+			}
 		} else {
 			return null;
 		}
@@ -99,7 +103,7 @@ public class Compiler {
 
 	// Variable ::= Type Ident
 	private Variable variable() {
-		
+
 		Variable aux = null;
 		Type type = null;
 		String name = null;
@@ -107,15 +111,17 @@ public class Compiler {
 		type = type();
 		if (type != null) {
 			name = ident();
-			if(name != null){
-				if(variableNames.contains(name) == true){
-					error("variable: Variable "+name+" already exists!");
-				}else
+			if (name != null) {
+				if (variableNames.contains(name) == true) {
+					error("variable: Variable " + name + " already exists!");
+				} else {
 					variableNames.add(name);
+				}
 				aux = new Variable(name, type);
 				return aux;
-			}else
+			} else {
 				error("variable: The name of variable is not set");
+			}
 		}
 		return null;
 	}
@@ -127,12 +133,12 @@ public class Compiler {
 
 	// StdType ::= 'i' | 'd' | 'c'
 	private Type stdType() {
-		if((lexer.token == Symbol.INTEGER)||(lexer.token == Symbol.CHAR)||(lexer.token == Symbol.DOUBLE)){
+		if ((lexer.token == Symbol.INTEGER) || (lexer.token == Symbol.CHAR) || (lexer.token == Symbol.DOUBLE)) {
 			Type type = new Type(lexer.token, false);
 			lexer.nextToken();
 			return type;
 		}
-		
+
 		return null;
 	}
 
@@ -148,7 +154,7 @@ public class Compiler {
 					lexer.nextToken();
 					return type;
 				} else {
-                                        error("ArrayType");
+					error("ArrayType");
 					return null;
 				}
 			}
@@ -158,26 +164,31 @@ public class Compiler {
 		}
 		return type;
 	}
-//
-//	// Stmt ::= Expr ';' | ifStmt | WhileStmt | BreakStmt | PrintStmt
-//	private Stmt stmt() {
-//            IfStmt se = null;
-//            WhileStmt enquanto= null;
-//            boolean parada = false;
-//            PrintStmt imprime = null;
-//            CompositeExpr aux = null;
-//            Stmt stmt = null;
-//            
+
+	// Stmt ::= Expr ';' | ifStmt | WhileStmt | BreakStmt | PrintStmt
+	private Stmt stmt() {
+		IfStmt se = null;
+		WhileStmt enquanto = null;
+		boolean parada = false;
+		PrintStmt imprime = null;
+		CompositeExpr aux = null;
+		Stmt stmt = null;
+		
+		if((aux = expr()) != null){
+			
+//			return aux;
+		}
+
 //		if ((((aux = expr()) != null) && (token == ';')) || (se = ifStmt()) != null || (enquanto = whileStmt()) != null || (parada = breakStmt()) || (imprime = printStmt()) != null) {
 //			stmt = new Stmt(se, enquanto, parada, imprime, aux);
-//                        if (token == ';') {
+//			if (token == ';') {
 //				nextToken();
 //			}
 //			return stmt;
 //		}
-//
-//		return null;
-//	}
+
+		return null;
+	}
 //
 //	//IfStmt ::= 'f' '(' Expr ')' '{' { Stmt } '}' [ 'e' '{' { Stmt } '}' ]
 //	private IfStmt ifStmt() {
@@ -318,210 +329,225 @@ public class Compiler {
 //		return null;
 //	}
 //
-//	// Expr ::= SimExpr [ RelOp Expr ]
-//	private CompositeExpr expr() {
-//		CompositeExpr expr = null;
-//		SimExpr aux = null;
-//		String relop = null;
-//
-//		aux = simExpr();
-//		if (aux != null) {
-//			relop = relOp();
-//			if (relop != null) {
-//				expr = expr();
-//				if (expr == null) {
-//                                        error("SimExpr");
-//				}
-//			}
-//			return new CompositeExpr(aux, relop, expr);
-//		} else {
-//			return null; 
-//		}
-//
-//	}
-//
-//	// SimExpr ::= [Unary] Term { AddOp Term }
-//	private SimExpr simExpr() {
-//		String aux= null;
-//		String aux2 = null;
-//		Term termAux = null;
-//		Term termAux2 = null;
-//		ArrayList<String> addop = null;
-//		ArrayList<Term> termList = null;
-//		aux = unary();	
-//	
-//		termAux = term();
-//		if (termAux != null) {
-//			while (true) {
-//				aux2 = addOp();
-//				if(aux2 != null){
-//					if(addop == null)
-//						addop = new ArrayList<String>();
-//					addop.add(aux);
-//					termAux2 = term();
-//					if(termAux2 != null){
-//						if(termList == null)
-//							termList = new ArrayList<Term>();
-//						termList.add(termAux);
-//					}else{
-//						break;
-//					}
-//				}else
-//					break;
-//			}
-//			return new SimExpr(aux, termAux, addop, termList);
-//		}
-//
-//		return null;
-//	}
-//
-//	// Term ::= Factor { MulOp Factor }
-//	private Term term() {
-//		Factor aux = null;
-//		Factor aux3 = null;
-//		String aux2 = null;
-//		ArrayList<String> mulop = null;
-//		ArrayList<Factor> factorList = null;
-//
-//		aux = factor();
-//		if (aux != null) {
-//			while (true) {
-//				aux2 = mulOp();
-//				if(aux2 != null){
-//					if(mulop == null)
-//						mulop = new ArrayList<String>();
-//					mulop.add(aux2);
-//					aux3 = factor();
-//					if(aux3 != null){
-//						if(factorList == null)
-//							factorList = new ArrayList<Factor>();
-//						factorList.add(aux3);
-//					}else
-//						error("Term");
-//				}else
-//					break;
-//			}
-//
-//			return new Term(aux, mulop, factorList);
-//		}
-//
-//		return null;
-//	}
-//
-//	// Factor ::= LValue ':' Expr | LValue | '(' Expr ')' | 'r' '(' ')' | 's' '(' ')' | 't' '(' ')'
-//	private Factor factor() {
-//		LValue aux = null;
-//		aux = lValue();
-//		CompositeExpr aux2 = null;
-//		if (aux != null) {
-//			if (token == ':') {
-//                            nextToken();
-//			        aux2 = expr();
-//				if (aux2 != null) {
-//					return new Factor(aux, aux2, null);
-//				}
-//			}
-//			return new Factor(aux, null, null);
-//		} else if (token == '(') {
-//			nextToken();
-//			aux2 = expr();
-//			if (aux2 != null) {
-//				if (token == ')') {
-//					nextToken();
-//					return new Factor(null, aux2, null); 
-//				}
-//			}
-//
-//		} else if (token == 'r') {
-//                        nextToken();
-//			if (token == '(') {
-//				nextToken();
-//				if (token == ')') {
-//					nextToken();
-//					return new Factor(aux, null, "r()".toString());
-//				}
-//			}
-//
-//		} else if (token == 's') {
-//                        nextToken();
-//			if (token == '(') {
-//				nextToken();
-//				if (token == ')') {
-//					nextToken();
-//					return new Factor(aux, null, "s()".toString());
-//				}
-//			}
-//
-//		} else if (token == 't') {
-//                        nextToken();
-//			if (token == '(') {
-//				nextToken();
-//				if (token == ')') {
-//					nextToken();
-//					return new Factor(aux, null, "t()".toString());
-//				}
-//			}
-//		}
-//
-//		return null;
-//	}
-//
-//	// LValue ::= Ident | Ident '[' Expr ']'
-//	private LValue lValue() {
-//		String aux = null;
-//		Expr aux2 = null;
-//		aux = ident();
-//		if (aux != null) {
-//			if (token == '[') {
-//				nextToken();
-//				aux2 = expr();
-//				if (aux2 != null) {
-//					if (token == ']') {
-//						
-//						nextToken();
-//						return new LValue(aux, aux2);
-//					}
-//				}
-//			} else {
-//				return new LValue(aux, null);
-//			}
-//		}
-//		return null;
-//	}
+	// Expr ::= SimExpr [ RelOp Expr ]
+	private CompositeExpr expr() {
+		CompositeExpr expr = null;
+		SimExpr aux = null;
+		String relop = null;
+
+		aux = simExpr();
+		if (aux != null) {
+			if ((lexer.token == Symbol.ASSIGN)||(lexer.token == Symbol.NEQ)||(lexer.token == Symbol.LT)||
+				(lexer.token == Symbol.LE)||(lexer.token == Symbol.GT)||(lexer.token == Symbol.GE)){
+				expr = expr();
+				if (expr == null) {
+                                        error("SimExpr");
+				}
+			}
+			return new CompositeExpr(aux, relop, expr);
+		} else {
+			return null; 
+		}
+
+	}
+
+	// SimExpr ::= [Unary] Term { AddOp Term }
+	private SimExpr simExpr() {
+		String unary = null;
+		String aux2 = null;
+		Term termAux = null;
+		Term termAux2 = null;
+		ArrayList<String> addop = null;
+		ArrayList<Term> termList = null;
+		
+		if((lexer.token == Symbol.MINUS) || (lexer.token == Symbol.NOT) || (lexer.token == Symbol.PLUS)){
+			unary = lexer.token.toString();
+			lexer.nextToken();
+		}
+	
+		termAux = term();
+		if (termAux != null) {
+			while (true) {
+				if((lexer.token == Symbol.PLUS)||(lexer.token == Symbol.OR)||(lexer.token == Symbol.MINUS)){
+					if(addop == null)
+						addop = new ArrayList<String>();
+					addop.add(lexer.token.toString());
+					lexer.nextToken();
+					
+					termAux2 = term();
+					if(termAux2 != null){
+						if(termList == null)
+							termList = new ArrayList<Term>();
+						termList.add(termAux);
+					}else{
+						break;
+					}
+				}else
+					break;
+			}
+			return new SimExpr(unary, termAux, addop, termList);
+		}
+
+		return null;
+	}
+
+	// Term ::= Factor { MulOp Factor }
+	private Term term() {
+		Factor aux = null;
+		Factor aux3 = null;
+		String aux2 = null;
+		ArrayList<String> mulop = null;
+		ArrayList<Factor> factorList = null;
+
+		aux = factor();
+		if (aux != null) {
+			while (true) {
+				if((lexer.token == Symbol.MULT)||(lexer.token == Symbol.DIV)||(lexer.token == Symbol.REMAINDER)||(lexer.token == Symbol.AND)){
+					if(mulop == null)
+						mulop = new ArrayList<String>();
+					mulop.add(lexer.token.toString());
+					lexer.nextToken();
+					
+					aux3 = factor();
+					if(aux3 != null){
+						if(factorList == null)
+							factorList = new ArrayList<Factor>();
+						factorList.add(aux3);
+					}else
+						error("Term");
+				}else
+					break;
+			}
+
+			return new Term(aux, mulop, factorList);
+		}
+
+		return null;
+	}
+
+	// Factor ::= LValue ':' Expr | LValue | '(' Expr ')' | 'r' '(' ')' | 's' '(' ')' | 't' '(' ')'
+	private Factor factor() {
+		LValue lValue = null;
+		lValue = lValue();
+		CompositeExpr expr = null;
+		if (lValue != null) {
+			if (lexer.token == Symbol.DEFINITION) {
+                            lexer.nextToken();
+			        expr = expr();
+				if (expr != null) {
+					return new Factor(lValue, expr, null, null);
+				}
+			}
+			return new Factor(lValue, null, null, null);
+		} else if(lexer.token == Symbol.NUMBER){
+			lexer.nextToken();
+			// gramática nova desse trabalho, ainda pensarei como implementar
+			return new Factor(null, null, null, lexer.getNumberValue());
+			
+		}else if (lexer.token == Symbol.LEFTPAR) {
+			lexer.nextToken();
+			expr = expr();
+			if (expr != null) {
+				if (lexer.token == Symbol.RIGHTPAR) {
+					lexer.nextToken();
+					return new Factor(null, expr, null, null); 
+				}
+			}
+
+		} else if (lexer.token == Symbol.READINTEGER) {
+                        lexer.nextToken();
+			if (lexer.token == Symbol.LEFTPAR) {
+				lexer.nextToken();
+				if (lexer.token == Symbol.RIGHTPAR) {
+					lexer.nextToken();
+					return new Factor(lValue, null, "readInteger()".toString(), null);
+				}
+			}
+
+		} else if (lexer.token == Symbol.READDOUBLE) {
+                        lexer.nextToken();
+			if (lexer.token == Symbol.LEFTPAR) {
+				lexer.nextToken();
+				if (lexer.token == Symbol.RIGHTPAR) {
+					lexer.nextToken();
+					return new Factor(lValue, null, "readDouble()".toString(), null);
+				}
+			}
+
+		} else if (lexer.token == Symbol.READCHAR) {
+                        lexer.nextToken();
+			if (lexer.token == Symbol.LEFTPAR) {
+				lexer.nextToken();
+				if (lexer.token == Symbol.RIGHTPAR) {
+					lexer.nextToken();
+					return new Factor(lValue, null, "readChar()".toString(), null);
+				}
+			}
+
+		}
+
+		return null;
+	}
+
+	// LValue ::= Ident | Ident '[' Expr ']'
+	private LValue lValue() {
+		String ident = null;
+		Expr expr = null;
+		ident = ident();
+		if (ident != null) {
+			if (lexer.token == Symbol.LEFTSQUARE) {
+				lexer.nextToken();
+				expr = expr();
+				if (expr != null) {
+					if (lexer.token == Symbol.RIGHTSQUARE) {
+						lexer.nextToken();
+						return new LValue(ident, expr);
+					}
+				}
+			} else {
+				return new LValue(ident, null);
+			}
+		}
+		return null;
+	}
 
 	// Ident ::= Letter { Letter | Digit}
 	private String ident() {
 		String name = new String();
 		String aux;
 		boolean flag1 = false, flag2 = false, flag3 = false;
-		
+
 		if (lexer.token == Symbol.IDENT) {
 			lexer.nextToken();
 			name = name.concat(lexer.getStringValue());
-			
-			do{
-				if(lexer.token == Symbol.UNDERSCORE){
+
+			do {
+				if (lexer.token == Symbol.UNDERSCORE) {
 					name = name.concat("_");
 					lexer.nextToken();
 					flag1 = true;
-				}else
+				} else {
 					flag1 = false;
-				if(lexer.token == Symbol.IDENT){
+				}
+				if (lexer.token == Symbol.IDENT) {
 					name = name.concat(lexer.getStringValue());
 					lexer.nextToken();
 					flag2 = true;
-				}else
+				} else {
 					flag2 = false;
-				if(lexer.token == Symbol.NUMBER){
+				}
+				if (lexer.token == Symbol.NUMBER) {
 					name = name.concat(lexer.getStringValue());
 					lexer.nextToken();
 					flag3 = true;
-				}else
+				} else {
 					flag3 = false;
-			}while (!((flag1 == false)&&(flag2 == false)&&(flag3 == false)));
+				}
+			} while (!((flag1 == false) && (flag2 == false) && (flag3 == false)));
 			return name;
-		}else
+		} else {
 			error("ident: Variable must begin with a letter");
+		}
 		return null;
 	}
 //
@@ -570,20 +596,6 @@ public class Compiler {
 //		}
 //	}
 //
-//	// Unary ::= '+' | '-' | '!'
-//	private String unary() {
-//		char ret = ' ';
-//		switch (token) {
-//			case '+':
-//			case '-':
-//			case '!':
-//				ret = token;
-//				nextToken();
-//				return Character.toString(ret);
-//			default:
-//				return null;
-//		}
-//	}
 //
 //	// Digit ::= '0'| '1' | ... | '9'
 //	private String digit() {
@@ -640,7 +652,7 @@ public class Compiler {
 		System.out.println(strError);
 		throw new RuntimeException(strError);
 	}
-	
+
 	private Lexer lexer;
 	public ArrayList<String> variableNames;
 	private char[] input;

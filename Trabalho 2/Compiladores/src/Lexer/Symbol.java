@@ -30,6 +30,8 @@ public enum Symbol {
       READ("read"),
       WRITE("write"),
       COLON(":"),
+      
+      DEFINITION(":="),
 
       BOOLEAN("boolean"),
 
@@ -37,6 +39,7 @@ public enum Symbol {
       TRUE("true"),
       FALSE("false"),
       OR   ("||"),
+      PIPE ("|"),
       AND  ("&&"),
       REMAINDER("%"),
       NOT("!"),

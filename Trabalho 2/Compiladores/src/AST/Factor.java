@@ -14,11 +14,13 @@ public class Factor
 	private LValue lvalue;
 	private Expr expr;	
 	private String function;
+	private Integer number;
 
-	public Factor(LValue lvalue, Expr expr, String function) {
+	public Factor(LValue lvalue, Expr expr, String function, Integer number) {
 		this.lvalue = lvalue;
 		this.expr = expr;
 		this.function = function;
+		this.number = number;
 	}
 	
 	public LValue getLvalue() {
