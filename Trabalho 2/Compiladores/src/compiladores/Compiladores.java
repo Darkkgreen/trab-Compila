@@ -13,25 +13,19 @@ import AST.Program;
  */
 public class Compiladores {
 
-   /**
-    * @param args the command line arguments
-    */
-   public static void main(String[] args) {
-      //char []input = "vm(){ia; ix; io; in; ij;}".toCharArray();
-      //char []input = "vm(){ i a; d a; c a; c u;}".toCharArray();
-      //char []input = "vm(){a + b + c = (!d + e);}".toCharArray();
-      //char[] input = "vm(){ i[] a; d a; f(a=z){ a; } e{ z; } }".toCharArray();
-      //char []input = "vm(){ i[] a; d a; p(a,z)}".toCharArray();
-      //char []input = "vm(){ w(a=z){ a; } }".toCharArray();
-       char []input = "void main() {}".toCharArray();
-      //char []input = "vm(){ i aa12; d[] aa2; c aa;}".toCharArray();
-      //caso com letra reservada
-      //char []input = "vm(){ i AzZa3; }".toCharArray();
+	/**
+	 * @param args the command line arguments
+	 */
+	public static void main(String[] args) {
+		String entrada = new String();
+		entrada = "void main () { int[] v_lokura321; int[] v; int v_321; int v_; int v321; int [] vo____o;}";
+		entrada = entrada.concat(" ");
 
-      Compiler compiler = new Compiler();
+		char[] input = entrada.toCharArray();
+		Compiler compiler = new Compiler();
 
-      Program program = compiler.compile(input);
-      //program.genC();
-   }
+		Program program = compiler.compile(input);
+		program.genC();
+	}
 
 }

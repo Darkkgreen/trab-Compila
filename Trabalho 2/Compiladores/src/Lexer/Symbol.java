@@ -41,6 +41,9 @@ public enum Symbol {
       REMAINDER("%"),
       NOT("!"),
 
+      UNDERSCORE("_"),
+      LEFTSQUARE("["),
+      RIGHTSQUARE("]"),
       CHAR("char"),      
       DOUBLE("double"),
       INTEGER("int"),      
