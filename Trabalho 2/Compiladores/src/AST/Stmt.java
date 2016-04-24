@@ -9,7 +9,7 @@ package AST;
  *
  * @author Charizard
  */
-public class Stmt {
+public class Stmt  extends Expr{
     private IfStmt se;
     private WhileStmt enquanto;
     private boolean parada;
@@ -62,5 +62,13 @@ public class Stmt {
 
     public void setExpressao(Expr expressao) {
         this.expressao = expressao;
+    }
+    
+    public void genC(){
+	    if(expressao != null){
+		    expressao.genC();
+		    System.out.println(';');
+		    
+	    }
     }
 }

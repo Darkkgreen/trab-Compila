@@ -10,7 +10,10 @@ public class SimExpr extends Expr {
 	private ArrayList<Term> termList;
 
 	public void genC(){
-		// NÃO IMPLEMENTADO
+		if(unary != null){
+			System.out.print(unary);
+		}
+		term.genC();
 	}
 
 	public String getUnary() {

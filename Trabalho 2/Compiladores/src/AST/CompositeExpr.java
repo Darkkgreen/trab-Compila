@@ -33,6 +33,8 @@ public class CompositeExpr extends Expr{
 	}
 
 	public void genC() {
-		// não implementado
+		if(simexpr != null){
+			simexpr.genC();
+		}
 	}
 }

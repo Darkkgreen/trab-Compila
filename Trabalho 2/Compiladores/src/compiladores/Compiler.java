@@ -173,10 +173,14 @@ public class Compiler {
 		PrintStmt imprime = null;
 		CompositeExpr aux = null;
 		Stmt stmt = null;
-		
-		if((aux = expr()) != null){
-			
-//			return aux;
+
+		if ((aux = expr()) != null) {
+			stmt = new Stmt(se, enquanto, parada, imprime, aux);
+			if (lexer.token == Symbol.SEMICOLON) {
+				lexer.nextToken();
+			}
+			return stmt;
+
 		}
 
 //		if ((((aux = expr()) != null) && (token == ';')) || (se = ifStmt()) != null || (enquanto = whileStmt()) != null || (parada = breakStmt()) || (imprime = printStmt()) != null) {
@@ -186,7 +190,6 @@ public class Compiler {
 //			}
 //			return stmt;
 //		}
-
 		return null;
 	}
 //
@@ -330,6 +333,7 @@ public class Compiler {
 //	}
 //
 	// Expr ::= SimExpr [ RelOp Expr ]
+
 	private CompositeExpr expr() {
 		CompositeExpr expr = null;
 		SimExpr aux = null;
@@ -337,16 +341,16 @@ public class Compiler {
 
 		aux = simExpr();
 		if (aux != null) {
-			if ((lexer.token == Symbol.ASSIGN)||(lexer.token == Symbol.NEQ)||(lexer.token == Symbol.LT)||
-				(lexer.token == Symbol.LE)||(lexer.token == Symbol.GT)||(lexer.token == Symbol.GE)){
+			if ((lexer.token == Symbol.ASSIGN) || (lexer.token == Symbol.NEQ) || (lexer.token == Symbol.LT)
+				|| (lexer.token == Symbol.LE) || (lexer.token == Symbol.GT) || (lexer.token == Symbol.GE)) {
 				expr = expr();
 				if (expr == null) {
-                                        error("SimExpr");
+					error("SimExpr");
 				}
 			}
 			return new CompositeExpr(aux, relop, expr);
 		} else {
-			return null; 
+			return null;
 		}
 
 	}
@@ -359,31 +363,34 @@ public class Compiler {
 		Term termAux2 = null;
 		ArrayList<String> addop = null;
 		ArrayList<Term> termList = null;
-		
-		if((lexer.token == Symbol.MINUS) || (lexer.token == Symbol.NOT) || (lexer.token == Symbol.PLUS)){
+
+		if ((lexer.token == Symbol.MINUS) || (lexer.token == Symbol.NOT) || (lexer.token == Symbol.PLUS)) {
 			unary = lexer.token.toString();
 			lexer.nextToken();
 		}
-	
+
 		termAux = term();
 		if (termAux != null) {
 			while (true) {
-				if((lexer.token == Symbol.PLUS)||(lexer.token == Symbol.OR)||(lexer.token == Symbol.MINUS)){
-					if(addop == null)
+				if ((lexer.token == Symbol.PLUS) || (lexer.token == Symbol.OR) || (lexer.token == Symbol.MINUS)) {
+					if (addop == null) {
 						addop = new ArrayList<String>();
+					}
 					addop.add(lexer.token.toString());
 					lexer.nextToken();
-					
+
 					termAux2 = term();
-					if(termAux2 != null){
-						if(termList == null)
+					if (termAux2 != null) {
+						if (termList == null) {
 							termList = new ArrayList<Term>();
+						}
 						termList.add(termAux);
-					}else{
+					} else {
 						break;
 					}
-				}else
+				} else {
 					break;
+				}
 			}
 			return new SimExpr(unary, termAux, addop, termList);
 		}
@@ -402,21 +409,25 @@ public class Compiler {
 		aux = factor();
 		if (aux != null) {
 			while (true) {
-				if((lexer.token == Symbol.MULT)||(lexer.token == Symbol.DIV)||(lexer.token == Symbol.REMAINDER)||(lexer.token == Symbol.AND)){
-					if(mulop == null)
+				if ((lexer.token == Symbol.MULT) || (lexer.token == Symbol.DIV) || (lexer.token == Symbol.REMAINDER) || (lexer.token == Symbol.AND)) {
+					if (mulop == null) {
 						mulop = new ArrayList<String>();
+					}
 					mulop.add(lexer.token.toString());
 					lexer.nextToken();
-					
+
 					aux3 = factor();
-					if(aux3 != null){
-						if(factorList == null)
+					if (aux3 != null) {
+						if (factorList == null) {
 							factorList = new ArrayList<Factor>();
+						}
 						factorList.add(aux3);
-					}else
+					} else {
 						error("Term");
-				}else
+					}
+				} else {
 					break;
+				}
 			}
 
 			return new Term(aux, mulop, factorList);
@@ -432,55 +443,61 @@ public class Compiler {
 		CompositeExpr expr = null;
 		if (lValue != null) {
 			if (lexer.token == Symbol.DEFINITION) {
-                            lexer.nextToken();
-			        expr = expr();
+				lexer.nextToken();
+				expr = expr();
 				if (expr != null) {
-					return new Factor(lValue, expr, null, null);
-				}
+					return new Factor(lValue, expr, null, null, null);
+				}else
+					error("factor: There is no expression");
 			}
-			return new Factor(lValue, null, null, null);
-		} else if(lexer.token == Symbol.NUMBER){
+			return new Factor(lValue, null, null, null, null);
+		} else if ((lexer.token == Symbol.NUMBER) || (lexer.token == Symbol.DOUBLE)) {
+			Factor aux = null;
+			if (lexer.token == Symbol.NUMBER) {
+				aux = new Factor(null, null, null, lexer.getNumberValue(), null);
+			} else {
+				aux = new Factor(null, null, null, null, lexer.getStringValue());
+			}
 			lexer.nextToken();
-			// gramática nova desse trabalho, ainda pensarei como implementar
-			return new Factor(null, null, null, lexer.getNumberValue());
-			
-		}else if (lexer.token == Symbol.LEFTPAR) {
+			return aux;
+
+		} else if (lexer.token == Symbol.LEFTPAR) {
 			lexer.nextToken();
 			expr = expr();
 			if (expr != null) {
 				if (lexer.token == Symbol.RIGHTPAR) {
 					lexer.nextToken();
-					return new Factor(null, expr, null, null); 
+					return new Factor(null, expr, null, null, null);
 				}
 			}
 
 		} else if (lexer.token == Symbol.READINTEGER) {
-                        lexer.nextToken();
+			lexer.nextToken();
 			if (lexer.token == Symbol.LEFTPAR) {
 				lexer.nextToken();
 				if (lexer.token == Symbol.RIGHTPAR) {
 					lexer.nextToken();
-					return new Factor(lValue, null, "readInteger()".toString(), null);
+					return new Factor(lValue, null, "readInteger()".toString(), null, null);
 				}
 			}
 
 		} else if (lexer.token == Symbol.READDOUBLE) {
-                        lexer.nextToken();
+			lexer.nextToken();
 			if (lexer.token == Symbol.LEFTPAR) {
 				lexer.nextToken();
 				if (lexer.token == Symbol.RIGHTPAR) {
 					lexer.nextToken();
-					return new Factor(lValue, null, "readDouble()".toString(), null);
+					return new Factor(lValue, null, "readDouble()".toString(), null, null);
 				}
 			}
 
 		} else if (lexer.token == Symbol.READCHAR) {
-                        lexer.nextToken();
+			lexer.nextToken();
 			if (lexer.token == Symbol.LEFTPAR) {
 				lexer.nextToken();
 				if (lexer.token == Symbol.RIGHTPAR) {
 					lexer.nextToken();
-					return new Factor(lValue, null, "readChar()".toString(), null);
+					return new Factor(lValue, null, "readChar()".toString(), null, null);
 				}
 			}
 
@@ -493,6 +510,8 @@ public class Compiler {
 	private LValue lValue() {
 		String ident = null;
 		Expr expr = null;
+		// verificar se a variável existe
+
 		ident = ident();
 		if (ident != null) {
 			if (lexer.token == Symbol.LEFTSQUARE) {
@@ -518,8 +537,8 @@ public class Compiler {
 		boolean flag1 = false, flag2 = false, flag3 = false;
 
 		if (lexer.token == Symbol.IDENT) {
-			lexer.nextToken();
 			name = name.concat(lexer.getStringValue());
+			lexer.nextToken();
 
 			do {
 				if (lexer.token == Symbol.UNDERSCORE) {
@@ -545,9 +564,10 @@ public class Compiler {
 				}
 			} while (!((flag1 == false) && (flag2 == false) && (flag3 == false)));
 			return name;
-		} else {
-			error("ident: Variable must begin with a letter");
 		}
+//		else {
+//			error("ident: Variable must begin with a letter");
+//		}
 		return null;
 	}
 //

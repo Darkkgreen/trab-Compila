@@ -21,6 +21,12 @@ public class Program{
 			v.genC();
 			System.out.print("\t");
 		}
+		System.out.println();
+		System.out.print("\t");
+		for(Stmt s:listS){
+			s.genC();
+			System.out.print("\t");
+		}
 
 //		expr.genC();
 		System.out.println("\n}");

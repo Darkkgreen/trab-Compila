@@ -11,7 +11,7 @@ import java.util.ArrayList;
  *
  * @author ricke
  */
-public class Term {
+public class Term extends Expr{
 	private Factor factor;
 	private ArrayList<String> muloplist;
 	private ArrayList<Factor> factorlist;
@@ -34,6 +34,10 @@ public class Term {
 		this.factorlist = factorlist;
 	}
 
+	public void genC(){
+		factor.genC();
+		
+	}
 
 	
 	

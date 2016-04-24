@@ -9,7 +9,7 @@ package AST;
  *
  * @author ricke
  */
-public class LValue {
+public class LValue extends Expr{
 
 	String ident;
 	String exprIdent;
@@ -26,6 +26,17 @@ public class LValue {
 	public LValue(String ident, Expr expr) {
 		this.ident = ident;
 		this.expr = expr;
+	}
+	
+	public void genC(){
+		if(ident != null){
+			System.out.print(ident);
+			if(expr != null){
+				System.out.print('[');
+				expr.genC();
+				System.out.print(']');				
+			}
+		}
 	}
 
 }

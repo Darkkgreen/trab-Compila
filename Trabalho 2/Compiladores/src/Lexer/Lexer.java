@@ -78,7 +78,7 @@ public class Lexer {
 			nextToken();
 		} else if (input[tokenPos] == '/' && input[tokenPos + 1] == '*') {
 			// comment found
-			while (input[tokenPos] != '\0' && (input[tokenPos] != '*' || input[tokenPos+1] != '/')){
+			while (input[tokenPos] != '\0' && (input[tokenPos] != '*' || input[tokenPos + 1] != '/')) {
 				System.out.print(input[tokenPos]);
 				tokenPos++;
 			}
@@ -115,15 +115,28 @@ public class Lexer {
 				number.append(input[tokenPos]);
 				tokenPos++;
 			}
-			token = Symbol.NUMBER;
-			try {
-				numberValue = Integer.valueOf(number.toString()).intValue();
-			} catch (NumberFormatException e) {
-				//System.out.println("Number out of limits");
-			}
-			stringValue = number.toString();
-			if (numberValue >= MaxValueInteger) {
-				//System.out.println("Number out of limits");
+			if (input[tokenPos] == '.') {
+				number.append(input[tokenPos]);
+				System.out.print(input[tokenPos]);
+				tokenPos++;
+				while (Character.isDigit(input[tokenPos])) {
+					System.out.print(input[tokenPos]);
+					number.append(input[tokenPos]);
+					tokenPos++;
+				}
+				stringValue = number.toString();
+				token = Symbol.DOUBLE;
+			} else {
+				token = Symbol.NUMBER;
+				try {
+					numberValue = Integer.valueOf(number.toString()).intValue();
+				} catch (NumberFormatException e) {
+					//System.out.println("Number out of limits");
+				}
+				stringValue = number.toString();
+				if (numberValue >= MaxValueInteger) {
+					//System.out.println("Number out of limits");
+				}
 			}
 
 		} else {
@@ -140,21 +153,23 @@ public class Lexer {
 					break;
 				// unary
 				case '!':
-					if(input[tokenPos] == '='){
+					if (input[tokenPos] == '=') {
 						token = Symbol.NEQ;
 						tokenPos++;
-					}else
+					} else {
 						token = Symbol.NOT;
+					}
 					break;
 				// addOP
 				case '|':
-					if(input[tokenPos] == '|'){
+					if (input[tokenPos] == '|') {
 						token = Symbol.OR;
 						tokenPos++;
-					}else
+					} else {
 						token = Symbol.PIPE;
+					}
 					break;
-				
+
 				// mulop
 				case '*':
 					token = Symbol.MULT;
@@ -166,12 +181,13 @@ public class Lexer {
 					token = Symbol.REMAINDER;
 					break;
 				case '&':
-					if(input[tokenPos] == '&'){
+					if (input[tokenPos] == '&') {
 						token = Symbol.AND;
 						tokenPos++;
-					}else
+					} else {
 						token = Symbol.AND;
-					break;					
+					}
+					break;
 				case '<':
 					if (input[tokenPos] == '=') {
 						tokenPos++;
@@ -227,11 +243,13 @@ public class Lexer {
 					token = Symbol.SEMICOLON;
 					break;
 				case ':':
-					if(input[tokenPos] == '='){
+					if (input[tokenPos] == '=') {
+						System.out.print(input[tokenPos]);
 						tokenPos++;
 						token = Symbol.DEFINITION;
-					}else
+					} else {
 						token = Symbol.COLON;
+					}
 					break;
 				case '\'':
 					token = Symbol.CHARACTER;
