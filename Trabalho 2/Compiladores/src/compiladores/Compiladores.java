@@ -19,7 +19,49 @@ public class Compiladores {
 	public static void main(String[] args) {
 		String entrada = new String();
 		//entrada = "void main () { /*ehuheue*/ int[] v_lokura321; //lokuraaaaa\nint[] v; int v_321; int v_; int v321; int [] vo____o;}";
-		entrada = "void main () { int v; double v2; v := 3; v2 := 3.2;}";
+//		entrada = "void main(){readChar();}";
+		entrada = "void main() { \n"
+			+ "  int a; \n"
+			+ "  int g; \n"
+			+ "  int h; \n"
+			+ "  double j; \n"
+			+ "  double[] k; \n"
+			+ "  char n; \n"
+			+ "  a := g; \n"
+			+ "  g := h; \n"
+			+ "  while (! a) { \n"
+			+ "    if(g){ \n"
+			+ "      a := g; \n"
+			+ "      if (a) { \n"
+			+ "        a := h; \n"
+			+ "      } \n"
+			+ "      g := a; \n"
+			+ "    }else{ \n"
+			+ "      if (k[n]) { \n"
+			+ "        while (k[n]) { \n"
+			+ "          while (a) { \n"
+			+ "            readChar(); \n"
+			+ "          } \n"
+			+ "        } \n"
+			+ "      } else { \n"
+			+ "        if (readInteger()) { \n"
+			+ "          readDouble(); \n"
+			+ "          a := h; \n"
+			+ "          k[n] := j; \n"
+			+ "        } \n"
+			+ "      } \n"
+			+ "    } \n"
+			+ "    while (k[n]) { \n"
+			+ "      readInteger(); \n"
+			+ "    } \n"
+			+ "  } \n"
+			+ "  readInteger(); \n"
+			+ "  readDouble(); \n"
+			+ "  readChar(); \n"
+			+ "}";
+		//		entrada = "void main(){\n"
+		//			+ "	a := a + j\n"
+		//			+ "}";
 		entrada = entrada.concat(" ");
 
 		char[] input = entrada.toCharArray();

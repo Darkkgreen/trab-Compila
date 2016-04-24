@@ -5,8 +5,8 @@ import java.util.ArrayList;
 import Lexer.*;
 
 public class Compiler {
-    
-        private boolean aninhado = false;
+
+	private boolean aninhado = false;
 
 	public Program compile(char[] p_input) {
 		input = p_input;
@@ -175,25 +175,34 @@ public class Compiler {
 		CompositeExpr aux = null;
 		Stmt stmt = null;
 
-		if (((aux = expr()) != null)&& (lexer.token == Symbol.SEMICOLON) || (se = ifStmt()) != null || (enquanto = whileStmt()) != null || (parada = breakStmt()) || (imprime = printStmt()) != null) {
-			stmt = new Stmt(se, enquanto, parada, imprime, aux);
+		if ((aux = expr()) != null) {
 			if (lexer.token == Symbol.SEMICOLON) {
 				lexer.nextToken();
+			} else if (aux != null) {
+				error("stmt: expected Semicolon \";\"");
 			}
-			return stmt;
 
 		}
-		return null;
+		if ((lexer.token == Symbol.SEMICOLON) || (se = ifStmt()) != null || (enquanto = whileStmt()) != null || (parada = breakStmt()) || (imprime = printStmt()) != null) {
+
+		}
+		
+		// sem essa verificação, o programa podera entrar em loop
+		if((se != null)||(enquanto != null)||(parada == true)||(imprime != null)||(aux != null)){
+			stmt = new Stmt(se, enquanto, parada, imprime, aux);
+		}
+		
+		return stmt;
 	}
 
 	//IfStmt ::= 'f' '(' Expr ')' '{' { Stmt } '}' [ 'e' '{' { Stmt } '}' ]
 	private IfStmt ifStmt() {
-            Expr auxiliarExp = null;
-            ArrayList<Stmt> principal = new ArrayList<Stmt>();
-            ArrayList<Stmt> opcional = new ArrayList<Stmt>();
-            Stmt auxiliarStmt = null;
-            IfStmt ifstmt = null;
-            
+		Expr auxiliarExp = null;
+		ArrayList<Stmt> principal = new ArrayList<Stmt>();
+		ArrayList<Stmt> opcional = new ArrayList<Stmt>();
+		Stmt auxiliarStmt = null;
+		IfStmt ifstmt = null;
+
 		if (lexer.token == Symbol.IF) {
 			lexer.nextToken();
 			if (lexer.token == Symbol.LEFTPAR) {
@@ -204,8 +213,8 @@ public class Compiler {
 						if (lexer.token == Symbol.LEFTBRACKET) {
 							lexer.nextToken();
 							while ((auxiliarStmt = stmt()) != null) {
-                                                                principal.add(auxiliarStmt);
-                                                                auxiliarStmt = null;
+								principal.add(auxiliarStmt);
+								auxiliarStmt = null;
 								if (lexer.token == Symbol.RIGHTBRACKET) {
 									lexer.nextToken();
 									if (lexer.token == Symbol.ELSE) { //aqui entra a parte opcional
@@ -213,39 +222,44 @@ public class Compiler {
 										if (lexer.token == Symbol.LEFTBRACKET) {
 											lexer.nextToken();
 											while ((auxiliarStmt = stmt()) != null) {
-                                                                                            opcional.add(auxiliarStmt);
-                                                                                            auxiliarStmt = null;
+												opcional.add(auxiliarStmt);
+												auxiliarStmt = null;
 												if (lexer.token == Symbol.RIGHTBRACKET) {
 													lexer.nextToken();
 												}
 											}
-										}else
-                                                                                    error("ifStmt: expected [");
-									}       
+										} else {
+											error("ifStmt: expected [");
+										}
+									}
 								}
 							}
-                                                        ifstmt = new IfStmt(auxiliarExp, principal, opcional);
-                                                        return ifstmt;
-						}else
-                                                    error("ifStmt: expected {");
-					}else
-                                            error("ifStmt: expected )");
-				}else
-                                    error("ifStmt: expected expression");
-			}else
-                            error("ifStmt: expected (");
+							ifstmt = new IfStmt(auxiliarExp, principal, opcional);
+							return ifstmt;
+						} else {
+							error("ifStmt: expected {");
+						}
+					} else {
+						error("ifStmt: expected )");
+					}
+				} else {
+					error("ifStmt: expected expression");
+				}
+			} else {
+				error("ifStmt: expected (");
+			}
 		}
 		return null;
 	}
 
 	//WhileStmt ::= 'w' '(' Expr ')' '{' { Stmt } '}'
 	private WhileStmt whileStmt() {
-            Expr auxiliarExp = null;
-            ArrayList<Stmt> arrayPrinc = new ArrayList<Stmt>();
-            Stmt auxiliarSt = null;
-            
-            aninhado = true;
-            
+		Expr auxiliarExp = null;
+		ArrayList<Stmt> arrayPrinc = new ArrayList<Stmt>();
+		Stmt auxiliarSt = null;
+
+		aninhado = true;
+
 		if (lexer.token == Symbol.WHILE) {
 			lexer.nextToken();
 			if (lexer.token == Symbol.LEFTPAR) {
@@ -256,43 +270,50 @@ public class Compiler {
 						if (lexer.token == Symbol.LEFTBRACKET) {
 							lexer.nextToken();
 							while ((auxiliarSt = stmt()) != null) {
-                                                            arrayPrinc.add(auxiliarSt);
-                                                            auxiliarSt = null;
+								arrayPrinc.add(auxiliarSt);
+								auxiliarSt = null;
 							}
-                                                        if (lexer.token == Symbol.RIGHTBRACKET) {
-                                                            lexer.nextToken();
-                                                            WhileStmt enquanto = new WhileStmt(arrayPrinc, auxiliarExp);
-                                                            
-                                                            aninhado = false;
-                                                            return enquanto;
-                                                        }else
-                                                            error("whileStmt: expected }");
-						}else
-                                                    error("whileStmt: expected {");
-					}else
-                                            error("whileStmt: expected )");
-				}else
-                                    error("whileStmt: expected expression");
-			}else
-                            error("whileStmt: expected (");
+							if (lexer.token == Symbol.RIGHTBRACKET) {
+								lexer.nextToken();
+								WhileStmt enquanto = new WhileStmt(arrayPrinc, auxiliarExp);
+
+								aninhado = false;
+								return enquanto;
+							} else {
+								error("whileStmt: expected }");
+							}
+						} else {
+							error("whileStmt: expected {");
+						}
+					} else {
+						error("whileStmt: expected )");
+					}
+				} else {
+					error("whileStmt: expected expression");
+				}
+			} else {
+				error("whileStmt: expected (");
+			}
 		}
-            
-            aninhado = false;
-            return null;
+
+		aninhado = false;
+		return null;
 	}
 
 	//BreakStmt ::= 'b' ';'
 	private boolean breakStmt() {
 		if (lexer.token == Symbol.BREAK) {
-                    if(aninhado == true){
-			lexer.nextToken();
-			if (lexer.token == Symbol.SEMICOLON) {
+			if (aninhado == true) {
 				lexer.nextToken();
-				return true;
-			}else
-                            error("breakStmt: expected ;");
-                    }else
-                        error("breakStmt: break out of a while");
+				if (lexer.token == Symbol.SEMICOLON) {
+					lexer.nextToken();
+					return true;
+				} else {
+					error("breakStmt: expected ;");
+				}
+			} else {
+				error("breakStmt: break out of a while");
+			}
 		}
 
 		return false;
@@ -300,42 +321,45 @@ public class Compiler {
 
 	//PrintStmt ::= 'p' '(' Expr { ',' Expr }')'
 	private PrintStmt printStmt() {
-            ArrayList<Expr> listaExp = new ArrayList<Expr>();
-            Expr aux;
-            
+		ArrayList<Expr> listaExp = new ArrayList<Expr>();
+		Expr aux;
+
 		if (lexer.token == Symbol.PRINT) {
 			lexer.nextToken();
 			if (lexer.token == Symbol.LEFTPAR) {
 				lexer.nextToken();
 				if ((aux = expr()) != null) {
-                                    listaExp.add(aux);
-                                    aux = null;
+					listaExp.add(aux);
+					aux = null;
 					while (lexer.token == Symbol.COMMA) {
 						lexer.nextToken();
 						if ((aux = expr()) != null) {
-                                                    listaExp.add(aux);
-                                                    aux = null;
-						}else
-                                                    error("printStmt: expected expression after comma");
+							listaExp.add(aux);
+							aux = null;
+						} else {
+							error("printStmt: expected expression after comma");
+						}
 					}
 
 					if (lexer.token == Symbol.RIGHTPAR) {
 						lexer.nextToken();
-                                                PrintStmt imprime = new PrintStmt(listaExp);
+						PrintStmt imprime = new PrintStmt(listaExp);
 						return imprime;
-					}else
-                                            error("printStmt: expected )");
-				}else
-                                    error("printStmt: expected print expression");
-			}else
-                            error("printStmt: expected (");
+					} else {
+						error("printStmt: expected )");
+					}
+				} else {
+					error("printStmt: expected print expression");
+				}
+			} else {
+				error("printStmt: expected (");
+			}
 		}
 
 		return null;
 	}
 
 	// Expr ::= SimExpr [ RelOp Expr ]
-
 	private CompositeExpr expr() {
 		CompositeExpr expr = null;
 		SimExpr aux = null;
@@ -449,8 +473,9 @@ public class Compiler {
 				expr = expr();
 				if (expr != null) {
 					return new Factor(lValue, expr, null, null, null);
-				}else
+				} else {
 					error("factor: There is no expression");
+				}
 			}
 			return new Factor(lValue, null, null, null, null);
 		} else if ((lexer.token == Symbol.NUMBER) || (lexer.token == Symbol.DOUBLE)) {
@@ -579,7 +604,7 @@ public class Compiler {
 		} else if (lexer.tokenPos >= input.length) {
 			lexer.tokenPos = input.length;
 		}
-
+		System.out.println();
 		String strInput = new String(input, lexer.tokenPos - 1, input.length - lexer.tokenPos + 1);
 		String strError = "Error at \"" + strInput + "\" in " + function + "";
 		System.out.println(strError);
