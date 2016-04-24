@@ -5,6 +5,8 @@ import java.util.ArrayList;
 import Lexer.*;
 
 public class Compiler {
+    
+        private boolean aninhado = false;
 
 	public Program compile(char[] p_input) {
 		input = p_input;
@@ -39,16 +41,16 @@ public class Compiler {
 						lexer.nextToken();
 						ret = stmtBlock();
 					} else {
-						error("DECL RIGHT PAR");
+						error("decl: expected )");
 					}
 				} else {
-					error("DECL LEFT PAR");
+					error("decl: expected (");
 				}
 			} else {
-				error("DECL MAIN");
+				error("decl: expected main");
 			}
 		} else {
-			error("DECL VOID");
+			error("decl: expected void");
 		}
 
 		return ret;
@@ -93,7 +95,7 @@ public class Compiler {
 				lexer.nextToken();
 				return aux;
 			} else {
-				error("VariableDecl");
+				error("variableDecl: expected ;");
 				return null;
 			}
 		} else {
@@ -153,7 +155,7 @@ public class Compiler {
 					lexer.nextToken();
 					return type;
 				} else {
-					error("Missing right square in Array declaration");
+					error("arrayType: expected ]");
 					return null;
 				}
 			}
@@ -173,7 +175,7 @@ public class Compiler {
 		CompositeExpr aux = null;
 		Stmt stmt = null;
 
-		if ((aux = expr()) != null) {
+		if (((aux = expr()) != null)&& (lexer.token == Symbol.SEMICOLON) || (se = ifStmt()) != null || (enquanto = whileStmt()) != null || (parada = breakStmt()) || (imprime = printStmt()) != null) {
 			stmt = new Stmt(se, enquanto, parada, imprime, aux);
 			if (lexer.token == Symbol.SEMICOLON) {
 				lexer.nextToken();
@@ -183,14 +185,6 @@ public class Compiler {
 			return stmt;
 
 		}
-
-//		if ((((aux = expr()) != null) && (token == ';')) || (se = ifStmt()) != null || (enquanto = whileStmt()) != null || (parada = breakStmt()) || (imprime = printStmt()) != null) {
-//			stmt = new Stmt(se, enquanto, parada, imprime, aux);
-//			if (token == ';') {
-//				nextToken();
-//			}
-//			return stmt;
-//		}
 		return null;
 	}
 
@@ -228,20 +222,20 @@ public class Compiler {
 												}
 											}
 										}else
-                                                                                    error("Else left bracket error");
+                                                                                    error("ifStmt: expected [");
 									}       
 								}
 							}
                                                         ifstmt = new IfStmt(auxiliarExp, principal, opcional);
                                                         return ifstmt;
 						}else
-                                                    error("Missing left bracket before if statement");
+                                                    error("ifStmt: expected {");
 					}else
-                                            error("Missing right parenthesis after if expression");
+                                            error("ifStmt: expected )");
 				}else
-                                    error("Missing if expression");
+                                    error("ifStmt: expected expression");
 			}else
-                            error("Missing left parenthesis before if expression");
+                            error("ifStmt: expected (");
 		}
 		return null;
 	}
@@ -251,6 +245,8 @@ public class Compiler {
             Expr auxiliarExp = null;
             ArrayList<Stmt> arrayPrinc = new ArrayList<Stmt>();
             Stmt auxiliarSt = null;
+            
+            aninhado = true;
             
 		if (lexer.token == Symbol.WHILE) {
 			lexer.nextToken();
@@ -268,30 +264,37 @@ public class Compiler {
                                                         if (lexer.token == Symbol.RIGHTBRACKET) {
                                                             lexer.nextToken();
                                                             WhileStmt enquanto = new WhileStmt(arrayPrinc, auxiliarExp);
+                                                            
+                                                            aninhado = false;
                                                             return enquanto;
                                                         }else
-                                                            error("Missing right bracket after while statement");
-						}
+                                                            error("whileStmt: expected }");
+						}else
+                                                    error("whileStmt: expected {");
 					}else
-                                            error("Missing right parenthesis after while expression");
+                                            error("whileStmt: expected )");
 				}else
-                                    error("Missing while expression");
+                                    error("whileStmt: expected expression");
 			}else
-                            error("Missing left parenthesis before while expression");
+                            error("whileStmt: expected (");
 		}
-
-		return null;
+            
+            aninhado = false;
+            return null;
 	}
 
 	//BreakStmt ::= 'b' ';'
 	private boolean breakStmt() {
 		if (lexer.token == Symbol.BREAK) {
+                    if(aninhado == true){
 			lexer.nextToken();
 			if (lexer.token == Symbol.SEMICOLON) {
 				lexer.nextToken();
 				return true;
 			}else
-                            error("Missing semicolon");
+                            error("breakStmt: expected ;");
+                    }else
+                        error("breakStmt: break out of a while");
 		}
 
 		return false;
@@ -315,7 +318,7 @@ public class Compiler {
                                                     listaExp.add(aux);
                                                     aux = null;
 						}else
-                                                    error("Missing expression after comma");
+                                                    error("printStmt: expected expression after comma");
 					}
 
 					if (lexer.token == Symbol.RIGHTPAR) {
@@ -323,11 +326,11 @@ public class Compiler {
                                                 PrintStmt imprime = new PrintStmt(listaExp);
 						return imprime;
 					}else
-                                            error("Missing right parenthesis after ");
+                                            error("printStmt: expected )");
 				}else
-                                    error("Missing print expression");
+                                    error("printStmt: expected print expression");
 			}else
-                            error("Missing left parenthesis before expression");
+                            error("printStmt: expected (");
 		}
 
 		return null;
