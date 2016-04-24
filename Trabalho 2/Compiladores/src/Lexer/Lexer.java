@@ -39,7 +39,9 @@ public class Lexer {
 		keywordsTable.put("and", Symbol.AND);
 		keywordsTable.put("or", Symbol.OR);
 		keywordsTable.put("not", Symbol.NOT);
-
+		
+		keywordsTable.put("void", Symbol.VOID);
+		keywordsTable.put("main", Symbol.MAIN);
 	}
 
 	public void nextToken() {
@@ -79,6 +81,7 @@ public class Lexer {
 			if (Character.isDigit(input[tokenPos])) {
 				System.out.println("Word followed by a number");
 			}
+			System.out.println(value);
 		} else if (Character.isDigit(ch)) {
 			// get a number
 			StringBuffer number = new StringBuffer();

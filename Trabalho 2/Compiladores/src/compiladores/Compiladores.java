@@ -23,7 +23,7 @@ public class Compiladores {
       //char[] input = "vm(){ i[] a; d a; f(a=z){ a; } e{ z; } }".toCharArray();
       //char []input = "vm(){ i[] a; d a; p(a,z)}".toCharArray();
       //char []input = "vm(){ w(a=z){ a; } }".toCharArray();
-       char []input = "vm(){ w(a:z){ b; } }".toCharArray();
+       char []input = "void main() {}".toCharArray();
       //char []input = "vm(){ i aa12; d[] aa2; c aa;}".toCharArray();
       //caso com letra reservada
       //char []input = "vm(){ i AzZa3; }".toCharArray();

@@ -2,15 +2,17 @@ package compiladores;
 
 import AST.*;
 import java.util.ArrayList;
+import Lexer.*;
 
 public class Compiler {
 
 	public Program compile(char[] p_input) {
-		input = p_input;
-		tokenPos = 0;
-		nextToken();
-
+		lexer = new Lexer(p_input);
+		lexer.nextToken();
+		
 		Program e = program();
+		
+		// ver isso daqui pode estar errado
 		if (tokenPos != input.length) {
 			error("compile");
 		}
@@ -24,27 +26,23 @@ public class Compiler {
 
 	//Decl ::= 'v' 'm' '(' ')' StmtBlock
 	private Program decl() {
-		if (token == 'v') {
-			nextToken();
-			if (token == 'm') {
-				nextToken();
-				if (token == '(') {
-					nextToken();
-					if (token == ')') {
-						nextToken();
-						return stmtBlock();
-					} else {
-						error("Decl");
-					}
-				} else {
-					error("Decl");
-				}
-			} else {
-				error("Decl");
-			}
-		} else {
-			error("Decl");
-		}
+		if(lexer.token == Symbol.VOID){
+			lexer.nextToken();
+			if(lexer.token == Symbol.MAIN){
+				lexer.nextToken();
+				if(lexer.token == Symbol.LEFTPAR){
+					lexer.nextToken();
+					if(lexer.token == Symbol.RIGHTPAR)
+						stmtBlock();
+					else
+						error("DECL RIGHT PAR");
+				}else
+					error("DECL LEFT PAR");
+			}else
+				error("DECL MAIN");
+		}else
+		error("DECL VOID");
+		
 		return null;
 	}
 
@@ -618,20 +616,6 @@ public class Compiler {
 		}
 	}
 
-	private void nextToken() {
-		while (tokenPos < input.length && input[tokenPos] == ' ') {
-			tokenPos++;
-		}
-		if (tokenPos >= input.length) {
-			token = '\0';
-		} else {
-			token = input[tokenPos];
-			tokenPos++;
-		}
-
-		System.out.print(" " + token + " ");
-	}
-
 	private void error(String function) {
 		if (tokenPos == 0) {
 			tokenPos = 1;
@@ -645,8 +629,10 @@ public class Compiler {
 		throw new RuntimeException(strError);
 	}
 
-	private char token;
+	//private char token;
+	private Symbol token;
 	private int tokenPos;
 	private char[] input;
+	private Lexer lexer;
 
 }

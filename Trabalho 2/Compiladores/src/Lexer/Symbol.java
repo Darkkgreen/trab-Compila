@@ -39,7 +39,10 @@ public enum Symbol {
       OR   ("||"),
       AND  ("&&"),
       REMAINDER("%"),
-      NOT("!");
+      NOT("!"),
+      
+      VOID("void"),
+      MAIN("main");
 
       Symbol(String name) {
           this.name = name;
