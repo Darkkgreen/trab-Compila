@@ -177,6 +177,8 @@ public class Compiler {
 			stmt = new Stmt(se, enquanto, parada, imprime, aux);
 			if (lexer.token == Symbol.SEMICOLON) {
 				lexer.nextToken();
+			}else if(stmt != null){
+				error("stmt: expected Semicolon \";\"");
 			}
 			return stmt;
 
