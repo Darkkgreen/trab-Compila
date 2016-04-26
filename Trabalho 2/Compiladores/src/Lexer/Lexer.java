@@ -22,7 +22,6 @@ public class Lexer {
 	// this code will be executed only once for each program execution
 	static {
 		keywordsTable = new Hashtable<String, Symbol>();
-		keywordsTable.put("var", Symbol.VAR);
 		keywordsTable.put("begin", Symbol.BEGIN);
 		keywordsTable.put("end", Symbol.END);
 		keywordsTable.put("if", Symbol.IF);
@@ -82,6 +81,9 @@ public class Lexer {
 				System.out.print(input[tokenPos]);
 				tokenPos++;
 			}
+			if (input[tokenPos] == '\0') {
+				error("Lexer : unterminated comment");
+			}
 			System.out.print(input[tokenPos]);
 			tokenPos++;
 			System.out.print(input[tokenPos]);
@@ -91,9 +93,13 @@ public class Lexer {
 			// get an identifier or keyword
 			StringBuffer ident = new StringBuffer();
 			while (Character.isLetter(input[tokenPos])) {
-				System.out.print(input[tokenPos]);
-				ident.append(input[tokenPos]);
-				tokenPos++;
+				if ((input[tokenPos] >= 'a' && input[tokenPos] <= 'z') || (input[tokenPos] >= 'A' && input[tokenPos] <= 'Z')) {
+					System.out.print(input[tokenPos]);
+					ident.append(input[tokenPos]);
+					tokenPos++;
+				}else
+					error("Lexer : "+input[tokenPos]+" is a invalid character");
+
 			}
 
 			stringValue = ident.toString();
@@ -251,22 +257,20 @@ public class Lexer {
 						tokenPos++;
 						token = Symbol.DEFINITION;
 					} else {
-						token = Symbol.COLON;
+						error("in Lexer : Expected \"=\" after \":\"");
 					}
 					break;
 				case '\'':
 					System.out.print(input[tokenPos]);
 					if (input[tokenPos] == '\'') {
-						System.out.println("Invalid Character");
-						// aqui falar a vdd tem q sair do programa
+						error("Expected one character but was found ' ");
 					} else {
 						charValue = input[tokenPos];
 						tokenPos++;
 						token = Symbol.QUOTE;
 						System.out.print(input[tokenPos]);
 						if (input[tokenPos] != '\'') {
-							// tme q sair od programa 
-							System.out.println("DEU PAU");
+							error("Expected ' but was found another characters");
 						} else {
 							tokenPos++;
 						}
@@ -338,4 +342,18 @@ public class Lexer {
 
 	//private CompilerError error;
 	private static final int MaxValueInteger = 32768;
+
+	private void error(String function) {
+		if (tokenPos == 0) {
+			tokenPos = 1;
+		} else if (tokenPos >= input.length) {
+			tokenPos = input.length;
+		}
+		System.out.println();
+		String strInput = new String(input, tokenPos - 1, input.length - tokenPos + 1);
+		String strError = "Error at \"" + strInput + "\" in " + function + "";
+		System.out.println(strError);
+		throw new RuntimeException(strError);
+	}
+
 }

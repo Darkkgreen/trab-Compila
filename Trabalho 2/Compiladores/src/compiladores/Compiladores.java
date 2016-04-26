@@ -20,47 +20,19 @@ public class Compiladores {
 		String entrada = new String();
 		//entrada = "void main () { /*ehuheue*/ int[] v_lokura321; //lokuraaaaa\nint[] v; int v_321; int v_; int v321; int [] vo____o;}";
 //		entrada = "void main(){readChar();}";
-		entrada = "void main() { \n"
-                        + "int a; \n"
-                        + "int b; \n"
-                        + "int c; \n"
-//                        + "(a+b); \n"
-                        + "if(a+b){ \n"
-                        + "a = c+b; \n"
-                        + "} \n"
-//                      + " char n; \n"
-//                      + "  n := 'a'; \n"
-//			+ "  while (! a) { \n"
-//			+ "    if(g){ \n"
-//			+ "      a := g; \n"
-			+ "      int [5] a;  a[-5 +5 -11111];\n"
-//			+ "      g := a; \n"
-//			+ "    }else{ \n"
-//			+ "      if (k[n]) { \n"
-//			+ "        while (k[n]) { \n"
-//			+ "          while (a) { \n"
-//			+ "            readChar(); \n"
-//			+ "          } \n"
-//			+ "        } \n"
-//			+ "      } else { \n"
-//			+ "        if (readInteger()) { \n"
-//			+ "          readDouble(); \n"
-//			+ "          a := h; \n"
-//			+ "          k[n] := j; \n"
-//			+ "        } \n"
-//			+ "      } \n"
-//			+ "    } \n"
-//			+ "    while (k[n]) { \n"
-//			+ "      readInteger(); \n"
-//			+ "    } \n"
-//			+ "  } \n"
-//			+ "  readInteger(); \n"
-//			+ "  readDouble(); \n"
-//			+ "  readChar(); \n"
-			+ "}";
-		//		entrada = "void main(){\n"
-		//			+ "	a := a + j\n"
-		//			+ "}";
+		entrada = "/*\n" +
+"	ERRLEX05: Nao deve aceitar operadores invalidos\n" +
+"	Linha: 12;\n" +
+"*/\n" +
+"\n" +
+"void main () {\n" +
+"\n" +
+"	int a;\n" +
+"	int b;\n" +
+"	\n" +
+"	//Correto e a = b\n" +
+"	if (a == b) {}\n" +
+"}";
 		entrada = entrada.concat(" ");
 
 		char[] input = entrada.toCharArray();

@@ -3,6 +3,8 @@ package compiladores;
 import AST.*;
 import java.util.ArrayList;
 import Lexer.*;
+import java.util.EmptyStackException;
+import java.util.Stack;
 
 public class Compiler {
 
@@ -14,6 +16,8 @@ public class Compiler {
 		lexer = new Lexer(p_input);
 		lexer.nextToken();
 		variableNames = new ArrayList<String>();
+		whiles = new Stack();
+		pilha = 0;
 
 		Program e = program();
 
@@ -123,7 +127,8 @@ public class Compiler {
 				aux = new Variable(name, type);
 				return aux;
 			} else {
-				error("variable: The name of variable is not set");
+				error("variable: The name of variable is not set, probably the name used \"" + lexer.getStringValue() + "\" is reserved"
+					+ " or the first character is not a letter.");
 			}
 		}
 		return null;
@@ -140,6 +145,8 @@ public class Compiler {
 			Type type = new Type(lexer.token, false, 0);
 			lexer.nextToken();
 			return type;
+		} else if (lexer.getStringValue().toLowerCase().equals("char") || (lexer.getStringValue().toLowerCase().equals("int") || lexer.getStringValue().toLowerCase().equals("double"))) {
+			error("stdType : The type must be lowercase");
 		}
 
 		return null;
@@ -165,6 +172,8 @@ public class Compiler {
 						error("arrayType: expected ]");
 						return null;
 					}
+				} else if (lexer.token == Symbol.MINUS) {
+					error("arrayType : Array size must not be negative");
 				} else {
 					error("arrayType: Missing array size");
 				}
@@ -269,6 +278,7 @@ public class Compiler {
 		Expr auxiliarExp = null;
 		ArrayList<Stmt> arrayPrinc = new ArrayList<Stmt>();
 		Stmt auxiliarSt = null;
+		Integer myPilha = -1;
 
 		aninhado = true;
 
@@ -280,12 +290,18 @@ public class Compiler {
 					if (lexer.token == Symbol.RIGHTPAR) {
 						lexer.nextToken();
 						if (lexer.token == Symbol.LEFTBRACKET) {
+							myPilha = pilha;
+							whiles.push(pilha);
+
 							lexer.nextToken();
 							while ((auxiliarSt = stmt()) != null) {
 								arrayPrinc.add(auxiliarSt);
 								auxiliarSt = null;
 							}
 							if (lexer.token == Symbol.RIGHTBRACKET) {
+								if (whiles.contains(myPilha) == true) {
+									whiles.remove(myPilha);
+								}
 								lexer.nextToken();
 								WhileStmt enquanto = new WhileStmt(arrayPrinc, auxiliarExp);
 
@@ -315,7 +331,8 @@ public class Compiler {
 	//BreakStmt ::= 'b' ';'
 	private boolean breakStmt() {
 		if (lexer.token == Symbol.BREAK) {
-			if (aninhado == true) {
+			try {
+				whiles.pop();
 				lexer.nextToken();
 				if (lexer.token == Symbol.SEMICOLON) {
 					lexer.nextToken();
@@ -323,7 +340,7 @@ public class Compiler {
 				} else {
 					error("breakStmt: expected ;");
 				}
-			} else {
+			} catch (EmptyStackException e) {
 				error("breakStmt: break out of a while");
 			}
 		}
@@ -355,8 +372,13 @@ public class Compiler {
 
 					if (lexer.token == Symbol.RIGHTPAR) {
 						lexer.nextToken();
-						PrintStmt imprime = new PrintStmt(listaExp);
-						return imprime;
+						if (lexer.token == Symbol.SEMICOLON) {
+							lexer.nextToken();
+							PrintStmt imprime = new PrintStmt(listaExp);
+							return imprime;
+						}else
+							error("printStmt : expected ;");
+
 					} else {
 						error("printStmt: expected )");
 					}
@@ -379,9 +401,9 @@ public class Compiler {
 
 		aux = simExpr();
 		if (aux != null) {
-                        if(aux.getSolo() == false && possible == false){
-                                error("Expression not in the actual format");
-                        }
+			if (aux.getSolo() == false && possible == false) {
+				//error("Expression not in the actual format");
+			}
 			if ((lexer.token == Symbol.ASSIGN) || (lexer.token == Symbol.NEQ) || (lexer.token == Symbol.LT)
 				|| (lexer.token == Symbol.LE) || (lexer.token == Symbol.GT) || (lexer.token == Symbol.GE)) {
 				String mulop = aux.getLastMulOp();
@@ -498,6 +520,7 @@ public class Compiler {
 		if (lValue != null) {
 			if (lexer.token == Symbol.DEFINITION) {
 				lexer.nextToken();
+				// aqui tem que fazer a verificação de TIPOS
 				if (lexer.token == Symbol.QUOTE) {
 					lexer.nextToken();
 					simpleChar = lexer.getCharValue();
@@ -587,7 +610,7 @@ public class Compiler {
 
 			}
 			if (flag == false) {
-				error("There is no variable called \"" + ident + "\" in this scope");
+				error("lValeu : There is no variable called \"" + ident + "\" in this scope");
 			}
 			if (lexer.token == Symbol.LEFTSQUARE) {
 				if (aux.getType().isArray() == true) {
@@ -608,7 +631,8 @@ public class Compiler {
 										}
 
 										// ok não é número negativo, verifico o tamanho
-										if (expr.getSimexpr().getTerm().getFactor().getNumber() >= aux.getType().getSize()) {											error("lValue : the index surpass the array's size");
+										if (expr.getSimexpr().getTerm().getFactor().getNumber() >= aux.getType().getSize()) {
+											error("lValue : the index surpass the array's size");
 										}
 
 									}
@@ -622,7 +646,7 @@ public class Compiler {
 						}
 					}
 				} else {
-					error("Variable \"" + aux.getName() + "\" is not a array");
+					error("lValue : Variable \"" + aux.getName() + "\" is not a array");
 				}
 
 			} else {
@@ -689,7 +713,9 @@ public class Compiler {
 	private Lexer lexer;
 	public ArrayList<String> variableNames;
 	private char[] input;
-
 	private ArrayList<Variable> variablesList;
+
+	private Stack whiles;
+	private int pilha;
 
 }
