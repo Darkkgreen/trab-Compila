@@ -10,6 +10,7 @@ public class Compiler {
 
 	private boolean relationOP = false;
 	private String nomeArquivo;
+        private boolean soloing = false;
 
 	public Program compile(char[] p_input, String nome) {
 		this.nomeArquivo = nome;
@@ -195,6 +196,7 @@ public class Compiler {
 		CompositeExpr aux = null;
 		Stmt stmt = null;
 
+                soloing = true;
 		if ((aux = expr(false)) != null) {
 			if ((aux.getType() == Symbol.READCHAR) || (aux.getType() == Symbol.READINTEGER) || (aux.getType() == Symbol.READDOUBLE)) {
 				error("Stmt : functions like readChar, readInteger and readDouble must be declared after a :=");
@@ -204,8 +206,8 @@ public class Compiler {
 			} else if (aux != null) {
 				error("stmt: expected \";\"");
 			}
-
 		}
+                soloing = false;
 
 		se = ifStmt();
 		enquanto = whileStmt();
@@ -426,6 +428,9 @@ public class Compiler {
 					error("Invalid operand for comparison because was expected before the operand && or ||");
 				}
 			}
+                        if(soloing == true){
+                            error("Expression not in the actual format");
+                        }
 			return new CompositeExpr(aux, relop, expr, auxType);
 		} else {
 			return null;
