@@ -7,11 +7,11 @@ import java.util.EmptyStackException;
 import java.util.Stack;
 
 public class Compiler {
-
-	private boolean aninhado = false;
 	private boolean relationOP = false;
+	private String nomeArquivo;
 
-	public Program compile(char[] p_input) {
+	public Program compile(char[] p_input, String nome) {
+		this.nomeArquivo = nome;
 		input = p_input;
 		lexer = new Lexer(p_input);
 		lexer.nextToken();
@@ -280,8 +280,6 @@ public class Compiler {
 		Stmt auxiliarSt = null;
 		Integer myPilha = -1;
 
-		aninhado = true;
-
 		if (lexer.token == Symbol.WHILE) {
 			lexer.nextToken();
 			if (lexer.token == Symbol.LEFTPAR) {
@@ -304,8 +302,6 @@ public class Compiler {
 								}
 								lexer.nextToken();
 								WhileStmt enquanto = new WhileStmt(arrayPrinc, auxiliarExp);
-
-								aninhado = false;
 								return enquanto;
 							} else {
 								error("whileStmt: expected }");
@@ -323,8 +319,6 @@ public class Compiler {
 				error("whileStmt: expected (");
 			}
 		}
-
-		aninhado = false;
 		return null;
 	}
 
@@ -705,7 +699,7 @@ public class Compiler {
 		}
 		System.out.println();
 		String strInput = new String(input, lexer.tokenPos - 1, input.length - lexer.tokenPos + 1);
-		String strError = "Error at \"" + strInput + "\" in " + function + "";
+		String strError = "Error at file "+nomeArquivo+" \"" + strInput + "\" in " + function + "";
 		System.out.println(strError);
 		throw new RuntimeException(strError);
 	}
