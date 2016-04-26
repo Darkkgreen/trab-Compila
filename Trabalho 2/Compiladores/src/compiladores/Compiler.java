@@ -558,28 +558,24 @@ public class Compiler {
 //						System.out.println(expr.getType());
 						if ((expr.getType() == Symbol.DOUBLE) || (expr.getType() == Symbol.READDOUBLE)) {
 							error("Factor : you cannot set in a integer a double value");
-						}else if(expr.getType() == Symbol.CHAR){
-							error ("Factor : you cannot set in a integer a char value");
+						} else if ((expr.getType() == Symbol.CHAR) || (expr.getType() == Symbol.READCHAR)) {
+							error("Factor : you cannot set in a integer a char value");
 						}
 					} else if (lValue.getType().getType() == Symbol.CHAR) {
 //						System.out.println(expr.getType());
 						if ((expr.getType() == Symbol.DOUBLE) || (expr.getType() == Symbol.READDOUBLE)) {
 							error("Factor : you cannot set in a char a double value");
+						} else if ((lValue.getType().getType() == Symbol.INTEGER) || (expr.getType() == Symbol.READINTEGER)) {
+							error("Factor : you cannot set in a char a integer value");
+						}
+					} else if (lValue.getType().getType() == Symbol.DOUBLE) {
+//						System.out.println(expr.getType());
+						if ((expr.getType() == Symbol.INTEGER) || (expr.getType() == Symbol.READINTEGER)) {
+							error("Factor : you cannot set in a double a integer value");
+						} else if ((lValue.getType().getType() == Symbol.CHAR) || (expr.getType() == Symbol.READCHAR)) {
+							error("Factor : you cannot set in a double a char value");
 						}
 					}
-//					// aqui tem que fazer a verificação de TIPOS
-//					if (lexer.token == Symbol.QUOTE && lValue.getType().getType() == Symbol.CHAR) {
-//						lexer.nextToken();
-//						simpleChar = lexer.getCharValue();
-//						return new Factor(lValue, null, null, null, null, simpleChar);
-//					} else if (lexer.token == Symbol.DOUBLE && lValue.getType().getType() == Symbol.DOUBLE) {
-//						lexer.nextToken();
-//						return new Factor(lValue, null, null, null, null, simpleChar);
-//					} else if (lexer.token == Symbol.NUMBER && lValue.getType().getType() == Symbol.INTEGER) {
-//						lexer.nextToken();
-//						return new Factor(lValue, null, null, null, null, simpleChar);
-//					}
-//					return new Factor(lValue, expr, null, null, null, simpleChar);
 				} else {
 					error("factor: There is no expression");
 				}
@@ -708,6 +704,8 @@ public class Compiler {
 				}
 
 			} else {
+				if(aux.getType().isArray() == true)
+					error("lValue : you must declare which index do you want to use");
 				return new LValue(ident, null, auxType);
 			}
 		}
