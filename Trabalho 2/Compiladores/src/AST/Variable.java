@@ -13,6 +13,10 @@ public class Variable extends Expr{
 		return this.type;
 	}
 
+	public String getName() {
+		return name;
+	}
+
 	public void genC(){
 		
 	}

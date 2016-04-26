@@ -15,7 +15,12 @@ public class Term extends Expr{
 	private Factor factor;
 	private ArrayList<String> muloplist;
 	private ArrayList<Factor> factorlist;
+        private boolean solo;
 
+        public boolean getSolo(){
+                return solo;
+        }
+        
 	public Factor getFactor() {
 		return factor;
 	}
@@ -32,6 +37,11 @@ public class Term extends Expr{
 		this.factor = factor;
 		this.muloplist = muloplist;
 		this.factorlist = factorlist;
+                
+                if(muloplist == null && factorlist == null && factor.getSolo() == true)
+                    this.solo = true;
+                else
+                    this.solo = false;
 	}
 
 	public void genC(){

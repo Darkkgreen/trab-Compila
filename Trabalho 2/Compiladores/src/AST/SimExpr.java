@@ -8,14 +8,16 @@ public class SimExpr extends Expr {
 	private Term term;
 	private ArrayList<String> addop;
 	private ArrayList<Term> termList;
+        private boolean solo;
 
 	public void genC(){
-		if(unary != null){
-			System.out.print(unary);
-		}
-		term.genC();
+
 	}
 
+        public boolean getSolo(){
+                return solo;
+        }
+        
 	public String getUnary() {
 		return unary;
 	}
@@ -37,6 +39,12 @@ public class SimExpr extends Expr {
 		this.term = term;
 		this.addop = addop;
 		this.termList = termList;
+                
+                if(addop == null && term.getSolo() == true)
+                    this.solo = true;
+                else
+                    this.solo = false;
+                    
 	}
 	
 	public String getLastAddOp(){
