@@ -7,7 +7,7 @@ import Lexer.*;
 public class Compiler {
 
 	private boolean aninhado = false;
-        private boolean relationOP = false;
+	private boolean relationOP = false;
 
 	public Program compile(char[] p_input) {
 		input = p_input;
@@ -147,25 +147,26 @@ public class Compiler {
 	// ArrayType ::= StdType '[' ']'
 	private Type arrayType() {
 		Type type = null;
-                Integer aux = 0;
+		Integer aux = 0;
 		type = stdType();
 		if (type != null) {
 			if (lexer.token == Symbol.LEFTSQUARE) {
 				lexer.nextToken();
-                                if(lexer.token == Symbol.NUMBER){
-                                    aux = lexer.getNumberValue();
-                                    lexer.nextToken();
-                                    if (lexer.token == Symbol.RIGHTSQUARE) {
-					type.setArray(true);
-                                        type.setValue(aux);
+				if (lexer.token == Symbol.NUMBER) {
+					aux = lexer.getNumberValue();
 					lexer.nextToken();
-					return type;
-                                    } else {
-                                            error("arrayType: expected ]");
-                                            return null;
-                                    }
-                                }else
-                                    error("arrayType: Missing array size");
+					if (lexer.token == Symbol.RIGHTSQUARE) {
+						type.setArray(true);
+						type.setValue(aux);
+						lexer.nextToken();
+						return type;
+					} else {
+						error("arrayType: expected ]");
+						return null;
+					}
+				} else {
+					error("arrayType: Missing array size");
+				}
 			}
 			// como o construtor de type ja define false o array,
 			// nada é feito
@@ -379,20 +380,24 @@ public class Compiler {
 		if (aux != null) {
 			if ((lexer.token == Symbol.ASSIGN) || (lexer.token == Symbol.NEQ) || (lexer.token == Symbol.LT)
 				|| (lexer.token == Symbol.LE) || (lexer.token == Symbol.GT) || (lexer.token == Symbol.GE)) {
-                            if(relationOP == true){
-                                error("Not possible many instances of relationship comparison");
-                            }else{
-                                relationOP = true;
-                                relop = lexer.token.toString();
-                                lexer.nextToken();
-                                expr = expr();
-                                if (expr == null) {
-                                        error("SimExpr");
-                                }
-                                relationOP = false;
-                            }
+				String mulop = aux.getLastMulOp();
+				String addop = aux.getLastAddOp();
+				if ((relationOP == true)&&(mulop == null)&&(addop == null)) {
+					error("Not possible many instances of relationship comparison");
+				} else if ((relationOP == false)||((mulop != null)&&(mulop.equals("&&")))||((addop != null)&&(addop.equals("||")))){
+						relationOP = true;
+						relop = lexer.token.toString();
+						lexer.nextToken();
+						expr = expr();
+						if (expr == null) {
+							error("SimExpr");
+						}
+						relationOP = false;
+
+				}else
+					error("Invalid operand for comparison because was expected before the operand && or ||");
 			}
-			return new CompositeExpr(aux, relop, expr);              
+			return new CompositeExpr(aux, relop, expr);
 		} else {
 			return null;
 		}

@@ -38,5 +38,26 @@ public class SimExpr extends Expr {
 		this.addop = addop;
 		this.termList = termList;
 	}
+	
+	public String getLastAddOp(){
+		if(addop != null){
+			Integer last = addop.size();
+			return addop.get(last-1);
+		}
+		return null;
+	}
+	
+	public String getLastMulOp(){
+		if(term != null){
+			ArrayList<String> aux = term.getMuloplist();
+			if(aux != null){
+				Integer last;
+				last = aux.size();
+				return aux.get(last-1);
+			}
+		}
+
+		return null;
+	}
 
 }

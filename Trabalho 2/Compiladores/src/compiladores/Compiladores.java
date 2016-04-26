@@ -26,7 +26,7 @@ public class Compiladores {
 //			+ "  while (! a) { \n"
 //			+ "    if(g){ \n"
 //			+ "      a := g; \n"
-			+ "      if (a>b && b>c) { \n"
+			+ "      if (a>b && b>c || d>e && f>g || h>i) { \n"
 			+ "        a := h; \n"
 			+ "      } \n"
 //			+ "      g := a; \n"

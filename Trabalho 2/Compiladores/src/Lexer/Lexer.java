@@ -165,6 +165,7 @@ public class Lexer {
 				case '|':
 					if (input[tokenPos] == '|') {
 						token = Symbol.OR;
+						System.out.print(input[tokenPos]);
 						tokenPos++;
 					} else {
 						token = Symbol.PIPE;
@@ -184,6 +185,7 @@ public class Lexer {
 				case '&':
 					if (input[tokenPos] == '&') {
 						token = Symbol.AND;
+						System.out.print(input[tokenPos]);
 						tokenPos++;
 					} else {
 						token = Symbol.AND;
