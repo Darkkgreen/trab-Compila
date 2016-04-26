@@ -29,14 +29,7 @@ public class LValue extends Expr{
 	}
 	
 	public void genC(){
-		if(ident != null){
-			System.out.print(ident);
-			if(expr != null){
-				System.out.print('[');
-				expr.genC();
-				System.out.print(']');				
-			}
-		}
+
 	}
 
 }

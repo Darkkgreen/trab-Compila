@@ -12,14 +12,16 @@ public class SimExpr extends Expr {
 	public boolean onlyOneTerm(){
 		return ((termList == null)&& (term != null)) ? true : false;
 	}
+        private boolean solo;
 
 	public void genC(){
-		if(unary != null){
-			System.out.print(unary);
-		}
-		term.genC();
+
 	}
 
+        public boolean getSolo(){
+                return solo;
+        }
+        
 	public String getUnary() {
 		return unary;
 	}
@@ -41,6 +43,12 @@ public class SimExpr extends Expr {
 		this.term = term;
 		this.addop = addop;
 		this.termList = termList;
+                
+                if(addop == null && term.getSolo() == true)
+                    this.solo = true;
+                else
+                    this.solo = false;
+                    
 	}
 	
 	public String getLastAddOp(){

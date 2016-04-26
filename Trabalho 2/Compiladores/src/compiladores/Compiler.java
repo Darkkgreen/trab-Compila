@@ -185,7 +185,7 @@ public class Compiler {
 		CompositeExpr aux = null;
 		Stmt stmt = null;
 
-		if ((aux = expr()) != null) {
+		if ((aux = expr(false)) != null) {
 			if (lexer.token == Symbol.SEMICOLON) {
 				lexer.nextToken();
 			} else if (aux != null) {
@@ -219,7 +219,7 @@ public class Compiler {
 			lexer.nextToken();
 			if (lexer.token == Symbol.LEFTPAR) {
 				lexer.nextToken();
-				if ((auxiliarExp = expr()) != null) {
+				if ((auxiliarExp = expr(true)) != null) {
 					if (lexer.token == Symbol.RIGHTPAR) {
 						lexer.nextToken();
 						if (lexer.token == Symbol.LEFTBRACKET) {
@@ -276,7 +276,7 @@ public class Compiler {
 			lexer.nextToken();
 			if (lexer.token == Symbol.LEFTPAR) {
 				lexer.nextToken();
-				if ((auxiliarExp = expr()) != null) {
+				if ((auxiliarExp = expr(true)) != null) {
 					if (lexer.token == Symbol.RIGHTPAR) {
 						lexer.nextToken();
 						if (lexer.token == Symbol.LEFTBRACKET) {
@@ -340,12 +340,12 @@ public class Compiler {
 			lexer.nextToken();
 			if (lexer.token == Symbol.LEFTPAR) {
 				lexer.nextToken();
-				if ((aux = expr()) != null) {
+				if ((aux = expr(true)) != null) {
 					listaExp.add(aux);
 					aux = null;
 					while (lexer.token == Symbol.COMMA) {
 						lexer.nextToken();
-						if ((aux = expr()) != null) {
+						if ((aux = expr(true)) != null) {
 							listaExp.add(aux);
 							aux = null;
 						} else {
@@ -372,13 +372,16 @@ public class Compiler {
 	}
 
 	// Expr ::= SimExpr [ RelOp Expr ]
-	private CompositeExpr expr() {
+	private CompositeExpr expr(boolean possible) {
 		CompositeExpr expr = null;
 		SimExpr aux = null;
 		String relop = null;
 
 		aux = simExpr();
 		if (aux != null) {
+                        if(aux.getSolo() == false && possible == false){
+                                error("Expression not in the actual format");
+                        }
 			if ((lexer.token == Symbol.ASSIGN) || (lexer.token == Symbol.NEQ) || (lexer.token == Symbol.LT)
 				|| (lexer.token == Symbol.LE) || (lexer.token == Symbol.GT) || (lexer.token == Symbol.GE)) {
 				String mulop = aux.getLastMulOp();
@@ -389,7 +392,7 @@ public class Compiler {
 					relationOP = true;
 					relop = lexer.token.toString();
 					lexer.nextToken();
-					expr = expr();
+					expr = expr(true);
 					if (expr == null) {
 						error("SimExpr");
 					}
@@ -500,7 +503,7 @@ public class Compiler {
 					simpleChar = lexer.getCharValue();
 					return new Factor(lValue, null, null, null, null, simpleChar);
 				} else {
-					expr = expr();
+					expr = expr(true);
 					if (expr != null) {
 						return new Factor(lValue, expr, null, null, null, simpleChar);
 					} else {
@@ -521,7 +524,7 @@ public class Compiler {
 
 		} else if (lexer.token == Symbol.LEFTPAR) {
 			lexer.nextToken();
-			expr = expr();
+			expr = expr(true);
 			if (expr != null) {
 				if (lexer.token == Symbol.RIGHTPAR) {
 					lexer.nextToken();
@@ -589,7 +592,7 @@ public class Compiler {
 			if (lexer.token == Symbol.LEFTSQUARE) {
 				if (aux.getType().isArray() == true) {
 					lexer.nextToken();
-					expr = expr();
+					expr = expr(true);
 					if (expr != null) {
 						// M O N S T R O
 						// tem que verificar se o tamanho do vetor é compatível....

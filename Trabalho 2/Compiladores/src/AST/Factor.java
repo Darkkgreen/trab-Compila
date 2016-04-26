@@ -17,7 +17,12 @@ public class Factor extends Expr
 	private String numberDouble;
         private char singleChar;
 	private Integer number;
-	
+        private boolean solo;
+
+        public boolean getSolo(){
+            return solo;
+        }
+        
         public char getSingleChar() {
             return singleChar;
         }
@@ -58,6 +63,11 @@ public class Factor extends Expr
 		this.number = number;
 		this.numberDouble = numberDouble;
                 this.singleChar = singleChar;
+                
+                if(expr == null && function == null && number == null && numberDouble == null && singleChar == '\0')
+                    this.solo = true;
+                else
+                    this.solo = false;
 	}
 	
 	public LValue getLvalue() {
