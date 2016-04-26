@@ -46,7 +46,7 @@ public class SimExpr extends Expr {
 		this.termList = termList;
 		this.type = type;
                 
-                if(addop == null && term.getSolo() == true)
+                if(addop == null && termList == null && term.getSolo() == true)
                     this.solo = true;
                 else
                     this.solo = false;
