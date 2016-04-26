@@ -14,6 +14,7 @@ public class LValue extends Expr{
 	String ident;
 	String exprIdent;
 	Expr expr;
+	Type type;
 	
 	public String getIdent() {
 		return ident;
@@ -23,9 +24,14 @@ public class LValue extends Expr{
 		return expr;
 	}
 
-	public LValue(String ident, Expr expr) {
+	public LValue(String ident, Expr expr, Type type) {
 		this.ident = ident;
 		this.expr = expr;
+		this.type = type;
+	}
+
+	public Type getType() {
+		return type;
 	}
 	
 	public void genC(){

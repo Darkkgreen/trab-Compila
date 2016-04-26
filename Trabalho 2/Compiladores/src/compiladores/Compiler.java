@@ -7,6 +7,7 @@ import java.util.EmptyStackException;
 import java.util.Stack;
 
 public class Compiler {
+
 	private boolean relationOP = false;
 	private String nomeArquivo;
 
@@ -195,6 +196,9 @@ public class Compiler {
 		Stmt stmt = null;
 
 		if ((aux = expr(false)) != null) {
+			if ((aux.getType() == Symbol.READCHAR) || (aux.getType() == Symbol.READINTEGER) || (aux.getType() == Symbol.READDOUBLE)) {
+				error("Stmt : functions like readChar, readInteger and readDouble must be declared after a :=");
+			}
 			if (lexer.token == Symbol.SEMICOLON) {
 				lexer.nextToken();
 			} else if (aux != null) {
@@ -370,8 +374,9 @@ public class Compiler {
 							lexer.nextToken();
 							PrintStmt imprime = new PrintStmt(listaExp);
 							return imprime;
-						}else
+						} else {
 							error("printStmt : expected ;");
+						}
 
 					} else {
 						error("printStmt: expected )");
@@ -392,9 +397,12 @@ public class Compiler {
 		CompositeExpr expr = null;
 		SimExpr aux = null;
 		String relop = null;
+		Symbol auxType = null;
 
 		aux = simExpr();
 		if (aux != null) {
+			auxType = aux.getType();
+//			System.out.println(auxType+"COMPOSITE");
 			if (aux.getSolo() == false && possible == false) {
 				//error("Expression not in the actual format");
 			}
@@ -418,7 +426,7 @@ public class Compiler {
 					error("Invalid operand for comparison because was expected before the operand && or ||");
 				}
 			}
-			return new CompositeExpr(aux, relop, expr);
+			return new CompositeExpr(aux, relop, expr, auxType);
 		} else {
 			return null;
 		}
@@ -432,6 +440,7 @@ public class Compiler {
 		Term termAux2 = null;
 		ArrayList<String> addop = null;
 		ArrayList<Term> termList = null;
+		Symbol auxType = null;
 
 		if ((lexer.token == Symbol.MINUS) || (lexer.token == Symbol.NOT) || (lexer.token == Symbol.PLUS)) {
 			unary = lexer.token.toString();
@@ -440,6 +449,8 @@ public class Compiler {
 
 		termAux = term();
 		if (termAux != null) {
+			auxType = termAux.getType();
+//			System.out.println(auxType+"TERM");
 			while (true) {
 				if ((lexer.token == Symbol.PLUS) || (lexer.token == Symbol.OR) || (lexer.token == Symbol.MINUS)) {
 					if (addop == null) {
@@ -457,11 +468,22 @@ public class Compiler {
 					} else {
 						break;
 					}
+
+					// tratando se for int := double
+					if (termAux2.getType() == Symbol.DOUBLE) {
+						auxType = Symbol.DOUBLE;
+					}
 				} else {
 					break;
 				}
 			}
-			return new SimExpr(unary, termAux, addop, termList);
+			// tratando se for int := double
+			if (termAux.getType() == Symbol.DOUBLE) {
+				if (unary != null && unary.equals("!") == true) {
+					error("simExpr : it is not possible to use the operator ! with a double");
+				}
+			}
+			return new SimExpr(unary, termAux, addop, termList, auxType);
 		}
 
 		return null;
@@ -474,9 +496,14 @@ public class Compiler {
 		String aux2 = null;
 		ArrayList<String> mulop = null;
 		ArrayList<Factor> factorList = null;
+		Symbol auxType = null;
 
 		aux = factor();
+
 		if (aux != null) {
+//			System.out.println(auxType);
+			auxType = aux.getType();
+//			System.out.println(auxType+"TERM");
 			while (true) {
 				if ((lexer.token == Symbol.MULT) || (lexer.token == Symbol.DIV) || (lexer.token == Symbol.REMAINDER) || (lexer.token == Symbol.AND)) {
 					if (mulop == null) {
@@ -494,12 +521,23 @@ public class Compiler {
 					} else {
 						error("Term");
 					}
+
+					// verificando possibilidade do modulo
+					if (aux.getType() == Symbol.DOUBLE) {
+						auxType = Symbol.DOUBLE;
+						if (aux3.getType() == Symbol.DOUBLE) {
+							if (mulop.get(mulop.size() - 1).equals("%")) {
+								error("Term : operator % cannot be used between double");
+							}
+						}
+					}
+
 				} else {
 					break;
 				}
 			}
 
-			return new Term(aux, mulop, factorList);
+			return new Term(aux, mulop, factorList, auxType);
 		}
 
 		return null;
@@ -514,29 +552,49 @@ public class Compiler {
 		if (lValue != null) {
 			if (lexer.token == Symbol.DEFINITION) {
 				lexer.nextToken();
-				// aqui tem que fazer a verificação de TIPOS
-				if (lexer.token == Symbol.QUOTE) {
-					lexer.nextToken();
-					simpleChar = lexer.getCharValue();
-					return new Factor(lValue, null, null, null, null, simpleChar);
-				} else {
-					expr = expr(true);
-					if (expr != null) {
-						return new Factor(lValue, expr, null, null, null, simpleChar);
-					} else {
-						error("factor: There is no expression");
+				expr = expr(true);
+				if (expr != null) {
+					if (lValue.getType().getType() == Symbol.INTEGER) {
+//						System.out.println(expr.getType());
+						if ((expr.getType() == Symbol.DOUBLE) || (expr.getType() == Symbol.READDOUBLE)) {
+							error("Factor : you cannot set in a integer a double value");
+						}else if(expr.getType() == Symbol.CHAR){
+							error ("Factor : you cannot set in a integer a char value");
+						}
+					} else if (lValue.getType().getType() == Symbol.CHAR) {
+//						System.out.println(expr.getType());
+						if ((expr.getType() == Symbol.DOUBLE) || (expr.getType() == Symbol.READDOUBLE)) {
+							error("Factor : you cannot set in a char a double value");
+						}
 					}
+//					// aqui tem que fazer a verificação de TIPOS
+//					if (lexer.token == Symbol.QUOTE && lValue.getType().getType() == Symbol.CHAR) {
+//						lexer.nextToken();
+//						simpleChar = lexer.getCharValue();
+//						return new Factor(lValue, null, null, null, null, simpleChar);
+//					} else if (lexer.token == Symbol.DOUBLE && lValue.getType().getType() == Symbol.DOUBLE) {
+//						lexer.nextToken();
+//						return new Factor(lValue, null, null, null, null, simpleChar);
+//					} else if (lexer.token == Symbol.NUMBER && lValue.getType().getType() == Symbol.INTEGER) {
+//						lexer.nextToken();
+//						return new Factor(lValue, null, null, null, null, simpleChar);
+//					}
+//					return new Factor(lValue, expr, null, null, null, simpleChar);
+				} else {
+					error("factor: There is no expression");
 				}
+
 			}
-			return new Factor(lValue, null, null, null, null, '\0');
+			return new Factor(lValue, null, null, null, null, '\0', lValue.getType().getType());
 		} else if ((lexer.token == Symbol.NUMBER) || (lexer.token == Symbol.DOUBLE)) {
 			Factor aux = null;
 			if (lexer.token == Symbol.NUMBER) {
-				aux = new Factor(null, null, null, lexer.getNumberValue(), null, simpleChar);
+				aux = new Factor(null, null, null, lexer.getNumberValue(), null, simpleChar, Symbol.NUMBER);
 			} else {
-				aux = new Factor(null, null, null, null, lexer.getStringValue(), simpleChar);
+				aux = new Factor(null, null, null, null, lexer.getStringValue(), simpleChar, Symbol.DOUBLE);
 			}
 			lexer.nextToken();
+//			System.out.println(aux.getType()+"FACTOR");
 			return aux;
 
 		} else if (lexer.token == Symbol.LEFTPAR) {
@@ -545,7 +603,7 @@ public class Compiler {
 			if (expr != null) {
 				if (lexer.token == Symbol.RIGHTPAR) {
 					lexer.nextToken();
-					return new Factor(null, expr, null, null, null, simpleChar);
+					return new Factor(null, expr, null, null, null, simpleChar, null);
 				}
 			}
 
@@ -555,7 +613,7 @@ public class Compiler {
 				lexer.nextToken();
 				if (lexer.token == Symbol.RIGHTPAR) {
 					lexer.nextToken();
-					return new Factor(lValue, null, "readInteger()".toString(), null, null, simpleChar);
+					return new Factor(lValue, null, "readInteger()".toString(), null, null, simpleChar, Symbol.READINTEGER);
 				}
 			}
 
@@ -565,7 +623,7 @@ public class Compiler {
 				lexer.nextToken();
 				if (lexer.token == Symbol.RIGHTPAR) {
 					lexer.nextToken();
-					return new Factor(lValue, null, "readDouble()".toString(), null, null, simpleChar);
+					return new Factor(lValue, null, "readDouble()".toString(), null, null, simpleChar, Symbol.READDOUBLE);
 				}
 			}
 
@@ -575,10 +633,14 @@ public class Compiler {
 				lexer.nextToken();
 				if (lexer.token == Symbol.RIGHTPAR) {
 					lexer.nextToken();
-					return new Factor(lValue, null, "readChar()".toString(), null, null, simpleChar);
+					return new Factor(lValue, null, "readChar()".toString(), null, null, simpleChar, Symbol.READCHAR);
 				}
 			}
 
+		} else if (lexer.token == Symbol.QUOTE) {
+			lexer.nextToken();
+			simpleChar = lexer.getCharValue();
+			return new Factor(lValue, null, null, null, null, simpleChar, Symbol.CHAR);
 		}
 
 		return null;
@@ -595,9 +657,11 @@ public class Compiler {
 			// valida se existe a variável
 			boolean flag = false;
 			Variable aux = null;
+			Type auxType = null;
 			for (Variable v : variablesList) {
 				if (v.getName().equals(ident) == true) {
 					flag = true;
+					auxType = v.getType();
 					aux = v;
 					break;
 				}
@@ -636,7 +700,7 @@ public class Compiler {
 
 						if (lexer.token == Symbol.RIGHTSQUARE) {
 							lexer.nextToken();
-							return new LValue(ident, expr);
+							return new LValue(ident, expr, auxType);
 						}
 					}
 				} else {
@@ -644,7 +708,7 @@ public class Compiler {
 				}
 
 			} else {
-				return new LValue(ident, null);
+				return new LValue(ident, null, auxType);
 			}
 		}
 		return null;
@@ -699,7 +763,7 @@ public class Compiler {
 		}
 		System.out.println();
 		String strInput = new String(input, lexer.tokenPos - 1, input.length - lexer.tokenPos + 1);
-		String strError = "Error at file "+nomeArquivo+" \"" + strInput + "\" in " + function + "";
+		String strError = "Error at file " + nomeArquivo + " \"" + strInput + "\" in " + function + "";
 		System.out.println(strError);
 		throw new RuntimeException(strError);
 	}

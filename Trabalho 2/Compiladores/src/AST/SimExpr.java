@@ -1,5 +1,6 @@
 package AST;
 
+import Lexer.Symbol;
 import java.util.ArrayList;
 
 public class SimExpr extends Expr {
@@ -38,11 +39,12 @@ public class SimExpr extends Expr {
 		return termList;
 	}
 
-	public SimExpr(String unary, Term term, ArrayList<String> addop, ArrayList<Term> termList) {
+	public SimExpr(String unary, Term term, ArrayList<String> addop, ArrayList<Term> termList, Symbol type) {
 		this.unary = unary;
 		this.term = term;
 		this.addop = addop;
 		this.termList = termList;
+		this.type = type;
                 
                 if(addop == null && term.getSolo() == true)
                     this.solo = true;
@@ -71,5 +73,16 @@ public class SimExpr extends Expr {
 
 		return null;
 	}
+	
+	private Symbol type;
+
+	public Symbol getType() {
+		return type;
+	}
+
+	public void setType(Symbol type) {
+		this.type = type;
+	}
+	
 
 }

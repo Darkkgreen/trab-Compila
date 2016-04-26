@@ -5,6 +5,8 @@
  */
 package AST;
 
+import Lexer.Symbol;
+
 /**
  *
  * @author ricke
@@ -18,6 +20,11 @@ public class Factor extends Expr
         private char singleChar;
 	private Integer number;
         private boolean solo;
+	private Symbol type;
+
+	public Symbol getType() {
+		return type;
+	}
 
         public boolean getSolo(){
             return solo;
@@ -56,14 +63,25 @@ public class Factor extends Expr
 	}
 	
 
-	public Factor(LValue lvalue, Expr expr, String function, Integer number, String numberDouble, char singleChar) {
+	public Factor(LValue lvalue, Expr expr, String function, Integer number, String numberDouble, char singleChar, Symbol type) {
 		this.lvalue = lvalue;
 		this.expr = expr;
 		this.function = function;
 		this.number = number;
 		this.numberDouble = numberDouble;
                 this.singleChar = singleChar;
-                
+		this.type = type;
+		
+		if(type == null){
+			if(expr == null && lvalue == null){
+				// nothing to do
+			}else if(expr != null){
+//				type = expr.getType();								
+			}else if(lvalue != null){
+				lvalue.getType();
+			}
+		}
+//                System.out.println(type+"DENTDO ROD FACTOE");
                 if(expr == null && function == null && number == null && numberDouble == null && singleChar == '\0')
                     this.solo = true;
                 else

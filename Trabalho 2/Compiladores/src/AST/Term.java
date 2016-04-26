@@ -5,6 +5,7 @@
  */
 package AST;
 
+import Lexer.Symbol;
 import java.util.ArrayList;
 
 /**
@@ -37,10 +38,11 @@ public class Term extends Expr{
 		return factorlist;
 	}
 
-	public Term(Factor factor, ArrayList<String> muloplist, ArrayList<Factor> factorlist) {
+	public Term(Factor factor, ArrayList<String> muloplist, ArrayList<Factor> factorlist, Symbol type) {
 		this.factor = factor;
 		this.muloplist = muloplist;
 		this.factorlist = factorlist;
+		this.type = type;
                 
                 if(muloplist == null && factorlist == null && factor.getSolo() == true)
                     this.solo = true;
@@ -52,6 +54,17 @@ public class Term extends Expr{
 		factor.genC();
 		
 	}
+	
+	private Symbol type;
+
+	public Symbol getType() {
+		return type;
+	}
+
+	public void setType(Symbol type) {
+		this.type = type;
+	}
+	
 
 	
 	
