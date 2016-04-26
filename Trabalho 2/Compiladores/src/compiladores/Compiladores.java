@@ -20,12 +20,13 @@ public class Compiladores {
 	/**
 	 * @param args the command line arguments
 	 */
-	public static void main(String[] args) {
+	public static void main(String[] args) {	
 		String dir = System.getProperty("user.dir");
 		dir.concat("/");
 		System.out.println("current dir = " + dir);
-		Scanner ler = new Scanner(System.in);
-		String nome = ler.nextLine();
+		//Scanner ler = new Scanner(System.in);
+		//String nome = ler.nextLine();
+		String nome = "src/OKSEM02.txt";
 		System.out.println(nome);
 		String entrada = new String();
 		String linha = null;

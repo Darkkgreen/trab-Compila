@@ -5,6 +5,8 @@
  */
 package AST;
 
+import Lexer.Symbol;
+
 /**
  *
  * @author ricke
@@ -14,10 +16,11 @@ public class CompositeExpr extends Expr{
 	private String relOp;
 	private CompositeExpr expr;
 
-	public CompositeExpr(SimExpr simexpr, String relOp, CompositeExpr expr) {
+	public CompositeExpr(SimExpr simexpr, String relOp, CompositeExpr expr, Symbol type) {
 		this.simexpr = simexpr;
 		this.relOp = relOp;
 		this.expr = expr;
+		this.type = type;
 	}
 	
 	public boolean onlySimExpr(){
@@ -41,4 +44,15 @@ public class CompositeExpr extends Expr{
 			simexpr.genC();
 		}
 	}
+	
+	private Symbol type;
+
+	public Symbol getType() {
+		return type;
+	}
+
+	public void setType(Symbol type) {
+		this.type = type;
+	}
+	
 }
