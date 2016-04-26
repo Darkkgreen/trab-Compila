@@ -59,7 +59,7 @@ public class Compiler {
 
 	//StmtBlock ::= '{' { VariableDecl } { Stmt } '}'
 	private Program stmtBlock() {
-		ArrayList<Variable> ret = new ArrayList<Variable>();
+		variablesList = new ArrayList<Variable>();
 		ArrayList<Stmt> stmt = new ArrayList<Stmt>();
 		Variable aux = null;
 		Stmt auxiliarStmt = null;
@@ -67,7 +67,7 @@ public class Compiler {
 		if (lexer.token == Symbol.LEFTBRACKET) {
 			lexer.nextToken();
 			while ((aux = variableDecl()) != null) {
-				ret.add(aux);
+				variablesList.add(aux);
 				aux = null;
 			}
 			while ((auxiliarStmt = stmt()) != null) {
@@ -79,7 +79,7 @@ public class Compiler {
 		}
 
 		if (lexer.token == Symbol.RIGHTBRACKET) {
-			Program program = new Program(ret, stmt);
+			Program program = new Program(variablesList, stmt);
 			lexer.nextToken();
 			return program;
 		} else {
@@ -114,11 +114,12 @@ public class Compiler {
 		if (type != null) {
 			name = ident();
 			if (name != null) {
-				if (variableNames.contains(name) == true) {
-					error("variable: Variable " + name + " already exists!");
-				} else {
-					variableNames.add(name);
+				for (Variable v : variablesList) {
+					if (v.getName().equals(name) == true) {
+						error("variable: Variable \"" + name + "\" already exists!");
+					}
 				}
+				variableNames.add(name);
 				aux = new Variable(name, type);
 				return aux;
 			} else {
@@ -382,20 +383,21 @@ public class Compiler {
 				|| (lexer.token == Symbol.LE) || (lexer.token == Symbol.GT) || (lexer.token == Symbol.GE)) {
 				String mulop = aux.getLastMulOp();
 				String addop = aux.getLastAddOp();
-				if ((relationOP == true)&&(mulop == null)&&(addop == null)) {
+				if ((relationOP == true) && (mulop == null) && (addop == null)) {
 					error("Not possible many instances of relationship comparison");
-				} else if ((relationOP == false)||((mulop != null)&&(mulop.equals("&&")))||((addop != null)&&(addop.equals("||")))){
-						relationOP = true;
-						relop = lexer.token.toString();
-						lexer.nextToken();
-						expr = expr();
-						if (expr == null) {
-							error("SimExpr");
-						}
-						relationOP = false;
+				} else if ((relationOP == false) || ((mulop != null) && (mulop.equals("&&"))) || ((addop != null) && (addop.equals("||")))) {
+					relationOP = true;
+					relop = lexer.token.toString();
+					lexer.nextToken();
+					expr = expr();
+					if (expr == null) {
+						error("SimExpr");
+					}
+					relationOP = false;
 
-				}else
+				} else {
 					error("Invalid operand for comparison because was expected before the operand && or ||");
+				}
 			}
 			return new CompositeExpr(aux, relop, expr);
 		} else {
@@ -570,15 +572,33 @@ public class Compiler {
 
 		ident = ident();
 		if (ident != null) {
-			if (lexer.token == Symbol.LEFTSQUARE) {
-				lexer.nextToken();
-				expr = expr();
-				if (expr != null) {
-					if (lexer.token == Symbol.RIGHTSQUARE) {
-						lexer.nextToken();
-						return new LValue(ident, expr);
-					}
+			// valida se existe a variável
+			boolean flag = false;
+			Variable aux = null;
+			for (Variable v : variablesList) {
+				if (v.getName().equals(ident) == true) {
+					flag = true;
+					aux = v;
+					break;
 				}
+
+			}
+			if (flag == false) {
+				error("There is no variable called \"" + ident + "\" in this scope");
+			}
+			if (lexer.token == Symbol.LEFTSQUARE) {
+				if (aux.getType().isArray() == true) {
+					lexer.nextToken();
+					expr = expr();
+					if (expr != null) {
+						if (lexer.token == Symbol.RIGHTSQUARE) {
+							lexer.nextToken();
+							return new LValue(ident, expr);
+						}
+					}
+				}else
+					error("Variable \""+aux.getName()+"\" is not a array");
+
 			} else {
 				return new LValue(ident, null);
 			}
@@ -643,5 +663,7 @@ public class Compiler {
 	private Lexer lexer;
 	public ArrayList<String> variableNames;
 	private char[] input;
+
+	private ArrayList<Variable> variablesList;
 
 }
