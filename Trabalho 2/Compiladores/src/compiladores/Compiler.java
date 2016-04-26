@@ -385,15 +385,14 @@ public class Compiler {
 				if ((relationOP == true)&&(mulop == null)&&(addop == null)) {
 					error("Not possible many instances of relationship comparison");
 				} else if ((relationOP == false)||((mulop != null)&&(mulop.equals("&&")))||((addop != null)&&(addop.equals("||")))){
-						relationOP = true;
-						relop = lexer.token.toString();
-						lexer.nextToken();
-						expr = expr();
-						if (expr == null) {
-							error("SimExpr");
-						}
-						relationOP = false;
-
+                                        relationOP = true;
+                                        relop = lexer.token.toString();
+                                        lexer.nextToken();
+                                        expr = expr();
+                                        if (expr == null) {
+                                                error("SimExpr");
+                                        }
+                                        relationOP = false;
 				}else
 					error("Invalid operand for comparison because was expected before the operand && or ||");
 			}

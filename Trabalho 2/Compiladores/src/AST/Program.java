@@ -12,24 +12,7 @@ public class Program{
 	}
 
 	public void genC(){
-		System.out.println();
-		System.out.println("void main () {");
-		System.out.print("\t");
-
-
-		for(Variable v:listV){
-			v.genC();
-			System.out.print("\t");
-		}
-		System.out.println();
-		System.out.print("\t");
-		for(Stmt s:listS){
-			s.genC();
-			System.out.print("\t");
-		}
-
-//		expr.genC();
-		System.out.println("\n}");
+		
 	}
 
 }
