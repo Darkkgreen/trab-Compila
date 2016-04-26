@@ -747,11 +747,6 @@ public class Compiler {
 					flag3 = false;
 				}
 			} while (!((flag1 == false) && (flag2 == false) && (flag3 == false)));
-                        aux = name.toLowerCase();
-                        if(aux.equals(Symbol.IF.toString()) || aux.equals(Symbol.ELSE.toString()) || aux.equals(Symbol.WHILE.toString()) ||
-                                aux.equals(Symbol.PRINT.toString()) || aux.equals(Symbol.BREAK.toString()) || aux.equals(Symbol.DOUBLE.toString()) || 
-                                aux.equals(Symbol.CHAR.toString()) || aux.equals(Symbol.INTEGER.toString()))
-                            error("Invalid variable name");
 			return name;
 		}
 //		else {
