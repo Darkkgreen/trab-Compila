@@ -64,7 +64,7 @@ public class Factor extends Expr
 		this.numberDouble = numberDouble;
                 this.singleChar = singleChar;
                 
-                if(expr == null && function == null && number == null && numberDouble == null && singleChar == '\0')
+                if(lvalue != null && expr == null && function == null && number == null && numberDouble == null && singleChar == '\0')
                     this.solo = true;
                 else
                     this.solo = false;

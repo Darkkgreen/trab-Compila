@@ -396,7 +396,7 @@ public class Compiler {
 		aux = simExpr();
 		if (aux != null) {
 			if (aux.getSolo() == false && possible == false) {
-				//error("Expression not in the actual format");
+				error("Expression not in the actual format");
 			}
 			if ((lexer.token == Symbol.ASSIGN) || (lexer.token == Symbol.NEQ) || (lexer.token == Symbol.LT)
 				|| (lexer.token == Symbol.LE) || (lexer.token == Symbol.GT) || (lexer.token == Symbol.GE)) {
@@ -519,7 +519,9 @@ public class Compiler {
 					lexer.nextToken();
 					simpleChar = lexer.getCharValue();
 					return new Factor(lValue, null, null, null, null, simpleChar);
-				} else {
+				}else if(lexer.token == Symbol.READCHAR || lexer.token == Symbol.READDOUBLE || lexer.token == Symbol.READINTEGER){ 
+                                        error("Impossible to execute " + lexer.token + " operation in this scope");
+                                }else {
 					expr = expr(true);
 					if (expr != null) {
 						return new Factor(lValue, expr, null, null, null, simpleChar);
@@ -683,6 +685,11 @@ public class Compiler {
 					flag3 = false;
 				}
 			} while (!((flag1 == false) && (flag2 == false) && (flag3 == false)));
+                        aux = name.toLowerCase();
+                        if(aux.equals(Symbol.IF.toString()) || aux.equals(Symbol.ELSE.toString()) || aux.equals(Symbol.WHILE.toString()) ||
+                                aux.equals(Symbol.PRINT.toString()) || aux.equals(Symbol.BREAK.toString()) || aux.equals(Symbol.DOUBLE.toString()) || 
+                                aux.equals(Symbol.CHAR.toString()) || aux.equals(Symbol.INTEGER.toString()))
+                            error("Invalid variable name");
 			return name;
 		}
 //		else {
