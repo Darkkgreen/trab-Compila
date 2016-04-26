@@ -21,14 +21,6 @@ public class Compiladores {
 		//entrada = "void main () { /*ehuheue*/ int[] v_lokura321; //lokuraaaaa\nint[] v; int v_321; int v_; int v321; int [] vo____o;}";
 //		entrada = "void main(){readChar();}";
 		entrada = "void main() { \n"
-			+ "  int a; \n"
-			+ "  int g; \n"
-			+ "  int h; \n"
-			+ "  double j; \n"
-			+ "  double[] k; \n"
-			+ "  char n; \n"
-			+ "  a := g; \n"
-			+ "  g := h; \n"
                         + "  n := 'a'; \n"
 //			+ "  while (! a) { \n"
 //			+ "    if(g){ \n"

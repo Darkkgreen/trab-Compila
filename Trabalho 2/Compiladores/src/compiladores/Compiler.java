@@ -184,16 +184,16 @@ public class Compiler {
 
 		}
 
-                se = ifStmt();
-                enquanto = whileStmt();
-                parada = breakStmt();
-                imprime = printStmt();
-		
+		se = ifStmt();
+		enquanto = whileStmt();
+		parada = breakStmt();
+		imprime = printStmt();
+
 		// sem essa verificação, o programa podera entrar em loop
-		if((se != null)||(enquanto != null)||(parada == true)||(imprime != null)||(aux != null)){
+		if ((se != null) || (enquanto != null) || (parada == true) || (imprime != null) || (aux != null)) {
 			stmt = new Stmt(se, enquanto, parada, imprime, aux);
 		}
-		
+
 		return stmt;
 	}
 
@@ -217,25 +217,25 @@ public class Compiler {
 							while ((auxiliarStmt = stmt()) != null) {
 								principal.add(auxiliarStmt);
 								auxiliarStmt = null;
-                                                        }
-								if (lexer.token == Symbol.RIGHTBRACKET) {
+							}
+							if (lexer.token == Symbol.RIGHTBRACKET) {
+								lexer.nextToken();
+								if (lexer.token == Symbol.ELSE) { //aqui entra a parte opcional
 									lexer.nextToken();
-									if (lexer.token == Symbol.ELSE) { //aqui entra a parte opcional
+									if (lexer.token == Symbol.LEFTBRACKET) {
 										lexer.nextToken();
-										if (lexer.token == Symbol.LEFTBRACKET){
-											lexer.nextToken();
-											while ((auxiliarStmt = stmt()) != null) {
-												opcional.add(auxiliarStmt);
-												auxiliarStmt = null;
-                                                                                        }
-												if (lexer.token == Symbol.RIGHTBRACKET) {
-													lexer.nextToken();
-												}
-										} else {
-											error("ifStmt: expected [");
+										while ((auxiliarStmt = stmt()) != null) {
+											opcional.add(auxiliarStmt);
+											auxiliarStmt = null;
 										}
+										if (lexer.token == Symbol.RIGHTBRACKET) {
+											lexer.nextToken();
+										}
+									} else {
+										error("ifStmt: expected [");
 									}
 								}
+							}
 							ifstmt = new IfStmt(auxiliarExp, principal, opcional);
 							return ifstmt;
 						} else {
@@ -469,22 +469,22 @@ public class Compiler {
 		LValue lValue = null;
 		lValue = lValue();
 		CompositeExpr expr = null;
-                char simpleChar = '\0';
-                if (lValue != null) {
+		char simpleChar = '\0';
+		if (lValue != null) {
 			if (lexer.token == Symbol.DEFINITION) {
 				lexer.nextToken();
-				if(lexer.token == Symbol.QUOTE){
-                                    simpleChar = lexer.getCharValue();
-                                    System.out.println("SO EU O TIRIRIC"+simpleChar);
-                                    return new Factor(lValue, null, null, null, null, simpleChar);
-                                }else{
-                                    expr = expr();
-                                    if (expr != null) {
-                                            return new Factor(lValue, expr, null, null, null, simpleChar);
-                                    } else{
-                                            error("factor: There is no expression");
-                                    }
-                                }
+				if (lexer.token == Symbol.QUOTE) {
+					lexer.nextToken();
+					simpleChar = lexer.getCharValue();
+					return new Factor(lValue, null, null, null, null, simpleChar);
+				} else {
+					expr = expr();
+					if (expr != null) {
+						return new Factor(lValue, expr, null, null, null, simpleChar);
+					} else {
+						error("factor: There is no expression");
+					}
+				}
 			}
 			return new Factor(lValue, null, null, null, null, '\0');
 		} else if ((lexer.token == Symbol.NUMBER) || (lexer.token == Symbol.DOUBLE)) {
