@@ -59,7 +59,8 @@ public enum Symbol {
       LEFTBRACKET("{"),
       RIGHTBRACKET("}"),
       VOID("void"),
-      MAIN("main");
+      MAIN("main"),
+      QUOTE("'");
 
       Symbol(String name) {
           this.name = name;

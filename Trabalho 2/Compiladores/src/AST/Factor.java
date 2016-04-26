@@ -15,7 +15,16 @@ public class Factor extends Expr
 	private Expr expr;	
 	private String function;
 	private String numberDouble;
+        private char singleChar;
 
+        public char getSingleChar() {
+            return singleChar;
+        }
+
+        public void setSingleChar(char singleChar) {
+            this.singleChar = singleChar;
+        }
+        
 	public String getNumberDouble() {
 		return numberDouble;
 	}
@@ -33,12 +42,13 @@ public class Factor extends Expr
 	}
 	private Integer number;
 
-	public Factor(LValue lvalue, Expr expr, String function, Integer number, String numberDouble) {
+	public Factor(LValue lvalue, Expr expr, String function, Integer number, String numberDouble, char singleChar) {
 		this.lvalue = lvalue;
 		this.expr = expr;
 		this.function = function;
 		this.number = number;
 		this.numberDouble = numberDouble;
+                this.singleChar = singleChar;
 	}
 	
 	public LValue getLvalue() {

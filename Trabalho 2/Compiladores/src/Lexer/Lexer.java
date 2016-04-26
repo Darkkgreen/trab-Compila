@@ -95,14 +95,15 @@ public class Lexer {
 				ident.append(input[tokenPos]);
 				tokenPos++;
 			}
-			stringValue = ident.toString();
-			// if identStr is in the list of keywords, it is a keyword !
-			Symbol value = keywordsTable.get(stringValue);
-			if (value == null) {
-				token = Symbol.IDENT;
-			} else {
-				token = value;
-			}
+                        
+                        stringValue = ident.toString();
+                        // if identStr is in the list of keywords, it is a keyword !
+                        Symbol value = keywordsTable.get(stringValue);
+                        if (value == null) {
+                                token = Symbol.IDENT;
+                        } else {
+                                token = value;
+                        }
 			//if (Character.isDigit(input[tokenPos])) {
 			//	System.out.println("Word followed by a number");
 			//}
@@ -252,14 +253,23 @@ public class Lexer {
 					}
 					break;
 				case '\'':
-					token = Symbol.CHARACTER;
-					charValue = input[tokenPos];
-					tokenPos++;
-					if (input[tokenPos] != '\'') {
-						System.out.println("Illegal literal character" + input[tokenPos - 1]);
-					}
-					tokenPos++;
-					break;
+//                                        tokenPos++;
+//                                        if(input[tokenPos] != '\''){
+//                                            System.out.println("Invalid Character");
+//                                            // aqui falar a vdd tem q sair do programa
+//                                        }else{
+//                                            charValue = input[tokenPos];
+//                                            tokenPos++;
+//                                            token = Symbol.QUOTE;
+//                                            tokenPos++;
+//                                            if(input[tokenPos] != '\''){
+//                                                // tme q sair od programa 
+//                                                System.out.println("DEU PAU");
+//                                            }else
+//                                                tokenPos++;
+//                                        }
+//
+//                                        break;
 				default:
 					System.out.println("Invalid Character: '" + ch + "'");
 				//error.signal("Invalid Character: '" + ch + "'");

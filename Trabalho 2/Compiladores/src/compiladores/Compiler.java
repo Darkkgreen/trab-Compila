@@ -179,13 +179,15 @@ public class Compiler {
 			if (lexer.token == Symbol.SEMICOLON) {
 				lexer.nextToken();
 			} else if (aux != null) {
-				error("stmt: expected Semicolon \";\"");
+				error("stmt: expected \";\"");
 			}
 
 		}
-		if ((lexer.token == Symbol.SEMICOLON) || (se = ifStmt()) != null || (enquanto = whileStmt()) != null || (parada = breakStmt()) || (imprime = printStmt()) != null) {
 
-		}
+                se = ifStmt();
+                enquanto = whileStmt();
+                parada = breakStmt();
+                imprime = printStmt();
 		
 		// sem essa verificação, o programa podera entrar em loop
 		if((se != null)||(enquanto != null)||(parada == true)||(imprime != null)||(aux != null)){
@@ -215,25 +217,25 @@ public class Compiler {
 							while ((auxiliarStmt = stmt()) != null) {
 								principal.add(auxiliarStmt);
 								auxiliarStmt = null;
+                                                        }
 								if (lexer.token == Symbol.RIGHTBRACKET) {
 									lexer.nextToken();
 									if (lexer.token == Symbol.ELSE) { //aqui entra a parte opcional
 										lexer.nextToken();
-										if (lexer.token == Symbol.LEFTBRACKET) {
+										if (lexer.token == Symbol.LEFTBRACKET){
 											lexer.nextToken();
 											while ((auxiliarStmt = stmt()) != null) {
 												opcional.add(auxiliarStmt);
 												auxiliarStmt = null;
+                                                                                        }
 												if (lexer.token == Symbol.RIGHTBRACKET) {
 													lexer.nextToken();
 												}
-											}
 										} else {
 											error("ifStmt: expected [");
 										}
 									}
 								}
-							}
 							ifstmt = new IfStmt(auxiliarExp, principal, opcional);
 							return ifstmt;
 						} else {
@@ -467,23 +469,30 @@ public class Compiler {
 		LValue lValue = null;
 		lValue = lValue();
 		CompositeExpr expr = null;
-		if (lValue != null) {
+                char simpleChar = '\0';
+                if (lValue != null) {
 			if (lexer.token == Symbol.DEFINITION) {
 				lexer.nextToken();
-				expr = expr();
-				if (expr != null) {
-					return new Factor(lValue, expr, null, null, null);
-				} else {
-					error("factor: There is no expression");
-				}
+				if(lexer.token == Symbol.QUOTE){
+                                    simpleChar = lexer.getCharValue();
+                                    System.out.println("SO EU O TIRIRIC"+simpleChar);
+                                    return new Factor(lValue, null, null, null, null, simpleChar);
+                                }else{
+                                    expr = expr();
+                                    if (expr != null) {
+                                            return new Factor(lValue, expr, null, null, null, simpleChar);
+                                    } else{
+                                            error("factor: There is no expression");
+                                    }
+                                }
 			}
-			return new Factor(lValue, null, null, null, null);
+			return new Factor(lValue, null, null, null, null, '\0');
 		} else if ((lexer.token == Symbol.NUMBER) || (lexer.token == Symbol.DOUBLE)) {
 			Factor aux = null;
 			if (lexer.token == Symbol.NUMBER) {
-				aux = new Factor(null, null, null, lexer.getNumberValue(), null);
+				aux = new Factor(null, null, null, lexer.getNumberValue(), null, simpleChar);
 			} else {
-				aux = new Factor(null, null, null, null, lexer.getStringValue());
+				aux = new Factor(null, null, null, null, lexer.getStringValue(), simpleChar);
 			}
 			lexer.nextToken();
 			return aux;
@@ -494,7 +503,7 @@ public class Compiler {
 			if (expr != null) {
 				if (lexer.token == Symbol.RIGHTPAR) {
 					lexer.nextToken();
-					return new Factor(null, expr, null, null, null);
+					return new Factor(null, expr, null, null, null, simpleChar);
 				}
 			}
 
@@ -504,7 +513,7 @@ public class Compiler {
 				lexer.nextToken();
 				if (lexer.token == Symbol.RIGHTPAR) {
 					lexer.nextToken();
-					return new Factor(lValue, null, "readInteger()".toString(), null, null);
+					return new Factor(lValue, null, "readInteger()".toString(), null, null, simpleChar);
 				}
 			}
 
@@ -514,7 +523,7 @@ public class Compiler {
 				lexer.nextToken();
 				if (lexer.token == Symbol.RIGHTPAR) {
 					lexer.nextToken();
-					return new Factor(lValue, null, "readDouble()".toString(), null, null);
+					return new Factor(lValue, null, "readDouble()".toString(), null, null, simpleChar);
 				}
 			}
 
@@ -524,7 +533,7 @@ public class Compiler {
 				lexer.nextToken();
 				if (lexer.token == Symbol.RIGHTPAR) {
 					lexer.nextToken();
-					return new Factor(lValue, null, "readChar()".toString(), null, null);
+					return new Factor(lValue, null, "readChar()".toString(), null, null, simpleChar);
 				}
 			}
 
