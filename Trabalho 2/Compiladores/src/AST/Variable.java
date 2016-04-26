@@ -14,9 +14,6 @@ public class Variable extends Expr{
 	}
 
 	public void genC(){
-		if(type.isArray() == false)
-			System.out.println(type.getType() +" "+name+";");
-		else
-			System.out.println(type.getType() +"[] "+name+";");
+		
 	}
 }

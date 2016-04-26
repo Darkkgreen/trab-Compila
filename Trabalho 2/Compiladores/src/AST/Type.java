@@ -13,6 +13,15 @@ import Lexer.Symbol;
 public class Type {
 	private boolean array;
 	private Symbol type;
+        private Integer value;
+
+        public Integer getValue() {
+            return value;
+        }
+
+        public void setValue(Integer value) {
+            this.value = value;
+        }
 
 	public boolean isArray() {
 		return array;
@@ -30,8 +39,9 @@ public class Type {
 		this.type = type;
 	}
 
-	public Type(Symbol type, boolean array){
+	public Type(Symbol type, boolean array, Integer aux){
 		this.array = array;
 		this.type = type;
+                this.value = aux;
 	}
 }

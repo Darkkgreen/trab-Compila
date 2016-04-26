@@ -65,10 +65,6 @@ public class Stmt  extends Expr{
     }
     
     public void genC(){
-	    if(expressao != null){
-		    expressao.genC();
-		    System.out.println(';');
-		    
-	    }
+
     }
 }
