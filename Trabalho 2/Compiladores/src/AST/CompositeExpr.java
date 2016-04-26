@@ -19,6 +19,10 @@ public class CompositeExpr extends Expr{
 		this.relOp = relOp;
 		this.expr = expr;
 	}
+	
+	public boolean onlySimExpr(){
+		return (expr == null)&&(simexpr != null) ? true: false;
+	}
 
 	public SimExpr getSimexpr() {
 		return simexpr;

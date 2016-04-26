@@ -16,7 +16,8 @@ public class Factor extends Expr
 	private String function;
 	private String numberDouble;
         private char singleChar;
-
+	private Integer number;
+	
         public char getSingleChar() {
             return singleChar;
         }
@@ -24,6 +25,14 @@ public class Factor extends Expr
         public void setSingleChar(char singleChar) {
             this.singleChar = singleChar;
         }
+	
+	public boolean isLValueExist(){
+		return lvalue == null ? false : true;
+	}
+	
+	public boolean isOnlyNumber(){
+		return (lvalue == null)&&(expr == null)&&(function == null)&&(singleChar == '\0')&&(numberDouble == null)&&(number != null) ? true : false;
+	}
         
 	public String getNumberDouble() {
 		return numberDouble;
@@ -40,7 +49,7 @@ public class Factor extends Expr
 	public void setNumber(Integer number) {
 		this.number = number;
 	}
-	private Integer number;
+	
 
 	public Factor(LValue lvalue, Expr expr, String function, Integer number, String numberDouble, char singleChar) {
 		this.lvalue = lvalue;

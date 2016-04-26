@@ -26,7 +26,7 @@ public class Compiladores {
 //			+ "  while (! a) { \n"
 //			+ "    if(g){ \n"
 //			+ "      a := g; \n"
-			+ "      int a; if (a[2]==3){ a:=3}} \n"
+			+ "      int [5] a;  a[-5 +5 -11111];\n"
 //			+ "      g := a; \n"
 //			+ "    }else{ \n"
 //			+ "      if (k[n]) { \n"

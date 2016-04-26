@@ -19,6 +19,10 @@ public class Term extends Expr{
 	public Factor getFactor() {
 		return factor;
 	}
+	
+	public boolean onlyOneFactor(){
+		return (factorlist == null)&&(factor != null) ? true: false;
+	}
 
 	public ArrayList<String> getMuloplist() {
 		return muloplist;

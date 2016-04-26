@@ -8,6 +8,10 @@ public class SimExpr extends Expr {
 	private Term term;
 	private ArrayList<String> addop;
 	private ArrayList<Term> termList;
+	
+	public boolean onlyOneTerm(){
+		return ((termList == null)&& (term != null)) ? true : false;
+	}
 
 	public void genC(){
 		if(unary != null){

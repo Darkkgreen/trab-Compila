@@ -158,7 +158,7 @@ public class Compiler {
 					lexer.nextToken();
 					if (lexer.token == Symbol.RIGHTSQUARE) {
 						type.setArray(true);
-						type.setValue(aux);
+						type.setSize(aux);
 						lexer.nextToken();
 						return type;
 					} else {
@@ -567,7 +567,7 @@ public class Compiler {
 	// LValue ::= Ident | Ident '[' Expr ']'
 	private LValue lValue() {
 		String ident = null;
-		Expr expr = null;
+		CompositeExpr expr = null;
 		// verificar se a variável existe
 
 		ident = ident();
@@ -591,13 +591,36 @@ public class Compiler {
 					lexer.nextToken();
 					expr = expr();
 					if (expr != null) {
+						// M O N S T R O
+						// tem que verificar se o tamanho do vetor é compatível....
+						if (expr.onlySimExpr() == true) {
+							if (expr.getSimexpr().onlyOneTerm() == true) {
+								if (expr.getSimexpr().getTerm().onlyOneFactor() == true) {
+									if (expr.getSimexpr().getTerm().getFactor().isOnlyNumber() == true) {
+										if (expr.getSimexpr().getUnary() != null) {
+											// então é só número!
+											if (expr.getSimexpr().getUnary().equals("-") == true) {
+												error("lValue : there is no negative index");
+											}
+										}
+
+										// ok não é número negativo, verifico o tamanho
+										if (expr.getSimexpr().getTerm().getFactor().getNumber() >= aux.getType().getSize()) {											error("lValue : the index surpass the array's size");
+										}
+
+									}
+								}
+							}
+						}
+
 						if (lexer.token == Symbol.RIGHTSQUARE) {
 							lexer.nextToken();
 							return new LValue(ident, expr);
 						}
 					}
-				}else
-					error("Variable \""+aux.getName()+"\" is not a array");
+				} else {
+					error("Variable \"" + aux.getName() + "\" is not a array");
+				}
 
 			} else {
 				return new LValue(ident, null);
