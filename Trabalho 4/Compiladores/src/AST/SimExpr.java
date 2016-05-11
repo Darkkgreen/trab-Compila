@@ -16,7 +16,19 @@ public class SimExpr extends Expr {
         private boolean solo;
 
 	public void genC(){
-
+                Integer contador = 0;
+                Term aux = null;
+		System.out.print(unary);
+                term.genC();
+                
+                if(!addop.isEmpty()){
+                    for(String s: addop){
+                        System.out.print(s);
+                        aux = termList.get(contador);
+                        aux.genC();
+                        contador++;
+                    }
+                }
 	}
 
         public boolean getSolo(){

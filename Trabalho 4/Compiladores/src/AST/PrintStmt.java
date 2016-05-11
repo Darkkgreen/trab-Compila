@@ -26,5 +26,19 @@ public class PrintStmt {
         this.lista = lista;
     }
     
+     public void genC(){
+        System.out.println("printf(");
+        if(!lista.isEmpty()){
+            if(lista.size() == 1){
+                lista.get(0).genC();
+            }else{
+                for(Expr e:lista){
+                    e.genC();
+                    System.out.print(", ");
+                }
+            }
+        }
+        System.out.println(");");
+    }
     
 }

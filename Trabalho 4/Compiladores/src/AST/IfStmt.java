@@ -45,4 +45,25 @@ public class IfStmt {
     public void setOpcional(ArrayList<Stmt> opcional) {
         this.opcional = opcional;
     }
+    
+    public void genC(){
+        System.out.print("if(");
+        expr.genC();
+        System.out.println("){");
+        
+        for(Stmt princ:stmt){
+            princ.genC();
+            System.out.println();
+        }
+        System.out.print("}");
+        
+        if(!opcional.isEmpty()){
+            System.out.print("else{");
+            for(Stmt op:opcional){
+                op.genC();
+                System.out.println();
+            }
+            System.out.println("}");
+        }
+    }
 }

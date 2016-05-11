@@ -51,9 +51,19 @@ public class Term extends Expr{
 	}
 
 	public void genC(){
-		factor.genC();
-		
-	}
+            Integer contador = 0;
+            Factor aux = null;
+            factor.genC();
+            
+            if(!muloplist.isEmpty()){
+                for(String s: muloplist){
+                    System.out.print(s);
+                    aux = factorlist.get(contador);
+                    aux.genC();
+                    contador++;
+                }
+            }
+        }
 	
 	private Symbol type;
 

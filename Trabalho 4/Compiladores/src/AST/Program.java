@@ -12,17 +12,20 @@ public class Program {
 		this.listS = listS;
 	}
 
-	public void genC() {
-		System.out.println("void main()");
-		for (Variable v	: listV){
-			System.out.print("\t");
-			v.genC();
+	public void genC(){
+		System.out.println("void main () {");
+
+		for(Variable v:listV){
+                    v.genC();
+                    System.out.println();
 		}
-		for(Stmt s : listS){
-			System.out.print("\t");
-			s.genC();
-		}
-		
+
+		for(Stmt s:listS){
+                    s.genC();
+                    System.out.println();
+                }
+                
+		System.out.println("\n }");
 	}
 
 }

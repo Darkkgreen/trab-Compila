@@ -65,6 +65,16 @@ public class Stmt  extends Expr{
     }
     
     public void genC(){
-
+        if(this.se != null){
+            se.genC();
+        }else if(this.enquanto != null){
+            enquanto.genC();
+        }else if(this.parada != false){
+            System.out.println("break;");
+        }else if(this.escrever != null){
+            escrever.genC();
+        }else if(this.expressao != null){
+            expressao.genC();
+        }
     }
 }

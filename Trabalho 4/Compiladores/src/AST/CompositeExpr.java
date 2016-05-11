@@ -40,9 +40,11 @@ public class CompositeExpr extends Expr{
 	}
 
 	public void genC() {
-		if(simexpr != null){
-			simexpr.genC();
-		}
+		simexpr.genC();
+                if(relOp != null && expr != null){
+                    System.out.print(" "+ relOp +" ");
+                    expr.genC();
+                }
 	}
 	
 	private Symbol type;

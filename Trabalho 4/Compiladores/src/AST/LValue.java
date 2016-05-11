@@ -12,7 +12,6 @@ package AST;
 public class LValue extends Expr{
 
 	String ident;
-	String exprIdent;
 	Expr expr;
 	Type type;
 	
@@ -35,7 +34,13 @@ public class LValue extends Expr{
 	}
 	
 	public void genC(){
-
+            System.out.print(ident);
+            if(expr != null)
+            {
+                System.out.print("[");
+                expr.genC();
+                System.out.print("]");
+            }
 	}
 
 }
