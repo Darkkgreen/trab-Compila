@@ -8,7 +8,8 @@ public class NumberExpr extends Expr {
 		this.num = n;
 	}
 
-	public void genC(){
-		System.out.print(num);
+	public StringBuffer genC(){
+                StringBuffer aux;
+		return aux = new StringBuffer(num);
 	}
 }

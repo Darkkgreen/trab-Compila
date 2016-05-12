@@ -8,7 +8,8 @@ public class VariableExpr extends Expr {
 		this.letter = n;
 	}
 
-	public void genC(){
-		System.out.print(letter);
+	public StringBuffer genC(){
+                StringBuffer aux;
+		return aux = new StringBuffer(letter);
 	}
 }

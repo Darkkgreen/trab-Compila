@@ -127,5 +127,7 @@ public class Factor extends Expr
 		}else if(function != null){
 			aux.append(function);
 		}
+                
+                return aux;
 	}
 }

@@ -33,14 +33,20 @@ public class LValue extends Expr{
 		return type;
 	}
 	
-	public void genC(){
-            System.out.print(ident);
+	public StringBuffer genC(){
+            StringBuffer aux = new StringBuffer();
+            StringBuffer exp;
+            
+            aux.append(ident);
             if(expr != null)
             {
-                System.out.print("[");
-                expr.genC();
-                System.out.print("]");
+                aux.append("[");
+                exp = expr.genC();
+                aux.append(exp);
+                aux.append("]");
             }
+            
+            return aux;
 	}
 
 }
