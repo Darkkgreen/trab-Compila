@@ -64,17 +64,21 @@ public class Stmt  extends Expr{
         this.expressao = expressao;
     }
     
-    public void genC(){
+    public StringBuffer genC(){
+        StringBuffer aux = new StringBuffer();
+        
         if(this.se != null){
-            se.genC();
+            aux = se.genC();
         }else if(this.enquanto != null){
-            enquanto.genC();
+            aux = enquanto.genC();
         }else if(this.parada != false){
-            System.out.println("break;");
+            aux.append("break;");
         }else if(this.escrever != null){
-            escrever.genC();
+            aux =  escrever.genC();
         }else if(this.expressao != null){
-            expressao.genC();
+            aux = expressao.genC();
         }
+        
+        return aux;
     }
 }

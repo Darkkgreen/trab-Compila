@@ -26,19 +26,27 @@ public class PrintStmt {
         this.lista = lista;
     }
     
-     public void genC(){
-        System.out.println("printf(");
+     public StringBuffer genC(){
+        StringBuffer aux = new StringBuffer("printf(");
+        StringBuffer exp;
+        
         if(!lista.isEmpty()){
             if(lista.size() == 1){
-                lista.get(0).genC();
+                exp = lista.get(0).genC();
+                aux.append(exp);
             }else{
                 for(Expr e:lista){
-                    e.genC();
-                    System.out.print(", ");
+                    exp = e.genC();
+                    aux.append(exp);
+                    if(lista.size() != (lista.lastIndexOf(e) - 1)){
+                        aux.append(", ");
+                    }
                 }
             }
         }
-        System.out.println(");");
+        aux.append(");");
+        
+        return aux;
     }
     
 }

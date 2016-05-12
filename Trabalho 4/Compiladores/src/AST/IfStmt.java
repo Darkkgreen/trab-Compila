@@ -46,24 +46,33 @@ public class IfStmt {
         this.opcional = opcional;
     }
     
-    public void genC(){
-        System.out.print("if(");
-        expr.genC();
-        System.out.println("){");
+    public StringBuffer genC(){
+        StringBuffer aux = new StringBuffer("if(");
+        StringBuffer exp;
+        StringBuffer st;
+        StringBuffer sto;
+        
+        exp = expr.genC();
+        aux.append(exp);
+        aux.append("){\n");
         
         for(Stmt princ:stmt){
-            princ.genC();
-            System.out.println();
+            st = princ.genC();
+            aux.append(st);
+            aux.append("\n");
         }
-        System.out.print("}");
+        aux.append("}");
         
         if(!opcional.isEmpty()){
-            System.out.print("else{");
+            aux.append("else{");
             for(Stmt op:opcional){
-                op.genC();
-                System.out.println();
+                sto = op.genC();
+                aux.append(sto);
+                aux.append("\n");
             }
-            System.out.println("}");
+            aux.append("}\n");
         }
+        
+        return aux;
     }
 }

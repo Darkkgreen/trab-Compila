@@ -101,23 +101,31 @@ public class Factor extends Expr
 		return function;
 	}
 
-	public void genC(){
+	public StringBuffer genC(){
+                StringBuffer aux = new StringBuffer();
+                StringBuffer lvalu;
+                StringBuffer exp;
+                
 		if((lvalue != null)&&(expr != null)){
-			lvalue.genC();
-			System.out.print(" := ");
-			expr.genC();
+			lvalu = lvalue.genC();
+                        aux.append(lvalu);
+			aux.append(" := ");
+			exp = expr.genC();
+                        aux.append(exp);
 		}else if(lvalue != null){
-			lvalue.genC();
+			lvalu = lvalue.genC();
+                        aux.append(lvalu);
 		}else if(number != null){
-			System.out.print(number);
+			aux.append(number);
 		}else if(numberDouble != null){
-			System.out.print(numberDouble);
+			aux.append(numberDouble);
 		}else if(expr != null){
-			System.out.print('(');
-			expr.genC();
-			System.out.print(')');
+			aux.append('(');
+			exp = expr.genC();
+                        aux.append(exp);
+			aux.append(')');
 		}else if(function != null){
-			System.out.print(function);
+			aux.append(function);
 		}
 	}
 }

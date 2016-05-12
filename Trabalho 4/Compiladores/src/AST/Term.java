@@ -50,19 +50,26 @@ public class Term extends Expr{
                     this.solo = false;
 	}
 
-	public void genC(){
+	public StringBuffer genC(){
+            StringBuffer aux = new StringBuffer();
+            StringBuffer fact;
             Integer contador = 0;
-            Factor aux = null;
-            factor.genC();
+            Factor fac = null;
+            
+            fact = factor.genC();
+            aux.append(fact);
             
             if(!muloplist.isEmpty()){
                 for(String s: muloplist){
-                    System.out.print(s);
-                    aux = factorlist.get(contador);
-                    aux.genC();
+                    aux.append(" " + s);
+                    fac = factorlist.get(contador);
+                    fact = fac.genC();
+                    aux.append(" " + fact);
                     contador++;
                 }
             }
+            
+            return aux;
         }
 	
 	private Symbol type;

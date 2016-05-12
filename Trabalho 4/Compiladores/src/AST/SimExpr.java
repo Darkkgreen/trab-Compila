@@ -15,20 +15,28 @@ public class SimExpr extends Expr {
 	}
         private boolean solo;
 
-	public void genC(){
+	public StringBuffer genC(){
+                StringBuffer aux = new StringBuffer();
+                StringBuffer ter;
                 Integer contador = 0;
-                Term aux = null;
-		System.out.print(unary);
-                term.genC();
+                Term termo = null;
+                
+                if(unary != null)
+                    aux.append(unary);
+                ter = term.genC();
+                aux.append(ter);
                 
                 if(!addop.isEmpty()){
                     for(String s: addop){
-                        System.out.print(s);
-                        aux = termList.get(contador);
-                        aux.genC();
+                        aux.append(" " + s);
+                        termo = termList.get(contador);
+                        ter = termo.genC();
+                        aux.append(" " + ter);
                         contador++;
                     }
                 }
+                
+                return aux;
 	}
 
         public boolean getSolo(){

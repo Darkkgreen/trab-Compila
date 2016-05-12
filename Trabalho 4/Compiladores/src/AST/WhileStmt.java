@@ -36,16 +36,24 @@ public class WhileStmt {
         this.expr = expr;
     }
     
-    public void genC(){
-        System.out.print("while(");
-        expr.genC();
-        System.out.println("){");
+    public StringBuffer genC(){
+        StringBuffer aux =  new StringBuffer("while(");
+        StringBuffer exp;
+        StringBuffer st;
+        
+        exp = expr.genC();
+        aux.append(exp);
+        aux.append("){\n");
         
         for(Stmt s:stmt){
-            s.genC();
+            st = s.genC();
+            aux.append(st);
+            aux.append("\n");
         }
         
-        System.out.println("}");
+        aux.append("}\n");
+        
+        return aux;
     }
     
 }

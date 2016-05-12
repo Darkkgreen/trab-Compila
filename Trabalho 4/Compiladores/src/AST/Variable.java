@@ -17,10 +17,16 @@ public class Variable extends Expr{
 		return name;
 	}
 
-	public void genC(){
-		type.genC();
-		System.out.print(" ");
-		System.out.print(name);
-		System.out.print(";");
+	public StringBuffer genC(){
+                StringBuffer aux = new StringBuffer();
+                StringBuffer tipo;
+                
+		tipo = type.genC();
+                aux.append(tipo);
+                aux.append(" ");
+		aux.append(name);
+		aux.append(";");
+                
+                return aux;
 	}
 }

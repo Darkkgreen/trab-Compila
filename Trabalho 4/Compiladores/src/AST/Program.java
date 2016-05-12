@@ -12,20 +12,26 @@ public class Program {
 		this.listS = listS;
 	}
 
-	public void genC(){
-		System.out.println("void main () {");
+	public StringBuffer genC(){
+                StringBuffer aux = new StringBuffer("#include <stdio.h>\n#include <stdlib.h>\n\nvoid main(){");
+                StringBuffer variable;
+                StringBuffer stmt;
 
 		for(Variable v:listV){
-                    v.genC();
-                    System.out.println();
+                    variable = v.genC();
+                    aux.append(variable);
+                    aux.append("\n");
 		}
 
 		for(Stmt s:listS){
-                    s.genC();
-                    System.out.println();
+                    stmt = s.genC();
+                    aux.append(stmt);
+                    aux.append("\n");
                 }
                 
-		System.out.println("\n }");
+		aux.append("}");
+                
+                return aux;
 	}
 
 }

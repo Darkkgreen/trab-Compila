@@ -45,10 +45,13 @@ public class Type extends Expr{
                 this.size = aux;
 	}
 	
-	public void genC(){
-		System.out.print(type.toString());
+	public StringBuffer genC(){
+                StringBuffer aux = new StringBuffer(type.toString());
+                
 		if(this.isArray() == true){
-			System.out.print("["+this.getSize()+"]");
+			aux.append("["+this.getSize()+"]");
 		}
+                
+                return aux;
 	}
 }

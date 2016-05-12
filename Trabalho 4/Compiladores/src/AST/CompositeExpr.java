@@ -39,12 +39,21 @@ public class CompositeExpr extends Expr{
 		return expr;
 	}
 
-	public void genC() {
-		simexpr.genC();
+	public StringBuffer genC() {
+                StringBuffer aux = new StringBuffer();
+                StringBuffer simp;
+                StringBuffer exp;
+                
+		simp = simexpr.genC();
+                aux.append(simp);
+                
                 if(relOp != null && expr != null){
-                    System.out.print(" "+ relOp +" ");
-                    expr.genC();
+                    aux.append(" "+ relOp +" ");
+                    exp = expr.genC();
+                    aux.append(exp);
                 }
+                
+                return aux;
 	}
 	
 	private Symbol type;
