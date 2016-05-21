@@ -206,20 +206,25 @@ public class Compiler {
 			} else if (aux != null) {
 				error("stmt: expected \";\"");
 			}
+			return new Stmt(null,null,false,null,aux);
 		}
                 soloing = false;
 
 		se = ifStmt();
+		if(se != null)
+			return new Stmt(se,null,false,null,null);
 		enquanto = whileStmt();
+		if(enquanto != null)
+			return new Stmt(null,enquanto,false,null,null);
+
 		parada = breakStmt();
+		if(parada == true)
+			return new Stmt(null,null,true,null,null);
 		imprime = printStmt();
+		if(imprime != null)
+			return new Stmt(null,null,false,imprime,null);
 
-		// sem essa verificação, o programa podera entrar em loop
-		if ((se != null) || (enquanto != null) || (parada == true) || (imprime != null) || (aux != null)) {
-			stmt = new Stmt(se, enquanto, parada, imprime, aux);
-		}
-
-		return stmt;
+		return null;
 	}
 
 	//IfStmt ::= 'f' '(' Expr ')' '{' { Stmt } '}' [ 'e' '{' { Stmt } '}' ]
@@ -405,9 +410,9 @@ public class Compiler {
 		if (aux != null) {
 			auxType = aux.getType();
 //			System.out.println(auxType+"COMPOSITE");
-			if (aux.getSolo() == false && possible == false) {
-				error("Expression not in the actual format");
-			}
+			//if (aux.getSolo() == false && possible == false) {
+			//	error("Expression not in the actual format");
+			//}
 			if ((lexer.token == Symbol.ASSIGN) || (lexer.token == Symbol.NEQ) || (lexer.token == Symbol.LT)
 				|| (lexer.token == Symbol.LE) || (lexer.token == Symbol.GT) || (lexer.token == Symbol.GE)) {
 				String mulop = aux.getLastMulOp();
@@ -428,9 +433,9 @@ public class Compiler {
 					error("Invalid operand for comparison because was expected before the operand && or ||");
 				}
 			}
-                        if(soloing == true){
-                            error("Expression not in the actual format");
-                        }
+                        //if(soloing == true){
+                        //    error("Expression not in the actual format");
+                        //}
 			return new CompositeExpr(aux, relop, expr, auxType);
 		} else {
 			return null;
@@ -553,6 +558,7 @@ public class Compiler {
 		LValue lValue = null;
 		lValue = lValue();
 		CompositeExpr expr = null;
+		String doublee = null;
 		char simpleChar = '\0';
 		if (lValue != null) {
 			if (lexer.token == Symbol.DEFINITION) {
@@ -567,6 +573,7 @@ public class Compiler {
 							error("Factor : you cannot set in a integer a char value");
 						}
 					} else if (lValue.getType().getType() == Symbol.CHAR) {
+						simpleChar = lexer.getCharValue();
 //						System.out.println(expr.getType());
 						if ((expr.getType() == Symbol.DOUBLE) || (expr.getType() == Symbol.READDOUBLE)) {
 							error("Factor : you cannot set in a char a double value");
@@ -574,6 +581,7 @@ public class Compiler {
 							error("Factor : you cannot set in a char a integer value");
 						}
 					} else if (lValue.getType().getType() == Symbol.DOUBLE) {
+						doublee = lexer.getStringValue();
 //						System.out.println(expr.getType());
 						if ((expr.getType() == Symbol.INTEGER) || (expr.getType() == Symbol.READINTEGER)) {
 							error("Factor : you cannot set in a double a integer value");
@@ -586,7 +594,7 @@ public class Compiler {
 				}
 
 			}
-			return new Factor(lValue, null, null, null, null, '\0', lValue.getType().getType());
+			return new Factor(lValue, expr, null, null, doublee, simpleChar, lValue.getType().getType());
 		} else if ((lexer.token == Symbol.NUMBER) || (lexer.token == Symbol.DOUBLE)) {
 			Factor aux = null;
 			if (lexer.token == Symbol.NUMBER) {

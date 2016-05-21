@@ -63,16 +63,26 @@ public class Compiladores {
 			char[] input = entrada.toCharArray();
 			Compiler compiler = new Compiler();
 
+			Program program = null;
 			try {
-				Program program = compiler.compile(input, nome);
+				program = compiler.compile(input, nome);
 				System.out.println("OK!!!!");
 				System.out.println("==========================================================================");
-				//program.genC();
+
 			} catch (RuntimeException e) {
 				System.out.println();
 				System.out.println(e);
 				System.out.println("==========================================================================");
 			}
+			
+			if (program != null) {
+				try{
+				program.genC(nome.replace(".txt", ".c"),dir.replace("Testes", "arquivosC/"));
+				}catch (RuntimeException e){
+					System.out.println("Não foi possível gerar C, erro de "+ e);
+				}
+			}	
+				
 
 		}
 	}
