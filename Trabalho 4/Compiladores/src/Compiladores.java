@@ -3,7 +3,7 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package compiladores;
+
 
 import AST.Program;
 import java.io.BufferedReader;
@@ -53,7 +53,7 @@ public class Compiladores {
 		Compiler compiler = new Compiler();
 
 		Program program = compiler.compile(input, nome);
-		program.genC();
+		System.out.println(program.genC());
 	}
 
 }
