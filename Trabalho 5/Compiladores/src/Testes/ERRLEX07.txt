@@ -1,0 +1,10 @@
+/*
+	ERRLEX07: Comentario interminavel deve ser tratado
+	Linha: 10;
+*/
+
+void main () {
+
+	//Comentario valido
+	/*Comentario invalido, nao termina!
+}

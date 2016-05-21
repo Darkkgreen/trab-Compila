@@ -1,0 +1,18 @@
+#!/bin/bash
+
+# To compile this files, enter this command:
+# ./make
+# To clean all .class files, enter:
+# ./make clean
+
+if [ "$1" == "clean" ]
+then
+  rm *.class
+  cd AST
+  rm *.class
+  cd ../Lexer/
+  rm *.class
+  cd ..
+else
+  javac Compiladores.java
+fi

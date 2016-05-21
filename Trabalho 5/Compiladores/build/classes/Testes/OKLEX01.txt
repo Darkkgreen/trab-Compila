@@ -1,0 +1,13 @@
+/*
+	OKLEX01: Teste para aceitação de comentarios
+*/
+
+void main() {
+	
+	//Um comentario!
+
+}
+
+/*
+//Mais um comentario
+*/
