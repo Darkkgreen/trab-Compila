@@ -8,7 +8,7 @@ public class VariableExpr extends Expr {
 		this.letter = n;
 	}
 
-	public StringBuffer genC(){
+	public StringBuffer genC(Integer tabs){
                 StringBuffer aux;
 		return aux = new StringBuffer(letter);
 	}

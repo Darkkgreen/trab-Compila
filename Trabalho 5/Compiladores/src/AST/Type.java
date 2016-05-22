@@ -45,7 +45,7 @@ public class Type extends Expr{
                 this.size = aux;
 	}
 	
-	public StringBuffer genC(){
+	public StringBuffer genC(Integer tabs){
                 StringBuffer aux = new StringBuffer(type.toString());
                 
 		if(this.isArray() == true){

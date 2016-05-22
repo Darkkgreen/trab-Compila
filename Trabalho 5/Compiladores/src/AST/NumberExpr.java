@@ -8,7 +8,7 @@ public class NumberExpr extends Expr {
 		this.num = n;
 	}
 
-	public StringBuffer genC(){
+	public StringBuffer genC(Integer tabs){
                 StringBuffer aux;
 		return aux = new StringBuffer(num);
 	}

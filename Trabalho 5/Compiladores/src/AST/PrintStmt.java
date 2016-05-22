@@ -26,17 +26,17 @@ public class PrintStmt {
         this.lista = lista;
     }
     
-     public StringBuffer genC(){
+     public StringBuffer genC(Integer tabs){
         StringBuffer aux = new StringBuffer("printf(");
         StringBuffer exp;
         
         if(!lista.isEmpty()){
             if(lista.size() == 1){
-                exp = lista.get(0).genC();
+                exp = lista.get(0).genC(tabs);
                 aux.append(exp);
             }else{
                 for(Expr e:lista){
-                    exp = e.genC();
+                    exp = e.genC(tabs);
                     aux.append(exp);
                     if(lista.size() != (lista.lastIndexOf(e) - 1)){
                         aux.append(", ");

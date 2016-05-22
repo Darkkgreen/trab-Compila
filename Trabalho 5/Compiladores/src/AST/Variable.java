@@ -17,11 +17,16 @@ public class Variable extends Expr{
 		return name;
 	}
 
-	public StringBuffer genC(){
+	public StringBuffer genC(Integer tabs){
                 StringBuffer aux = new StringBuffer();
+		
+		Integer i;
+		for(i=0;i<tabs;i++)
+			aux.append("\t");
+		
                 StringBuffer tipo;
                 
-		tipo = type.genC();
+		tipo = type.genC(tabs);
                 aux.append(tipo);
                 aux.append(" ");
 		aux.append(name);

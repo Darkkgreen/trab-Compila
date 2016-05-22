@@ -50,20 +50,20 @@ public class Term extends Expr{
                     this.solo = false;
 	}
 
-	public StringBuffer genC(){
+	public StringBuffer genC(Integer tabs){
             StringBuffer aux = new StringBuffer();
             StringBuffer fact;
             Integer contador = 0;
             Factor fac = null;
-            
-            fact = factor.genC();
+	    
+            fact = factor.genC(tabs);
             aux.append(fact);
             
-            if(!muloplist.isEmpty()){
+            if(muloplist != null && !muloplist.isEmpty()){
                 for(String s: muloplist){
                     aux.append(" " + s);
                     fac = factorlist.get(contador);
-                    fact = fac.genC();
+                    fact = fac.genC(tabs);
                     aux.append(" " + fact);
                     contador++;
                 }

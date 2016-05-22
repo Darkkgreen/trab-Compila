@@ -110,7 +110,6 @@ public class Lexer {
 			} else {
 				token = value;
 			}
-
 		} else if (Character.isDigit(ch)) {
 			// get a number
 			StringBuffer number = new StringBuffer();
@@ -135,11 +134,11 @@ public class Lexer {
 				try {
 					numberValue = Integer.valueOf(number.toString()).intValue();
 				} catch (NumberFormatException e) {
-					System.out.println("Number out of limits");
+					// System.out.println("Number out of limits");
 				}
 				stringValue = number.toString();
 				if (numberValue >= MaxValueInteger) {
-					System.out.println("Number out of limits");
+					// System.out.println("Number out of limits");
 				}
 			}
 

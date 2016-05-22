@@ -33,7 +33,7 @@ public class LValue extends Expr{
 		return type;
 	}
 	
-	public StringBuffer genC(){
+	public StringBuffer genC(Integer tabs){
             StringBuffer aux = new StringBuffer();
             StringBuffer exp;
             
@@ -41,7 +41,7 @@ public class LValue extends Expr{
             if(expr != null)
             {
                 aux.append("[");
-                exp = expr.genC();
+                exp = expr.genC(tabs);
                 aux.append(exp);
                 aux.append("]");
             }

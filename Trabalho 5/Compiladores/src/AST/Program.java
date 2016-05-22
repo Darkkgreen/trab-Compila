@@ -1,37 +1,46 @@
 package AST;
 
+import java.io.File;
+import java.io.FileWriter;
+import java.io.IOException;
 import java.util.ArrayList;
 
 public class Program {
+	
+	private FunctionDecl fdecl;
 
-	private ArrayList<Stmt> listS;
-	private ArrayList<Variable> listV; // esquerda
-
-	public Program(ArrayList<Variable> listV, ArrayList<Stmt> listS) {
-		this.listV = listV;
-		this.listS = listS;
+	public Program(FunctionDecl fdecl) {
+		this.fdecl = fdecl;
 	}
 
-	public StringBuffer genC(){
-                StringBuffer aux = new StringBuffer("#include <stdio.h>\n#include <stdlib.h>\n\nvoid main(){");
-                StringBuffer variable;
-                StringBuffer stmt;
+	public StringBuffer genC(String nome, String dir) throws IOException {
+		File file = new File(dir+nome);
+		file.getParentFile().mkdirs();
+		FileWriter writer = new FileWriter(file);
+		
+		StringBuffer aux = new StringBuffer("#include <stdio.h>\n#include <stdlib.h>\n\nvoid main(){\n");
+		StringBuffer variable;
+		StringBuffer stmt;
 
-		for(Variable v:listV){
-                    variable = v.genC();
-                    aux.append(variable);
-                    aux.append("\n");
-		}
+//		for (Variable v : listV) {
+//			variable = v.genC(1);
+			//aux.append(variable);
+			//aux.append("\n");
+		//}
+		aux.append("\n");
 
-		for(Stmt s:listS){
-                    stmt = s.genC();
-                    aux.append(stmt);
-                    aux.append("\n");
-                }
-                
+		//for (Stmt s : listS) {
+		//	stmt = s.genC(1);
+		//	aux.append(stmt);
+		//	aux.append("\n");
+		//}
+
 		aux.append("}");
-                
-                return aux;
+		
+		writer.append(aux);
+		writer.close();
+
+		return aux;
 	}
 
 }

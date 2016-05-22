@@ -15,7 +15,7 @@ public class SimExpr extends Expr {
 	}
         private boolean solo;
 
-	public StringBuffer genC(){
+	public StringBuffer genC(Integer tabs){
                 StringBuffer aux = new StringBuffer();
                 StringBuffer ter;
                 Integer contador = 0;
@@ -23,14 +23,16 @@ public class SimExpr extends Expr {
                 
                 if(unary != null)
                     aux.append(unary);
-                ter = term.genC();
+		
+		
+                ter = term.genC(tabs);
                 aux.append(ter);
                 
-                if(!addop.isEmpty()){
+                if(addop != null && !addop.isEmpty()){
                     for(String s: addop){
                         aux.append(" " + s);
                         termo = termList.get(contador);
-                        ter = termo.genC();
+                        ter = termo.genC(tabs);
                         aux.append(" " + ter);
                         contador++;
                     }

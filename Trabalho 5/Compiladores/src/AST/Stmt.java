@@ -9,76 +9,79 @@ package AST;
  *
  * @author Charizard
  */
-public class Stmt  extends Expr{
-    private IfStmt se;
-    private WhileStmt enquanto;
-    private boolean parada;
-    private PrintStmt escrever;
-    private Expr expressao;
+public class Stmt extends Expr {
 
-    public Stmt(IfStmt se, WhileStmt enquanto, boolean parada, PrintStmt escrever, Expr expressao) {
-        this.se = se;
-        this.enquanto = enquanto;
-        this.parada = parada;
-        this.escrever = escrever;
-        this.expressao = expressao;
-    }
+	private IfStmt se;
+	private WhileStmt enquanto;
+	private boolean parada;
+	private PrintStmt escrever;
+	private Expr expressao;
 
-    public IfStmt getSe() {
-        return se;
-    }
+	public Stmt(IfStmt se, WhileStmt enquanto, boolean parada, PrintStmt escrever, Expr expressao) {
+		this.se = se;
+		this.enquanto = enquanto;
+		this.parada = parada;
+		this.escrever = escrever;
+		this.expressao = expressao;
+	}
 
-    public void setSe(IfStmt se) {
-        this.se = se;
-    }
+	public IfStmt getSe() {
+		return se;
+	}
 
-    public WhileStmt getEnquanto() {
-        return enquanto;
-    }
+	public void setSe(IfStmt se) {
+		this.se = se;
+	}
 
-    public void setEnquanto(WhileStmt enquanto) {
-        this.enquanto = enquanto;
-    }
+	public WhileStmt getEnquanto() {
+		return enquanto;
+	}
 
-    public boolean isParada() {
-        return parada;
-    }
+	public void setEnquanto(WhileStmt enquanto) {
+		this.enquanto = enquanto;
+	}
 
-    public void setParada(boolean parada) {
-        this.parada = parada;
-    }
+	public boolean isParada() {
+		return parada;
+	}
 
-    public PrintStmt getEscrever() {
-        return escrever;
-    }
+	public void setParada(boolean parada) {
+		this.parada = parada;
+	}
 
-    public void setEscrever(PrintStmt escrever) {
-        this.escrever = escrever;
-    }
-    
-    public Expr getExpressao() {
-        return expressao;
-    }
+	public PrintStmt getEscrever() {
+		return escrever;
+	}
 
-    public void setExpressao(Expr expressao) {
-        this.expressao = expressao;
-    }
-    
-    public StringBuffer genC(){
-        StringBuffer aux = new StringBuffer();
-        
-        if(this.se != null){
-            aux = se.genC();
-        }else if(this.enquanto != null){
-            aux = enquanto.genC();
-        }else if(this.parada != false){
-            aux.append("break;");
-        }else if(this.escrever != null){
-            aux =  escrever.genC();
-        }else if(this.expressao != null){
-            aux = expressao.genC();
-        }
-        
-        return aux;
-    }
+	public void setEscrever(PrintStmt escrever) {
+		this.escrever = escrever;
+	}
+
+	public Expr getExpressao() {
+		return expressao;
+	}
+
+	public void setExpressao(Expr expressao) {
+		this.expressao = expressao;
+	}
+
+	public StringBuffer genC(Integer tabs) {
+		StringBuffer aux = new StringBuffer();
+
+		if (this.se != null) {
+			aux = se.genC(tabs);
+		} else if (this.enquanto != null) {
+			aux = enquanto.genC(tabs);
+		} else if (this.parada != false) {
+			aux.append("break;");
+		} else if (this.escrever != null) {
+			
+			aux = escrever.genC(tabs);
+		} else if (this.expressao != null) {
+			aux = expressao.genC(tabs);
+			aux.append(";");
+		}
+
+		return aux;
+	}
 }
