@@ -1,6 +1,6 @@
 
-
 import AST.*;
+import AuxComp.SymbolTable;
 import java.util.ArrayList;
 import Lexer.*;
 import java.util.EmptyStackException;
@@ -10,61 +10,127 @@ public class Compiler {
 
 	private boolean relationOP = false;
 	private String nomeArquivo;
-        private boolean soloing = false;
+	private boolean soloing = false;
 
-	public Program compile(char[] p_input, String nome) {
+	public ArrayList<Program> compile(char[] p_input, String nome) {
 		this.nomeArquivo = nome;
 		input = p_input;
 		lexer = new Lexer(p_input);
 		lexer.nextToken();
 		variableNames = new ArrayList<String>();
+		symbolTable = new SymbolTable();
 		whiles = new Stack();
 		pilha = 0;
 
-		Program e = program();
+		return program();
 
 		// ver isso daqui pode estar errado
 		//		if (tokenPos != input.length) {
 		//			error("compile");
 		//		}
-		return e;
 	}
 
 	//Program ::= Decl
-	private Program program() {
-		return decl();
-	}
+	private ArrayList<Program> program() {
+		ArrayList<Program> listProgram = new ArrayList<Program>();
 
-	//Decl ::= 'v' 'm' '(' ')' StmtBlock
-	private Program decl() {
-		Program ret = null;
-		if (lexer.token == Symbol.VOID) {
-			lexer.nextToken();
-			if (lexer.token == Symbol.MAIN) {
-				lexer.nextToken();
-				if (lexer.token == Symbol.LEFTPAR) {
-					lexer.nextToken();
-					if (lexer.token == Symbol.RIGHTPAR) {
-						lexer.nextToken();
-						ret = stmtBlock();
-					} else {
-						error("decl: expected )");
-					}
-				} else {
-					error("decl: expected (");
-				}
-			} else {
-				error("decl: expected main");
-			}
-		} else {
-			error("decl: expected void");
+		Program aux = null;
+
+		while ((aux = decl()) != null) {
+			listProgram.add(aux);
+			aux = null;
 		}
 
-		return ret;
+		// verifcação semântica se tem o void main
+		//
+		//
+		//
+		return listProgram;
+	}
+
+	private FunctionDecl fdecl() {
+		String ident = null;
+		StmtBlock stmt = null;
+		Formals formals = null;
+		Type type = null;
+
+		// aqui deduzo que se for void, vai ser null
+		// portanto, não deve ter outro if else e talz...
+		type = type();
+		if (lexer.token == Symbol.VOID) {
+			lexer.nextToken();
+		}
+
+		ident = ident();
+		if (ident != null) {
+			
+			// verificando se não existe uma função com o mesmo nome
+			if(symbolTable.getInGlobal(ident) != null){
+				error(": the name "+ ident+" has already been declared!");
+			}
+			if (lexer.token == Symbol.LEFTPAR) {
+				lexer.nextToken();
+				formals = formals();
+				if (formals != null) {
+					if (lexer.token == Symbol.RIGHTPAR) {
+						lexer.nextToken();
+						stmt = stmtBlock();
+						
+						// adicionando a função no symbolTable
+						FunctionDecl aux = new FunctionDecl(type, ident, stmt, formals);
+						symbolTable.putInGlobal(ident, aux);
+						
+						return aux;
+					}
+				} else {
+					error("fdecl2");
+				}
+			}
+		} else {
+			error("fdecl1");
+		}
+		return null;
+		
+	}
+
+	private Formals formals() {
+		ArrayList<Variable> listV = null;
+
+		Variable aux = variable();
+
+		if (aux != null) {
+			listV = new ArrayList<Variable>();
+			listV.add(aux);
+			aux = null;
+
+			if (lexer.token == Symbol.COMMA) {
+				lexer.nextToken();
+				while (true) {
+					listV.add(aux);
+					if (lexer.token == Symbol.COMMA) {
+						lexer.nextToken();
+					} else {
+						break;
+					}
+				}
+			}
+
+		}
+
+		if (listV != null) {
+			return new Formals(listV);
+		} else {
+			return null;
+		}
+	}
+
+	//Decl ::= FunctionDecl
+	private Program decl() {
+		return new Program(fdecl());
 	}
 
 	//StmtBlock ::= '{' { VariableDecl } { Stmt } '}'
-	private Program stmtBlock() {
+	private StmtBlock stmtBlock() {
 		variablesList = new ArrayList<Variable>();
 		ArrayList<Stmt> stmt = new ArrayList<Stmt>();
 		Variable aux = null;
@@ -85,9 +151,9 @@ public class Compiler {
 		}
 
 		if (lexer.token == Symbol.RIGHTBRACKET) {
-			Program program = new Program(variablesList, stmt);
+			StmtBlock smtmblock = new StmtBlock(variablesList, stmt);
 			lexer.nextToken();
-			return program;
+			return smtmblock;
 		} else {
 			error("stmtBlock: expected }");
 		}
@@ -196,7 +262,7 @@ public class Compiler {
 		CompositeExpr aux = null;
 		Stmt stmt = null;
 
-                soloing = true;
+		soloing = true;
 		if ((aux = expr(false)) != null) {
 			if ((aux.getType() == Symbol.READCHAR) || (aux.getType() == Symbol.READINTEGER) || (aux.getType() == Symbol.READDOUBLE)) {
 				error("Stmt : functions like readChar, readInteger and readDouble must be declared after a :=");
@@ -206,23 +272,27 @@ public class Compiler {
 			} else if (aux != null) {
 				error("stmt: expected \";\"");
 			}
-			return new Stmt(null,null,false,null,aux);
+			return new Stmt(null, null, false, null, aux);
 		}
-                soloing = false;
+		soloing = false;
 
 		se = ifStmt();
-		if(se != null)
-			return new Stmt(se,null,false,null,null);
+		if (se != null) {
+			return new Stmt(se, null, false, null, null);
+		}
 		enquanto = whileStmt();
-		if(enquanto != null)
-			return new Stmt(null,enquanto,false,null,null);
+		if (enquanto != null) {
+			return new Stmt(null, enquanto, false, null, null);
+		}
 
 		parada = breakStmt();
-		if(parada == true)
-			return new Stmt(null,null,true,null,null);
+		if (parada == true) {
+			return new Stmt(null, null, true, null, null);
+		}
 		imprime = printStmt();
-		if(imprime != null)
-			return new Stmt(null,null,false,imprime,null);
+		if (imprime != null) {
+			return new Stmt(null, null, false, imprime, null);
+		}
 
 		return null;
 	}
@@ -433,9 +503,9 @@ public class Compiler {
 					error("Invalid operand for comparison because was expected before the operand && or ||");
 				}
 			}
-                        //if(soloing == true){
-                        //    error("Expression not in the actual format");
-                        //}
+			//if(soloing == true){
+			//    error("Expression not in the actual format");
+			//}
 			return new CompositeExpr(aux, relop, expr, auxType);
 		} else {
 			return null;
@@ -717,8 +787,9 @@ public class Compiler {
 				}
 
 			} else {
-				if(aux.getType().isArray() == true)
+				if (aux.getType().isArray() == true) {
 					error("lValue : you must declare which index do you want to use");
+				}
 				return new LValue(ident, null, auxType);
 			}
 		}
@@ -782,6 +853,8 @@ public class Compiler {
 		String strError = "Error at file " + nomeArquivo + " \"" + strInput + "\" in " + function + "";
 		throw new RuntimeException(strError);
 	}
+
+	private SymbolTable symbolTable;
 
 	private Lexer lexer;
 	public ArrayList<String> variableNames;
