@@ -9,6 +9,10 @@ public class Program {
 	
 	private FunctionDecl fdecl;
 
+	public FunctionDecl getFdecl() {
+		return fdecl;
+	}
+
 	public Program(FunctionDecl fdecl) {
 		this.fdecl = fdecl;
 	}

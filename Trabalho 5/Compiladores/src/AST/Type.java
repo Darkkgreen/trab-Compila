@@ -39,10 +39,10 @@ public class Type extends Expr{
 		this.type = type;
 	}
 
-	public Type(Symbol type, boolean array, Integer aux){
+	public Type(Symbol type, boolean array, Integer sizeArray){
 		this.array = array;
 		this.type = type;
-                this.size = aux;
+                this.size = sizeArray;
 	}
 	
 	public StringBuffer genC(Integer tabs){

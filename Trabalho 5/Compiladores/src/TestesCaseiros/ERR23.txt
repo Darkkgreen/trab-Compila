@@ -1,0 +1,4 @@
+// É PRECISO DE UMA FUNÇÃO DECLARADA COMO MAIN
+int locura(){
+
+}

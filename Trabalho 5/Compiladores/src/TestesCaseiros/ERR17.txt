@@ -1,0 +1,14 @@
+// ATRIBUIÇÃO ATRAVES DO RETORNO DA FUNÇÃO
+// ERRO
+int ronaldo(){
+
+}
+char rivaldo(){
+
+}
+void main(){
+  int a;
+
+  a := ronaldo();
+  a := rivaldo();
+}

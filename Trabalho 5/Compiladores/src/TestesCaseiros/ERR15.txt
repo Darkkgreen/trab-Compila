@@ -1,0 +1,4 @@
+// NÃO É POSSÍVEL DEFINIR PARÂMETROS NA FUNÇÃO MAIN
+void main(int a){
+
+}

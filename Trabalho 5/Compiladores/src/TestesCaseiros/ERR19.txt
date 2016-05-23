@@ -1,0 +1,8 @@
+// '' SÃO APENAS PRA DEFINIR UM CARACTER
+// NÃO UMA CADEIA DE CARACTERES
+
+void main(){
+  char c;
+
+  c := 'ronaldo';
+}

@@ -31,6 +31,7 @@ public class Compiladores {
 		System.out.println(dir);
 
 		// pega todos os arquivos e adiciona um arrayList
+		// de forma recursiva
 		Files.walk(Paths.get(dir)).forEach(filePath -> {
 			if (Files.isRegularFile(filePath)) {
 				nomeArquivos.add(filePath.getFileName().toString());
@@ -78,7 +79,7 @@ public class Compiladores {
 			if (program != null) {
 				try {
 					for(Program s : program){
-						s.genC(nome.replace(".txt", ".c"), dir.replace("Testes", "arquivosC/"));
+						//s.genC(nome.replace(".txt", ".c"), dir.replace("Testes", "arquivosC/"));
 					}
 				} catch (RuntimeException e) {
 					System.out.println("Não foi possível gerar C, erro de " + e);

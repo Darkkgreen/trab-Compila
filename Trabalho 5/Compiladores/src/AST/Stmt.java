@@ -16,13 +16,19 @@ public class Stmt extends Expr {
 	private boolean parada;
 	private PrintStmt escrever;
 	private Expr expressao;
+	private Expr returnFunc;
 
-	public Stmt(IfStmt se, WhileStmt enquanto, boolean parada, PrintStmt escrever, Expr expressao) {
+	public Stmt(IfStmt se, WhileStmt enquanto, boolean parada, PrintStmt escrever, Expr expressao, Expr returnFunc) {
 		this.se = se;
 		this.enquanto = enquanto;
 		this.parada = parada;
 		this.escrever = escrever;
 		this.expressao = expressao;
+		this.returnFunc = returnFunc;
+	}
+
+	public Expr getReturnFunc() {
+		return returnFunc;
 	}
 
 	public IfStmt getSe() {

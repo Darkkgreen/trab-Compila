@@ -39,6 +39,7 @@ public class Lexer {
 		keywordsTable.put("or", Symbol.OR);
 		keywordsTable.put("not", Symbol.NOT);
 
+		keywordsTable.put("return", Symbol.RETURN);
 		keywordsTable.put("readInteger", Symbol.READINTEGER);
 		keywordsTable.put("readDouble", Symbol.READDOUBLE);
 		keywordsTable.put("readChar", Symbol.READCHAR);
@@ -50,6 +51,7 @@ public class Lexer {
 		keywordsTable.put("int", Symbol.INTEGER);
 		keywordsTable.put("double", Symbol.DOUBLE);
 		keywordsTable.put("char", Symbol.CHAR);
+		keywordsTable.put("string", Symbol.STRING);
 
 	}
 
@@ -97,8 +99,9 @@ public class Lexer {
 					// System.out.print(input[tokenPos]);
 					ident.append(input[tokenPos]);
 					tokenPos++;
-				}else
-					error("Lexer : "+input[tokenPos]+" is a invalid character");
+				} else {
+					error("Lexer : " + input[tokenPos] + " is a invalid character");
+				}
 
 			}
 
@@ -261,7 +264,7 @@ public class Lexer {
 					if (input[tokenPos] == '\'') {
 						error("Expected one character but was found ' ");
 					} else {
-						charValue = input[tokenPos];
+						charValue = Character.toString(input[tokenPos]);
 						tokenPos++;
 						token = Symbol.QUOTE;
 						// System.out.print(input[tokenPos]);
@@ -273,6 +276,33 @@ public class Lexer {
 					}
 
 					break;
+				case '\"':
+					// System.out.print(input[tokenPos]);
+					if (input[tokenPos] == '\"') {
+						error("Expected a string, but found \" ");
+					} else {
+						StringBuffer ident = new StringBuffer();
+
+						while((charValue = Character.toString(input[tokenPos])).equals("\"") == false){
+							if(charValue.equals("\0")){
+								error("Não conseguimos achar o outro \"");
+							}
+							tokenPos++;
+							// System.out.print(input[tokenPos]);
+							ident.append(charValue);
+						}
+						stringValue = ident.toString();
+
+						token = Symbol.STRING;
+						if (input[tokenPos] != '\"') {
+							error("Expected ' but was found another characters");
+						} else {
+							tokenPos++;
+						}
+					}
+
+					break;
+
 				default:
 					// System.out.println("Invalid Character: '" + ch + "'");
 				//error.signal("Invalid Character: '" + ch + "'");
@@ -318,14 +348,14 @@ public class Lexer {
 		return numberValue;
 	}
 
-	public char getCharValue() {
+	public String getCharValue() {
 		return charValue;
 	}
 	// current token
 	public Symbol token;
 	private String stringValue;
 	private int numberValue;
-	private char charValue;
+	private String charValue;
 
 	public int tokenPos;
 	//  input[lastTokenPos] is the last character of the last token

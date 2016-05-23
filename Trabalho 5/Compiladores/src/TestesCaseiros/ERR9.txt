@@ -1,0 +1,4 @@
+// INDICE NEGATIVO
+void main(){
+  char [-3] a;
+}

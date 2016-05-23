@@ -1,3 +1,8 @@
+/* 
+* Trabalho de Compiladores - Final
+* Gustavo Rodrigues RA 489999
+* Henrique Teruo Eihara RA 490016
+ */
 
 import AST.*;
 import AuxComp.SymbolTable;
@@ -17,7 +22,6 @@ public class Compiler {
 		input = p_input;
 		lexer = new Lexer(p_input);
 		lexer.nextToken();
-		variableNames = new ArrayList<String>();
 		symbolTable = new SymbolTable();
 		whiles = new Stack();
 		pilha = 0;
@@ -33,12 +37,20 @@ public class Compiler {
 	//Program ::= Decl
 	private ArrayList<Program> program() {
 		ArrayList<Program> listProgram = new ArrayList<Program>();
+		boolean flag = false;
 
 		Program aux = null;
 
 		while ((aux = decl()) != null) {
+			if (aux.getFdecl().getIdent().equals("main")) {
+				flag = true;
+			}
 			listProgram.add(aux);
 			aux = null;
+		}
+
+		if (flag == false) {
+			error("Não há nenhuma função main declarada!!!!!!!!!");
 		}
 
 		// verifcação semântica se tem o void main
@@ -57,40 +69,57 @@ public class Compiler {
 		// aqui deduzo que se for void, vai ser null
 		// portanto, não deve ter outro if else e talz...
 		type = type();
-		if (lexer.token == Symbol.VOID) {
-			lexer.nextToken();
+		if (type == null) {
+			if (lexer.token == Symbol.VOID) {
+				type = new Type(Symbol.VOID, false, 0);
+				lexer.nextToken();
+			}
 		}
 
-		ident = ident();
-		if (ident != null) {
-			
-			// verificando se não existe uma função com o mesmo nome
-			if(symbolTable.getInGlobal(ident) != null){
-				error(": the name "+ ident+" has already been declared!");
+		if (type != null) {
+			ident = ident();
+			if (ident == null) {
+				// tratando o erro
+				if (lexer.token == Symbol.MAIN) {
+					ident = "main";
+					lexer.nextToken();
+				}
 			}
-			if (lexer.token == Symbol.LEFTPAR) {
-				lexer.nextToken();
-				formals = formals();
-				if (formals != null) {
+			if (ident != null) {
+				// verificando se não existe uma função com o mesmo nome
+				if (symbolTable.getInGlobal(ident) != null) {
+					error(": the name " + ident + " has already been declared!");
+				}
+				if (lexer.token == Symbol.LEFTPAR) {
+					lexer.nextToken();
+					formals = formals();
+
+					if ((formals != null) && (ident.equals("main"))) {
+						error("A função main não deve ter parâmetros!!");
+					}
+					//if (formals != null) {
 					if (lexer.token == Symbol.RIGHTPAR) {
 						lexer.nextToken();
-						stmt = stmtBlock();
-						
+						stmt = stmtBlock(type.getType());
+
 						// adicionando a função no symbolTable
 						FunctionDecl aux = new FunctionDecl(type, ident, stmt, formals);
 						symbolTable.putInGlobal(ident, aux);
-						
+
 						return aux;
 					}
-				} else {
-					error("fdecl2");
+					//} else {
+					//	error("fdecl2");
+					//}
 				}
+			} else {
+				error("fdecl : expected a name for function");
 			}
-		} else {
-			error("fdecl1");
+
 		}
+
 		return null;
-		
+
 	}
 
 	private Formals formals() {
@@ -105,7 +134,7 @@ public class Compiler {
 
 			if (lexer.token == Symbol.COMMA) {
 				lexer.nextToken();
-				while (true) {
+				while ((aux = variable()) != null) {
 					listV.add(aux);
 					if (lexer.token == Symbol.COMMA) {
 						lexer.nextToken();
@@ -126,12 +155,17 @@ public class Compiler {
 
 	//Decl ::= FunctionDecl
 	private Program decl() {
-		return new Program(fdecl());
+		FunctionDecl ret = fdecl();
+
+		if (ret != null) {
+			return new Program(ret);
+		}
+		return null;
 	}
 
 	//StmtBlock ::= '{' { VariableDecl } { Stmt } '}'
-	private StmtBlock stmtBlock() {
-		variablesList = new ArrayList<Variable>();
+	private StmtBlock stmtBlock(Symbol type) {
+		ArrayList<Variable> variablesList = new ArrayList<Variable>();
 		ArrayList<Stmt> stmt = new ArrayList<Stmt>();
 		Variable aux = null;
 		Stmt auxiliarStmt = null;
@@ -142,7 +176,7 @@ public class Compiler {
 				variablesList.add(aux);
 				aux = null;
 			}
-			while ((auxiliarStmt = stmt()) != null) {
+			while ((auxiliarStmt = stmt(type)) != null) {
 				stmt.add(auxiliarStmt);
 				auxiliarStmt = null;
 			}
@@ -186,13 +220,11 @@ public class Compiler {
 		if (type != null) {
 			name = ident();
 			if (name != null) {
-				for (Variable v : variablesList) {
-					if (v.getName().equals(name) == true) {
-						error("variable: Variable \"" + name + "\" already exists!");
-					}
+				if (symbolTable.getInLocal(name) != null) {
+					error("variable: Variable \"" + name + "\" already exists!");
 				}
-				variableNames.add(name);
 				aux = new Variable(name, type);
+				symbolTable.putInLocal(name, aux);
 				return aux;
 			} else {
 				error("variable: The name of variable is not set, probably the name used \"" + lexer.getStringValue() + "\" is reserved"
@@ -254,7 +286,7 @@ public class Compiler {
 	}
 
 	// Stmt ::= Expr ';' | ifStmt | WhileStmt | BreakStmt | PrintStmt
-	private Stmt stmt() {
+	private Stmt stmt(Symbol type) {
 		IfStmt se = null;
 		WhileStmt enquanto = null;
 		boolean parada = false;
@@ -272,33 +304,38 @@ public class Compiler {
 			} else if (aux != null) {
 				error("stmt: expected \";\"");
 			}
-			return new Stmt(null, null, false, null, aux);
+			return new Stmt(null, null, false, null, aux, null);
 		}
 		soloing = false;
 
-		se = ifStmt();
+		se = ifStmt(type);
 		if (se != null) {
-			return new Stmt(se, null, false, null, null);
+			return new Stmt(se, null, false, null, null, null);
 		}
-		enquanto = whileStmt();
+		enquanto = whileStmt(type);
 		if (enquanto != null) {
-			return new Stmt(null, enquanto, false, null, null);
+			return new Stmt(null, enquanto, false, null, null, null);
 		}
 
 		parada = breakStmt();
 		if (parada == true) {
-			return new Stmt(null, null, true, null, null);
+			return new Stmt(null, null, true, null, null, null);
 		}
 		imprime = printStmt();
 		if (imprime != null) {
-			return new Stmt(null, null, false, imprime, null);
+			return new Stmt(null, null, false, imprime, null, null);
+		}
+
+		Expr returnFunc = returnStmt(type);
+		if (returnFunc != null) {
+			return new Stmt(null, null, false, null, null, returnFunc);
 		}
 
 		return null;
 	}
 
 	//IfStmt ::= 'f' '(' Expr ')' '{' { Stmt } '}' [ 'e' '{' { Stmt } '}' ]
-	private IfStmt ifStmt() {
+	private IfStmt ifStmt(Symbol type) {
 		Expr auxiliarExp = null;
 		ArrayList<Stmt> principal = new ArrayList<Stmt>();
 		ArrayList<Stmt> opcional = new ArrayList<Stmt>();
@@ -314,7 +351,7 @@ public class Compiler {
 						lexer.nextToken();
 						if (lexer.token == Symbol.LEFTBRACKET) {
 							lexer.nextToken();
-							while ((auxiliarStmt = stmt()) != null) {
+							while ((auxiliarStmt = stmt(type)) != null) {
 								principal.add(auxiliarStmt);
 								auxiliarStmt = null;
 							}
@@ -324,7 +361,7 @@ public class Compiler {
 									lexer.nextToken();
 									if (lexer.token == Symbol.LEFTBRACKET) {
 										lexer.nextToken();
-										while ((auxiliarStmt = stmt()) != null) {
+										while ((auxiliarStmt = stmt(type)) != null) {
 											opcional.add(auxiliarStmt);
 											auxiliarStmt = null;
 										}
@@ -355,7 +392,7 @@ public class Compiler {
 	}
 
 	//WhileStmt ::= 'w' '(' Expr ')' '{' { Stmt } '}'
-	private WhileStmt whileStmt() {
+	private WhileStmt whileStmt(Symbol type) {
 		Expr auxiliarExp = null;
 		ArrayList<Stmt> arrayPrinc = new ArrayList<Stmt>();
 		Stmt auxiliarSt = null;
@@ -373,7 +410,7 @@ public class Compiler {
 							whiles.push(pilha);
 
 							lexer.nextToken();
-							while ((auxiliarSt = stmt()) != null) {
+							while ((auxiliarSt = stmt(type)) != null) {
 								arrayPrinc.add(auxiliarSt);
 								auxiliarSt = null;
 							}
@@ -626,10 +663,12 @@ public class Compiler {
 	// Factor ::= LValue ':' Expr | LValue | '(' Expr ')' | 'r' '(' ')' | 's' '(' ')' | 't' '(' ')'
 	private Factor factor() {
 		LValue lValue = null;
-		lValue = lValue();
+		String ident = ident();
+		lValue = lValue(ident);
 		CompositeExpr expr = null;
 		String doublee = null;
-		char simpleChar = '\0';
+		Call callAux = null;
+		String simpleChar = new String("\0");
 		if (lValue != null) {
 			if (lexer.token == Symbol.DEFINITION) {
 				lexer.nextToken();
@@ -641,22 +680,39 @@ public class Compiler {
 							error("Factor : you cannot set in a integer a double value");
 						} else if ((expr.getType() == Symbol.CHAR) || (expr.getType() == Symbol.READCHAR)) {
 							error("Factor : you cannot set in a integer a char value");
+						} else if (expr.getType() == Symbol.VOID) {
+							error("Factor : VOIDD VALUEEEEEE");
 						}
 					} else if (lValue.getType().getType() == Symbol.CHAR) {
 						simpleChar = lexer.getCharValue();
 //						System.out.println(expr.getType());
 						if ((expr.getType() == Symbol.DOUBLE) || (expr.getType() == Symbol.READDOUBLE)) {
 							error("Factor : you cannot set in a char a double value");
-						} else if ((lValue.getType().getType() == Symbol.INTEGER) || (expr.getType() == Symbol.READINTEGER)) {
+						} else if ((expr.getType() == Symbol.INTEGER) || (expr.getType() == Symbol.READINTEGER)) {
 							error("Factor : you cannot set in a char a integer value");
+						} else if (expr.getType() == Symbol.VOID) {
+							error("Factor : VOIDD VALUEEEEEE");
+						} else if (expr.getType() == Symbol.STRING) {
+							if (lValue.getType().isArray() == true) {
+								if (lValue.getType().getSize() >= expr.getSimexpr().getTerm().getFactor().getSingleChar().length()) {
+									//tudo bem, da certo
+								} else {
+									error("O TAMANHO NAO DEU CERTO CARA");
+								}
+							} else if (expr.getSimexpr().getTerm().getFactor().getSingleChar().length() > 1) {
+								error("O TAMANHO NÃO BATE CARA");
+							}
 						}
+
 					} else if (lValue.getType().getType() == Symbol.DOUBLE) {
 						doublee = lexer.getStringValue();
 //						System.out.println(expr.getType());
 						if ((expr.getType() == Symbol.INTEGER) || (expr.getType() == Symbol.READINTEGER)) {
 							error("Factor : you cannot set in a double a integer value");
-						} else if ((lValue.getType().getType() == Symbol.CHAR) || (expr.getType() == Symbol.READCHAR)) {
+						} else if ((expr.getType() == Symbol.CHAR) || (expr.getType() == Symbol.READCHAR)) {
 							error("Factor : you cannot set in a double a char value");
+						} else if (expr.getType() == Symbol.VOID) {
+							error("Factor : VOIDD VALUEEEEEE");
 						}
 					}
 				} else {
@@ -664,25 +720,25 @@ public class Compiler {
 				}
 
 			}
-			return new Factor(lValue, expr, null, null, doublee, simpleChar, lValue.getType().getType());
+			return new Factor(lValue, expr, null, null, doublee, simpleChar, lValue.getType().getType(), null);
 		} else if ((lexer.token == Symbol.NUMBER) || (lexer.token == Symbol.DOUBLE)) {
 			Factor aux = null;
 			if (lexer.token == Symbol.NUMBER) {
-				aux = new Factor(null, null, null, lexer.getNumberValue(), null, simpleChar, Symbol.NUMBER);
+				aux = new Factor(null, null, null, lexer.getNumberValue(), null, simpleChar, Symbol.INTEGER, null);
 			} else {
-				aux = new Factor(null, null, null, null, lexer.getStringValue(), simpleChar, Symbol.DOUBLE);
+				aux = new Factor(null, null, null, null, lexer.getStringValue(), simpleChar, Symbol.DOUBLE, null);
 			}
 			lexer.nextToken();
 //			System.out.println(aux.getType()+"FACTOR");
 			return aux;
 
-		} else if (lexer.token == Symbol.LEFTPAR) {
+		} else if (ident == null && lexer.token == Symbol.LEFTPAR) {
 			lexer.nextToken();
 			expr = expr(true);
 			if (expr != null) {
 				if (lexer.token == Symbol.RIGHTPAR) {
 					lexer.nextToken();
-					return new Factor(null, expr, null, null, null, simpleChar, null);
+					return new Factor(null, expr, null, null, null, simpleChar, null, null);
 				}
 			}
 
@@ -692,7 +748,7 @@ public class Compiler {
 				lexer.nextToken();
 				if (lexer.token == Symbol.RIGHTPAR) {
 					lexer.nextToken();
-					return new Factor(lValue, null, "readInteger()".toString(), null, null, simpleChar, Symbol.READINTEGER);
+					return new Factor(lValue, null, "readInteger()".toString(), null, null, simpleChar, Symbol.READINTEGER, null);
 				}
 			}
 
@@ -702,7 +758,7 @@ public class Compiler {
 				lexer.nextToken();
 				if (lexer.token == Symbol.RIGHTPAR) {
 					lexer.nextToken();
-					return new Factor(lValue, null, "readDouble()".toString(), null, null, simpleChar, Symbol.READDOUBLE);
+					return new Factor(lValue, null, "readDouble()".toString(), null, null, simpleChar, Symbol.READDOUBLE, null);
 				}
 			}
 
@@ -712,42 +768,46 @@ public class Compiler {
 				lexer.nextToken();
 				if (lexer.token == Symbol.RIGHTPAR) {
 					lexer.nextToken();
-					return new Factor(lValue, null, "readChar()".toString(), null, null, simpleChar, Symbol.READCHAR);
+					return new Factor(lValue, null, "readChar()".toString(), null, null, simpleChar, Symbol.READCHAR, null);
 				}
 			}
 
+		} else if (lexer.token == Symbol.STRING) {
+			lexer.nextToken();
+			simpleChar = lexer.getStringValue();
+			return new Factor(lValue, null, null, null, null, simpleChar, Symbol.STRING, null);
 		} else if (lexer.token == Symbol.QUOTE) {
 			lexer.nextToken();
 			simpleChar = lexer.getCharValue();
-			return new Factor(lValue, null, null, null, null, simpleChar, Symbol.CHAR);
+			return new Factor(lValue, null, null, null, null, simpleChar, Symbol.CHAR, null);
+		} else if ((callAux = call(ident)) != null) {
+			Symbol auxType = ((FunctionDecl) symbolTable.getInGlobal(callAux.getIdent())).getType().getType();
+			return new Factor(lValue, null, null, null, null, simpleChar, auxType, callAux);
 		}
 
 		return null;
 	}
 
 	// LValue ::= Ident | Ident '[' Expr ']'
-	private LValue lValue() {
-		String ident = null;
+	private LValue lValue(String ident) {
 		CompositeExpr expr = null;
-		// verificar se a variável existe
 
-		ident = ident();
 		if (ident != null) {
 			// valida se existe a variável
 			boolean flag = false;
 			Variable aux = null;
 			Type auxType = null;
-			for (Variable v : variablesList) {
-				if (v.getName().equals(ident) == true) {
-					flag = true;
-					auxType = v.getType();
-					aux = v;
-					break;
-				}
 
-			}
-			if (flag == false) {
-				error("lValeu : There is no variable called \"" + ident + "\" in this scope");
+			if (symbolTable.getInLocal(ident) != null) {
+				// existe a variável
+				flag = true;
+				auxType = ((Variable) symbolTable.getInLocal(ident)).getType();
+				aux = (Variable) symbolTable.getInLocal(ident);
+			} else if (symbolTable.getInGlobal(ident) != null) {
+				// deixar o Call tratar
+				return null;
+			} else {
+				error("lValue There is no variable called \"" + ident + "\" in this scope");
 			}
 			if (lexer.token == Symbol.LEFTSQUARE) {
 				if (aux.getType().isArray() == true) {
@@ -787,7 +847,7 @@ public class Compiler {
 				}
 
 			} else {
-				if (aux.getType().isArray() == true) {
+				if ((aux.getType().isArray() == true) && (auxType.getType() != Symbol.CHAR)) {
 					error("lValue : you must declare which index do you want to use");
 				}
 				return new LValue(ident, null, auxType);
@@ -857,11 +917,112 @@ public class Compiler {
 	private SymbolTable symbolTable;
 
 	private Lexer lexer;
-	public ArrayList<String> variableNames;
 	private char[] input;
-	private ArrayList<Variable> variablesList;
 
 	private Stack whiles;
 	private int pilha;
+
+	private Expr returnStmt(Symbol type) {
+		if (lexer.token == Symbol.RETURN) {
+			lexer.nextToken();
+			CompositeExpr expr = expr(true);
+			if (lexer.token == Symbol.SEMICOLON) {
+				lexer.nextToken();
+				if (expr == null) {
+					return expr;
+				} else if (type == expr.getType()) {
+					return expr;
+				} else {
+					error("NÃO É DO MESMO TIPO O RETORNO");
+				}
+			}
+
+		}
+		return null;
+	}
+
+	private ArrayList<Expr> actuals() {
+		ArrayList<Expr> ret = new ArrayList<Expr>();
+		CompositeExpr aux = null;
+		boolean flag = false;
+
+		while ((aux = expr(true)) != null) {
+			flag = true;
+			ret.add(aux);
+			aux = null;
+			if (lexer.token == Symbol.COMMA) {
+				lexer.nextToken();
+			} else {
+				break;
+			}
+		}
+
+		if (flag == true) {
+			return ret;
+		} else {
+			return null;
+		}
+	}
+
+	private Call call(String ident) {
+		if (ident != null) {
+			// verificação semântica
+			if (symbolTable.getInGlobal(ident) == null) {
+				error("Call : there is no function called " + ident);
+			}
+
+			if (lexer.token == Symbol.LEFTPAR) {
+				lexer.nextToken();
+
+				ArrayList<Expr> listExpr = actuals();
+
+				// verificação semântica 
+				FunctionDecl aux = (FunctionDecl) symbolTable.getInGlobal(ident);
+				Formals auxForm = aux.getFormals();
+				ArrayList<Variable> listV = null;
+				try {
+					listV = auxForm.getListV();
+				} catch (RuntimeException e) {
+					listV = null;
+				}
+
+				Integer i = 0;
+
+				if ((listExpr != null) && (listV != null)) {
+					// quando ambos tem parâmetros
+					if (listExpr.size() != listV.size()) {
+						error("Não é o mesmo número de parâmetros!!");
+					} else {
+						// verificação de tipos de parâmetros
+						CompositeExpr auxComp = null;
+						for (Expr s : listExpr) {
+							auxComp = (CompositeExpr) s;
+							if (auxComp.getType() != listV.get(i).getType().getType()) {
+								error("O parâmetro número " + (i + 1) + " não é do mesmo tipo da função chamada");
+							}
+							i++;
+						}
+					}
+				} else if ((listExpr != null) && (listV == null)) {
+					error("Esta sendo passado parâmetros para uma função que não tem!!!");
+				} else if ((listExpr == null) && (listV != null)) {
+					error("A função que esta sendo invocada deve receber parâmetros!!");
+				} else if ((listExpr == null) && (listV == null)) {
+					// apenas pra facilitar a leitura do código
+					// nessa situação o programa deve aceitar...
+				}
+
+				if (lexer.token == Symbol.RIGHTPAR) {
+					lexer.nextToken();
+					return new Call(listExpr, ident);
+				} else {
+					error("Call : expected a )");
+				}
+			}
+		}
+
+		return null;
+
+	}
 
 }

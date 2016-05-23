@@ -1,0 +1,4 @@
+// INDICE COM PONTO FLUTUANTE
+void main(){
+  char [1.0] a;
+}

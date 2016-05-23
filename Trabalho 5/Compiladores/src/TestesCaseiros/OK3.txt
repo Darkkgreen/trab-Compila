@@ -1,0 +1,7 @@
+// é possível declarar em vetores de char uma constante de string
+// a questão é q o tamanho tem q bater
+void main(){
+  char [5] c;
+
+  c := "rona";
+}

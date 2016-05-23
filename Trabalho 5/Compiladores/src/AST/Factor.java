@@ -13,11 +13,12 @@ import Lexer.Symbol;
  */
 public class Factor extends Expr {
 
+	private Call call;
 	private LValue lvalue;
 	private CompositeExpr expr;
 	private String function;
 	private String numberDouble;
-	private char singleChar;
+	private String singleChar;
 	private Integer number;
 	private boolean solo;
 	private Symbol type;
@@ -30,20 +31,17 @@ public class Factor extends Expr {
 		return solo;
 	}
 
-	public char getSingleChar() {
+	public String getSingleChar() {
 		return singleChar;
 	}
 
-	public void setSingleChar(char singleChar) {
-		this.singleChar = singleChar;
-	}
 
 	public boolean isLValueExist() {
 		return lvalue == null ? false : true;
 	}
 
 	public boolean isOnlyNumber() {
-		return (lvalue == null) && (expr == null) && (function == null) && (singleChar == '\0') && (numberDouble == null) && (number != null) ? true : false;
+		return (lvalue == null) && (expr == null) && (function == null) && (singleChar.equals("\0")) && (numberDouble == null) && (number != null) ? true : false;
 	}
 
 	public String getNumberDouble() {
@@ -62,7 +60,7 @@ public class Factor extends Expr {
 		this.number = number;
 	}
 
-	public Factor(LValue lvalue, CompositeExpr expr, String function, Integer number, String numberDouble, char singleChar, Symbol type) {
+	public Factor(LValue lvalue, CompositeExpr expr, String function, Integer number, String numberDouble, String singleChar, Symbol type, Call call) {
 		this.lvalue = lvalue;
 		this.expr = expr;
 		this.function = function;
@@ -70,6 +68,7 @@ public class Factor extends Expr {
 		this.numberDouble = numberDouble;
 		this.singleChar = singleChar;
 		this.type = type;
+		this.call = call;
 
 		if (type == null) {
 			if (expr == null && lvalue == null) {
@@ -82,7 +81,7 @@ public class Factor extends Expr {
 		}
 //                System.out.println(type+"DENTDO ROD FACTOE");
 
-		if (lvalue != null && expr == null && function == null && number == null && numberDouble == null && singleChar == '\0') {
+		if (lvalue != null && expr == null && function == null && number == null && numberDouble == null && singleChar.equals('\0')) {
 			this.solo = true;
 		} else {
 			this.solo = false;
@@ -145,7 +144,7 @@ public class Factor extends Expr {
 			} else {
 				aux.append("scanf(\"%d\", &");
 			}
-		} else if (singleChar != '\0') {
+		} else if (singleChar.equals('\0')) {
 			aux.append("\'" + singleChar + "\'");
 		}
 

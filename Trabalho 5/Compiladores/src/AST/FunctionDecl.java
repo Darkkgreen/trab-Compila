@@ -23,6 +23,10 @@ public class FunctionDecl extends Expr {
 		this.formals = formals;
 	}
 
+	public Formals getFormals() {
+		return formals;
+	}
+
 	public Type getType() {
 		return type;
 	}

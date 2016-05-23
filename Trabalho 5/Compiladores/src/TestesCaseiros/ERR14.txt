@@ -1,0 +1,8 @@
+// IMPOSSÍVEL DE UTILIZAR O OPERADOR # COM DOUBLE
+void main(){
+  double a;
+
+  if(a%a){
+    a := a;
+  }
+}
