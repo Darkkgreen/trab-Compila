@@ -13,6 +13,12 @@ import java.util.Stack;
 
 public class Compiler {
 
+	private SymbolTable symbolTable;
+	private Lexer lexer;
+	private char[] input;
+	private Stack whiles;
+	private Stack exprValido;
+	private int pilha;
 	private boolean relationOP = false;
 	private String nomeArquivo;
 	private boolean soloing = false;
@@ -24,6 +30,7 @@ public class Compiler {
 		lexer.nextToken();
 		symbolTable = new SymbolTable();
 		whiles = new Stack();
+		exprValido = new Stack();
 		pilha = 0;
 
 		return program();
@@ -296,8 +303,14 @@ public class Compiler {
 
 		soloing = true;
 		if ((aux = expr(false)) != null) {
-			if ((aux.getType() == Symbol.READCHAR) || (aux.getType() == Symbol.READINTEGER) || (aux.getType() == Symbol.READDOUBLE)) {
-				error("Stmt : functions like readChar, readInteger and readDouble must be declared after a :=");
+			if ((exprValido.isEmpty() == true)) {
+				if ((aux.getType() == Symbol.READCHAR) || (aux.getType() == Symbol.READINTEGER) || (aux.getType() == Symbol.READDOUBLE)) {
+					error("Stmt : functions like readChar, readInteger and readDouble must be declared after a :=");
+				} else {
+					error("Expressão ta errada, parsa");
+				}
+			} else {
+				exprValido.pop();
 			}
 			if (lexer.token == Symbol.SEMICOLON) {
 				lexer.nextToken();
@@ -671,6 +684,9 @@ public class Compiler {
 		String simpleChar = new String("\0");
 		if (lValue != null) {
 			if (lexer.token == Symbol.DEFINITION) {
+				// testando validação de expr
+				exprValido.push(1);
+
 				lexer.nextToken();
 				expr = expr(true);
 				if (expr != null) {
@@ -913,14 +929,6 @@ public class Compiler {
 		String strError = "Error at file " + nomeArquivo + " \"" + strInput + "\" in " + function + "";
 		throw new RuntimeException(strError);
 	}
-
-	private SymbolTable symbolTable;
-
-	private Lexer lexer;
-	private char[] input;
-
-	private Stack whiles;
-	private int pilha;
 
 	private Expr returnStmt(Symbol type) {
 		if (lexer.token == Symbol.RETURN) {
