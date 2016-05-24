@@ -34,11 +34,6 @@ public class Compiler {
 		pilha = 0;
 
 		return program();
-
-		// ver isso daqui pode estar errado
-		//		if (tokenPos != input.length) {
-		//			error("compile");
-		//		}
 	}
 
 	//Program ::= Decl
@@ -54,6 +49,8 @@ public class Compiler {
 			}
 			listProgram.add(aux);
 			aux = null;
+			// variáveis podem tero mesmo nome mesmo em funções diferentes...
+			symbolTable.removeLocalIdent();
 		}
 
 		if (flag == false) {
@@ -701,7 +698,7 @@ public class Compiler {
 						}
 					} else if (lValue.getType().getType() == Symbol.CHAR) {
 						simpleChar = lexer.getCharValue();
-//						System.out.println(expr.getType());
+//						System.out.irintln(expr.getType());
 						if ((expr.getType() == Symbol.DOUBLE) || (expr.getType() == Symbol.READDOUBLE)) {
 							error("Factor : you cannot set in a char a double value");
 						} else if ((expr.getType() == Symbol.INTEGER) || (expr.getType() == Symbol.READINTEGER)) {
@@ -754,7 +751,7 @@ public class Compiler {
 			if (expr != null) {
 				if (lexer.token == Symbol.RIGHTPAR) {
 					lexer.nextToken();
-					return new Factor(null, expr, null, null, null, simpleChar, null, null);
+					return new Factor(null, expr, null, null, null, simpleChar, expr.getType(), null);
 				}
 			}
 
@@ -863,8 +860,10 @@ public class Compiler {
 				}
 
 			} else {
+				// essa verificação tem que ser feita no factor :/ infelizmente
+				// inclusive no call e outras funções q tem atribuição
 				if ((aux.getType().isArray() == true) && (auxType.getType() != Symbol.CHAR)) {
-					error("lValue : you must declare which index do you want to use");
+					//error("lValue : you must declare which index do you want to use");
 				}
 				return new LValue(ident, null, auxType);
 			}
@@ -941,6 +940,8 @@ public class Compiler {
 				} else if (type == expr.getType()) {
 					return expr;
 				} else {
+					//System.out.println(expr.getType());
+					//System.out.println(type);
 					error("NÃO É DO MESMO TIPO O RETORNO");
 				}
 			}
