@@ -1,0 +1,7 @@
+// VERIFICAR RETORNO DA FUNÇÃO SE BATE COM O MESMO TIPO
+void teste(){
+  return;
+}
+void main(){
+  return ;
+}

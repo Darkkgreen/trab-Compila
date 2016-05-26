@@ -1,5 +1,4 @@
-// print sem parâmetro
-
+// avaliando parâmetros de print
 int main(){
   int a;
   char b;
@@ -11,6 +10,5 @@ int main(){
   print("ehuehue");
   print(c);
   print(2.5232);
-  print();
 
 }

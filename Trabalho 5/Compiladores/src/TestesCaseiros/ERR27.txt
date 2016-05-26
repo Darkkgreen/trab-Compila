@@ -1,0 +1,8 @@
+// não é possível nomear funções com palavras reservadas
+void main(){
+
+}
+
+void void(){
+
+}
