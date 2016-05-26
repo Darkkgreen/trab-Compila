@@ -1,0 +1,4 @@
+// não é possível nomear uma variável com palavras reservadas
+void main(){
+  int void;
+}

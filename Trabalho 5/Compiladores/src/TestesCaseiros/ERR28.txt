@@ -1,0 +1,5 @@
+// não é possível definir '' com mais caracteres
+void main(){
+  char c;
+  c := 'abc';
+}
