@@ -34,11 +34,6 @@ public class Compiler {
 		pilha = 0;
 
 		return program();
-
-		// ver isso daqui pode estar errado
-		//		if (tokenPos != input.length) {
-		//			error("compile");
-		//		}
 	}
 
 	//Program ::= Decl
@@ -54,10 +49,12 @@ public class Compiler {
 			}
 			listProgram.add(aux);
 			aux = null;
+			// variáveis podem tero mesmo nome mesmo em funções diferentes...
+			symbolTable.removeLocalIdent();
 		}
 
 		if (flag == false) {
-			error("Não há nenhuma função main declarada!!!!!!!!!");
+			error("You must declare a main function.");
 		}
 
 		// verifcação semântica se tem o void main
@@ -95,14 +92,14 @@ public class Compiler {
 			if (ident != null) {
 				// verificando se não existe uma função com o mesmo nome
 				if (symbolTable.getInGlobal(ident) != null) {
-					error(": the name " + ident + " has already been declared!");
+					error("The name of function " + ident + " has already been declared!");
 				}
 				if (lexer.token == Symbol.LEFTPAR) {
 					lexer.nextToken();
 					formals = formals();
 
 					if ((formals != null) && (ident.equals("main"))) {
-						error("A função main não deve ter parâmetros!!");
+						error("The function 'main' should not have parameters.");
 					}
 					//if (formals != null) {
 					if (lexer.token == Symbol.RIGHTPAR) {
@@ -120,7 +117,7 @@ public class Compiler {
 					//}
 				}
 			} else {
-				error("fdecl : expected a name for function");
+				error("Expected a name for function");
 			}
 
 		}
@@ -188,7 +185,7 @@ public class Compiler {
 				auxiliarStmt = null;
 			}
 		} else {
-			error("stmtBlock: expected {");
+			error("Expected { to open the statement.");
 		}
 
 		if (lexer.token == Symbol.RIGHTBRACKET) {
@@ -196,7 +193,7 @@ public class Compiler {
 			lexer.nextToken();
 			return smtmblock;
 		} else {
-			error("stmtBlock: expected }");
+			error("Expected } to close the statement.");
 		}
 		return null;
 	}
@@ -209,7 +206,7 @@ public class Compiler {
 				lexer.nextToken();
 				return aux;
 			} else {
-				error("variableDecl: expected ;");
+				error("Expected a ';' after the declaration's variable.");
 				return null;
 			}
 		} else {
@@ -228,13 +225,13 @@ public class Compiler {
 			name = ident();
 			if (name != null) {
 				if (symbolTable.getInLocal(name) != null) {
-					error("variable: Variable \"" + name + "\" already exists!");
+					error("Variable \"" + name + "\" already exists!");
 				}
 				aux = new Variable(name, type);
 				symbolTable.putInLocal(name, aux);
 				return aux;
 			} else {
-				error("variable: The name of variable is not set, probably the name used \"" + lexer.getStringValue() + "\" is reserved"
+				error("The name of variable is not set, because the name used \"" + lexer.getStringValue() + "\" is reserved"
 					+ " or the first character is not a letter.");
 			}
 		}
@@ -253,7 +250,7 @@ public class Compiler {
 			lexer.nextToken();
 			return type;
 		} else if (lexer.getStringValue().toLowerCase().equals("char") || (lexer.getStringValue().toLowerCase().equals("int") || lexer.getStringValue().toLowerCase().equals("double"))) {
-			error("stdType : The type must be lowercase");
+			error("The type must be lowercase");
 		}
 
 		return null;
@@ -274,15 +271,22 @@ public class Compiler {
 						type.setArray(true);
 						type.setSize(aux);
 						lexer.nextToken();
+						if (type.getType() == Symbol.INTEGER) {
+							type.setType(Symbol.INTEGERARRAY);
+						} else if (type.getType() == Symbol.CHAR) {
+							type.setType(Symbol.CHARARRAY);
+						} else if (type.getType() == Symbol.DOUBLE) {
+							type.setType(Symbol.DOUBLEARRAY);
+						}
 						return type;
 					} else {
-						error("arrayType: expected ]");
+						error("Expected ]");
 						return null;
 					}
 				} else if (lexer.token == Symbol.MINUS) {
-					error("arrayType : Array size must not be negative");
+					error("Array size must not be negative");
 				} else {
-					error("arrayType: Missing array size");
+					error("Missing array size");
 				}
 			}
 			// como o construtor de type ja define false o array,
@@ -305,9 +309,9 @@ public class Compiler {
 		if ((aux = expr(false)) != null) {
 			if ((exprValido.isEmpty() == true)) {
 				if ((aux.getType() == Symbol.READCHAR) || (aux.getType() == Symbol.READINTEGER) || (aux.getType() == Symbol.READDOUBLE)) {
-					error("Stmt : functions like readChar, readInteger and readDouble must be declared after a :=");
+					error("Functions like readChar, readInteger and readDouble must be declared after a :=");
 				} else {
-					error("Expressão ta errada, parsa");
+					error("The expression declared is not valid.");
 				}
 			} else {
 				exprValido.pop();
@@ -315,7 +319,7 @@ public class Compiler {
 			if (lexer.token == Symbol.SEMICOLON) {
 				lexer.nextToken();
 			} else if (aux != null) {
-				error("stmt: expected \";\"");
+				error("Expected \";\"");
 			}
 			return new Stmt(null, null, false, null, aux, null);
 		}
@@ -382,23 +386,23 @@ public class Compiler {
 											lexer.nextToken();
 										}
 									} else {
-										error("ifStmt: expected [");
+										error("Expected '{' after the else statement");
 									}
 								}
 							}
 							ifstmt = new IfStmt(auxiliarExp, principal, opcional);
 							return ifstmt;
 						} else {
-							error("ifStmt: expected {");
+							error("Expected '{' in if statement");
 						}
 					} else {
-						error("ifStmt: expected )");
+						error("Expected ')' in if statement");
 					}
 				} else {
-					error("ifStmt: expected expression");
+					error("Expected expression in if statement");
 				}
 			} else {
-				error("ifStmt: expected (");
+				error("Expected '(' in if statement");
 			}
 		}
 		return null;
@@ -435,19 +439,19 @@ public class Compiler {
 								WhileStmt enquanto = new WhileStmt(arrayPrinc, auxiliarExp);
 								return enquanto;
 							} else {
-								error("whileStmt: expected }");
+								error("Expected '}' in while statement");
 							}
 						} else {
-							error("whileStmt: expected {");
+							error("Expected '{' in while statement");
 						}
 					} else {
-						error("whileStmt: expected )");
+						error("Expected ')' in while statement");
 					}
 				} else {
-					error("whileStmt: expected expression");
+					error("Expected expression in while statement");
 				}
 			} else {
-				error("whileStmt: expected (");
+				error("Expected '(' in while statement");
 			}
 		}
 		return null;
@@ -463,10 +467,10 @@ public class Compiler {
 					lexer.nextToken();
 					return true;
 				} else {
-					error("breakStmt: expected ;");
+					error("Expected a ';' after break");
 				}
 			} catch (EmptyStackException e) {
-				error("breakStmt: break out of a while");
+				error("Break out of a while");
 			}
 		}
 
@@ -491,7 +495,7 @@ public class Compiler {
 							listaExp.add(aux);
 							aux = null;
 						} else {
-							error("printStmt: expected expression after comma");
+							error("Expected expression after comma in print statement.");
 						}
 					}
 
@@ -502,17 +506,17 @@ public class Compiler {
 							PrintStmt imprime = new PrintStmt(listaExp);
 							return imprime;
 						} else {
-							error("printStmt : expected ;");
+							error("Expected ';' in print statement");
 						}
 
 					} else {
-						error("printStmt: expected )");
+						error("Expected ')' in print statement");
 					}
 				} else {
-					error("printStmt: expected print expression");
+					error("Expected a expression in print statement");
 				}
 			} else {
-				error("printStmt: expected (");
+				error("Expected '(' in print statement");
 			}
 		}
 
@@ -610,7 +614,7 @@ public class Compiler {
 			// tratando se for int := double
 			if (termAux.getType() == Symbol.DOUBLE) {
 				if (unary != null && unary.equals("!") == true) {
-					error("simExpr : it is not possible to use the operator ! with a double");
+					error("It is not possible to use the operator ! with a double");
 				}
 			}
 			return new SimExpr(unary, termAux, addop, termList, auxType);
@@ -657,7 +661,7 @@ public class Compiler {
 						auxType = Symbol.DOUBLE;
 						if (aux3.getType() == Symbol.DOUBLE) {
 							if (mulop.get(mulop.size() - 1).equals("%")) {
-								error("Term : operator % cannot be used between double");
+								error("Operator % cannot be used between double");
 							}
 						}
 					}
@@ -690,49 +694,81 @@ public class Compiler {
 				lexer.nextToken();
 				expr = expr(true);
 				if (expr != null) {
+					if ((lValue.getType().getType() == Symbol.READCHAR)
+						|| (lValue.getType().getType() == Symbol.READDOUBLE)
+						|| (lValue.getType().getType() == Symbol.READINTEGER)) {
+						error("readChar, readInteger and readDouble should be declared after a ':=', not before");
+					}
+
 					if (lValue.getType().getType() == Symbol.INTEGER) {
 //						System.out.println(expr.getType());
 						if ((expr.getType() == Symbol.DOUBLE) || (expr.getType() == Symbol.READDOUBLE)) {
-							error("Factor : you cannot set in a integer a double value");
+							error("You cannot set in a integer a double value");
 						} else if ((expr.getType() == Symbol.CHAR) || (expr.getType() == Symbol.READCHAR)) {
-							error("Factor : you cannot set in a integer a char value");
+							error("You cannot set in a integer a char value");
 						} else if (expr.getType() == Symbol.VOID) {
-							error("Factor : VOIDD VALUEEEEEE");
+							error("You cannot set a void value, because it is void");
+						} else if ((expr.getType() == Symbol.INTEGERARRAY) || (expr.getType() == Symbol.CHARARRAY)
+							|| expr.getType() == Symbol.DOUBLEARRAY) {
+							error("You cannot set in a integer value a array");
 						}
 					} else if (lValue.getType().getType() == Symbol.CHAR) {
 						simpleChar = lexer.getCharValue();
-//						System.out.println(expr.getType());
+//						System.out.irintln(expr.getType());
 						if ((expr.getType() == Symbol.DOUBLE) || (expr.getType() == Symbol.READDOUBLE)) {
-							error("Factor : you cannot set in a char a double value");
+							error("You cannot set in a char a double value");
 						} else if ((expr.getType() == Symbol.INTEGER) || (expr.getType() == Symbol.READINTEGER)) {
-							error("Factor : you cannot set in a char a integer value");
+							error("You cannot set in a char a integer value");
 						} else if (expr.getType() == Symbol.VOID) {
-							error("Factor : VOIDD VALUEEEEEE");
+							error("You cannot set a void value, because it is void");
 						} else if (expr.getType() == Symbol.STRING) {
 							if (lValue.getType().isArray() == true) {
 								if (lValue.getType().getSize() >= expr.getSimexpr().getTerm().getFactor().getSingleChar().length()) {
 									//tudo bem, da certo
 								} else {
-									error("O TAMANHO NAO DEU CERTO CARA");
+									error("The size of array isn't enough");
 								}
 							} else if (expr.getSimexpr().getTerm().getFactor().getSingleChar().length() > 1) {
-								error("O TAMANHO NÃO BATE CARA");
+								error("You cannot set into a char value a String more than 1 character");
 							}
+						} else if ((expr.getType() == Symbol.INTEGERARRAY) || (expr.getType() == Symbol.CHARARRAY)
+							|| expr.getType() == Symbol.DOUBLEARRAY) {
+							error("You cannot set in a char value a array");
 						}
 
 					} else if (lValue.getType().getType() == Symbol.DOUBLE) {
 						doublee = lexer.getStringValue();
-//						System.out.println(expr.getType());
+						System.out.println(expr.getType());
 						if ((expr.getType() == Symbol.INTEGER) || (expr.getType() == Symbol.READINTEGER)) {
-							error("Factor : you cannot set in a double a integer value");
+							error("You cannot set in a double a integer value");
 						} else if ((expr.getType() == Symbol.CHAR) || (expr.getType() == Symbol.READCHAR)) {
-							error("Factor : you cannot set in a double a char value");
+							error("You cannot set in a double a char value");
 						} else if (expr.getType() == Symbol.VOID) {
-							error("Factor : VOIDD VALUEEEEEE");
+							error("You cannot set a void value, because it is void");
+						} else if ((expr.getType() == Symbol.INTEGERARRAY) || (expr.getType() == Symbol.CHARARRAY)
+							|| expr.getType() == Symbol.DOUBLEARRAY) {
+							error("You cannot set in a double value a array");
+						}
+						// tratando os casos se for array
+					} else if ((lValue.getType().getType() == Symbol.INTEGERARRAY) || (lValue.getType().getType() == Symbol.CHARARRAY)
+						|| (lValue.getType().getType() == Symbol.DOUBLEARRAY)) {
+
+						if (expr.getType() == Symbol.STRING) {
+							if (lValue.getType().getSize() >= expr.getSimexpr().getTerm().getFactor().getSingleChar().length()) {
+								//tudo bem, da certo
+							} else {
+								error("The size of array isn't enough");
+							}
+						} else if ((expr.getType() == Symbol.INTEGERARRAY) || (expr.getType() == Symbol.CHARARRAY)
+							|| expr.getType() == Symbol.DOUBLEARRAY) {
+							error("You cannot set into a char value a String more than 1 character");
+						}
+						if ((expr.getType() == Symbol.INTEGER) || (expr.getType() == Symbol.CHAR) || (expr.getType() == Symbol.DOUBLE)) {
+							error("You cannot set a value to array");
 						}
 					}
 				} else {
-					error("factor: There is no expression");
+					error("There is no expression");
 				}
 
 			}
@@ -754,7 +790,7 @@ public class Compiler {
 			if (expr != null) {
 				if (lexer.token == Symbol.RIGHTPAR) {
 					lexer.nextToken();
-					return new Factor(null, expr, null, null, null, simpleChar, null, null);
+					return new Factor(null, expr, null, null, null, simpleChar, expr.getType(), null);
 				}
 			}
 
@@ -823,7 +859,7 @@ public class Compiler {
 				// deixar o Call tratar
 				return null;
 			} else {
-				error("lValue There is no variable called \"" + ident + "\" in this scope");
+				error("There is no variable called \"" + ident + "\" in this scope");
 			}
 			if (lexer.token == Symbol.LEFTSQUARE) {
 				if (aux.getType().isArray() == true) {
@@ -839,13 +875,20 @@ public class Compiler {
 										if (expr.getSimexpr().getUnary() != null) {
 											// então é só número!
 											if (expr.getSimexpr().getUnary().equals("-") == true) {
-												error("lValue : there is no negative index");
+												error("There is no negative index");
 											}
 										}
 
 										// ok não é número negativo, verifico o tamanho
 										if (expr.getSimexpr().getTerm().getFactor().getNumber() >= aux.getType().getSize()) {
-											error("lValue : the index surpass the array's size");
+											error("The index surpass the array's size");
+										}
+										if (aux.getType().getType() == Symbol.INTEGERARRAY) {
+											auxType.setType(Symbol.INTEGER);
+										} else if (aux.getType().getType() == Symbol.CHARARRAY) {
+											auxType.setType(Symbol.CHAR);
+										} else if (aux.getType().getType() == Symbol.DOUBLEARRAY) {
+											auxType.setType(Symbol.DOUBLE);
 										}
 
 									}
@@ -859,12 +902,21 @@ public class Compiler {
 						}
 					}
 				} else {
-					error("lValue : Variable \"" + aux.getName() + "\" is not a array");
+					error("Variable \"" + aux.getName() + "\" is not a array");
 				}
 
 			} else {
+				// essa verificação tem que ser feita no factor :/ infelizmente
+				// inclusive no call e outras funções q tem atribuição
 				if ((aux.getType().isArray() == true) && (auxType.getType() != Symbol.CHAR)) {
-					error("lValue : you must declare which index do you want to use");
+					if (aux.getType().getType() == Symbol.INTEGER) {
+						auxType.setType(Symbol.INTEGERARRAY);
+					} else if (aux.getType().getType() == Symbol.CHAR) {
+						auxType.setType(Symbol.CHARARRAY);
+					} else if (aux.getType().getType() == Symbol.DOUBLE) {
+						auxType.setType(Symbol.DOUBLEARRAY);
+					}
+					//error("lValue : you must declare which index do you want to use");
 				}
 				return new LValue(ident, null, auxType);
 			}
@@ -914,20 +966,19 @@ public class Compiler {
 	}
 
 	private void error(String function) {
-		// if (lexer.tokenPos == 0) {
-		// 	lexer.tokenPos = 1;
-		// } else if (lexer.tokenPos >= input.length) {
-		// 	lexer.tokenPos = input.length;
-		// }
-		// System.out.println();
-		// String strInput = new String(input, lexer.tokenPos - 1, input.length - lexer.tokenPos + 1);
-		// String strError = "Error at file " + nomeArquivo + " \"" + strInput + "\" in " + function + "";
-		// System.out.println(strError);
-		// throw new RuntimeException(strError);
+		 if (lexer.tokenPos == 0) {
+		 	lexer.tokenPos = 1;
+		 } else if (lexer.tokenPos >= input.length) {
+		 	lexer.tokenPos = input.length;
+		 }
+		 System.out.println();
+		 String strError = "\n" + nomeArquivo + " : "+lexer.getLineNumber()+" : " + function;
+		 System.out.println(strError);
+		 throw new RuntimeException(strError);
 
-		String strInput = new String(input, lexer.tokenPos - 1, input.length - lexer.tokenPos + 1);
-		String strError = "Error at file " + nomeArquivo + " \"" + strInput + "\" in " + function + "";
-		throw new RuntimeException(strError);
+		//String strInput = new String(input, lexer.tokenPos - 1, input.length - lexer.tokenPos + 1);
+	//	String strError = "Error at file " + nomeArquivo + " \"" + strInput + "\" in " + function + "";
+	//	throw new RuntimeException(strError);
 	}
 
 	private Expr returnStmt(Symbol type) {
@@ -941,7 +992,9 @@ public class Compiler {
 				} else if (type == expr.getType()) {
 					return expr;
 				} else {
-					error("NÃO É DO MESMO TIPO O RETORNO");
+					//System.out.println(expr.getType());
+					//System.out.println(type);
+					error("The return value is not the same as the declared function");
 				}
 			}
 
@@ -976,7 +1029,7 @@ public class Compiler {
 		if (ident != null) {
 			// verificação semântica
 			if (symbolTable.getInGlobal(ident) == null) {
-				error("Call : there is no function called " + ident);
+				error("There is no function called " + ident);
 			}
 
 			if (lexer.token == Symbol.LEFTPAR) {
@@ -999,22 +1052,22 @@ public class Compiler {
 				if ((listExpr != null) && (listV != null)) {
 					// quando ambos tem parâmetros
 					if (listExpr.size() != listV.size()) {
-						error("Não é o mesmo número de parâmetros!!");
+						error("The numbers of parameters passed to function is not the same as declared");
 					} else {
 						// verificação de tipos de parâmetros
 						CompositeExpr auxComp = null;
 						for (Expr s : listExpr) {
 							auxComp = (CompositeExpr) s;
 							if (auxComp.getType() != listV.get(i).getType().getType()) {
-								error("O parâmetro número " + (i + 1) + " não é do mesmo tipo da função chamada");
+								error("The parameter number " + (i + 1) + " is not the same type as declared in fucntion");
 							}
 							i++;
 						}
 					}
 				} else if ((listExpr != null) && (listV == null)) {
-					error("Esta sendo passado parâmetros para uma função que não tem!!!");
+					error("You are passing parameters to a function that dont have parameters");
 				} else if ((listExpr == null) && (listV != null)) {
-					error("A função que esta sendo invocada deve receber parâmetros!!");
+					error("The function that has been called should receive parameters");
 				} else if ((listExpr == null) && (listV == null)) {
 					// apenas pra facilitar a leitura do código
 					// nessa situação o programa deve aceitar...
@@ -1024,7 +1077,7 @@ public class Compiler {
 					lexer.nextToken();
 					return new Call(listExpr, ident);
 				} else {
-					error("Call : expected a )");
+					error("Expected a ')' in call statement");
 				}
 			}
 		}

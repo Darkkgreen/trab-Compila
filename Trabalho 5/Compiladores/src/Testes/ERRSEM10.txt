@@ -1,9 +1,0 @@
-/*
-	ERRSEM10: Funcoes de leitura devem estar em expressoes de atribuicao
-	Linha: 8;
-*/
-
-void main () {
-
-	readChar();
-}

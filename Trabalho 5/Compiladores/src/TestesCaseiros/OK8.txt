@@ -1,0 +1,8 @@
+// é possível definir em char os caracters \0 \n e \t
+
+void main(){
+  char c;
+  c := '\0';
+  c := '\n';
+  c := '\t';
+}
