@@ -31,6 +31,23 @@ public class StmtBlock extends Expr{
 
 	@Override
 	public StringBuffer genC(Integer tabs) {
+                StringBuffer aux = new StringBuffer();
+                StringBuffer tab = new StringBuffer();
+                Integer i = 0;
+                
+                aux.append("{\n");
+                
+                for (Variable var : listV){
+			aux.append(var.genC(tabs+1));
+			aux.append("\n");
+                }
+                
+                for (Stmt princ : listS) {
+			aux.append(princ.genC(tabs+1));
+			aux.append("\n");
+                }
+                
+                aux.append("}\n");
 		return null;
 	}
 

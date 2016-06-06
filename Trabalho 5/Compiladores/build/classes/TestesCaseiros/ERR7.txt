@@ -1,0 +1,11 @@
+// não é permitido definir tipos de outros tipos
+// aqui em questão de ser array ou não.
+// devemos tratar o b no caso, como ponteiro
+// o que não é do mesmo tipo
+void main(){
+  int a;
+  int [5] b;
+
+  a := b[3];
+  a := b;
+}

@@ -73,19 +73,26 @@ public class Stmt extends Expr {
 
 	public StringBuffer genC(Integer tabs) {
 		StringBuffer aux = new StringBuffer();
+                StringBuffer tab = new StringBuffer();
+                
+                Integer i;
+                for(i = 0; i < tabs; i++){
+                    tab.append("\t");
+                }
+                
+                aux.append(tab);
 
 		if (this.se != null) {
-			aux = se.genC(tabs);
+			aux.append(se.genC(tabs));
 		} else if (this.enquanto != null) {
-			aux = enquanto.genC(tabs);
+			aux.append(enquanto.genC(tabs));
 		} else if (this.parada != false) {
-			aux.append("break;");
+                        aux.append("break;\n");
 		} else if (this.escrever != null) {
-			
-			aux = escrever.genC(tabs);
+			aux.append(escrever.genC(tabs));
 		} else if (this.expressao != null) {
-			aux = expressao.genC(tabs);
-			aux.append(";");
+			aux.append(expressao.genC(tabs));
+			aux.append(";\n");
 		}
 
 		return aux;

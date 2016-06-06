@@ -41,7 +41,17 @@ public class FunctionDecl extends Expr {
 
 	@Override
 	public StringBuffer genC(Integer tabs) {
-		return null;
+		StringBuffer aux = new StringBuffer();
+                
+                aux.append(type.genC(tabs));
+                aux.append(" ");
+                aux.append(ident);
+                aux.append("(");
+                aux.append(formals.genC(tabs));
+                aux.append(")");
+                aux.append(stmt.genC(tabs+1));
+                
+                return aux;
 	}
 
 	

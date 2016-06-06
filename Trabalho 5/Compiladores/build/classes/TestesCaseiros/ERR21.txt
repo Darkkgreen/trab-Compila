@@ -1,0 +1,7 @@
+// ESTOURANDO O LIMITE DO VETOR DE CHAR
+
+void main(){
+  char [5] c;
+
+  c := "rona092301283091832180";
+}

@@ -2,7 +2,7 @@ package AST;
 
 public class Variable extends Expr{
 	private Type type;
-	private String name; // nome da variável no caso feita pelo indent
+	private String name; // nome da variável no caso feita pelo ident
 
 	public Variable(String name, Type type){
 		this.type = type;

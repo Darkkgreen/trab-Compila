@@ -49,50 +49,32 @@ public class IfStmt {
 
 	public StringBuffer genC(Integer tabs) {
 		StringBuffer aux = new StringBuffer("\n");
-
-		Integer i;
-		for (i = 0; i < tabs; i++) {
-			aux.append("\t");
-		}
-
+                Integer i;
+                StringBuffer tab = new StringBuffer();
+                
+                for (i = 0; i < tabs; i++) {
+                    tab.append("\t");
+                }
+                
+                aux.append(tab);
 		aux.append("if(");
-		StringBuffer exp;
-		StringBuffer st;
-		StringBuffer sto;
-
-		exp = expr.genC(tabs);
-		aux.append(exp);
+		aux.append(expr.genC(tabs));
 		aux.append("){\n");
 
 		for (Stmt princ : stmt) {
-			for (i = 0; i < tabs; i++) {
-				aux.append("\t");
-			}
-			aux.append("\t");
-			st = princ.genC(tabs+1);
-			aux.append(st);
+			aux.append(princ.genC(tabs+1));
 			aux.append("\n");
 		}
-
-		for (i = 0; i < tabs; i++) {
-			aux.append("\t");
-		}
+                aux.append(tab);
 		aux.append("}");
 
 		if (!opcional.isEmpty()) {
 			aux.append("else{\n");
 			for (Stmt op : opcional) {
-				for (i = 0; i < tabs; i++) {
-					aux.append("\t");
-				}
-				aux.append("\t");
-				sto = op.genC(tabs);
-				aux.append(sto);
+				aux.append(op.genC(tabs+1));
 				aux.append("\n");
 			}
-			for (i = 0; i < tabs; i++) {
-				aux.append("\t");
-			}
+                        aux.append(tab);
 			aux.append("}\n");
 		}
 

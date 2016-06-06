@@ -1,0 +1,16 @@
+// print sem parâmetro
+
+int main(){
+  int a;
+  char b;
+  double c;
+  print(a);
+  print(1234);
+  print(b);
+  print('b');
+  print("ehuehue");
+  print(c);
+  print(2.5232);
+  print();
+
+}

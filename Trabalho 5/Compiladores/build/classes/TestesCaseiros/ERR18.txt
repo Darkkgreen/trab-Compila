@@ -1,0 +1,15 @@
+// VALOR VOID NA FUÇNÃO DE RETORNO
+// NÃO SE DEVE UTILIZAR ELA COMO DEFINIÇÃO
+// DE JEITO NENHUM
+int ronaldo(){
+
+}
+void rivaldo(){
+
+}
+void main(){
+  int a;
+
+  a := ronaldo();
+  a := rivaldo();
+}

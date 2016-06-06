@@ -1,0 +1,7 @@
+// quando receber uma constante do mesmo tamanho do char
+// deve permitir essa definição
+void main(){
+  char c;
+
+  c := "r";
+}

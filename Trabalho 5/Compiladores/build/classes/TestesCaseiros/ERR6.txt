@@ -1,0 +1,7 @@
+// não é permitido definir tipos de outros tipos
+void main(){
+  double a;
+  char c;
+
+  a := c;
+}

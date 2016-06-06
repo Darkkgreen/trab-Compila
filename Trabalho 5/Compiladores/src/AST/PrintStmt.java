@@ -27,24 +27,30 @@ public class PrintStmt {
     }
     
      public StringBuffer genC(Integer tabs){
-        StringBuffer aux = new StringBuffer("printf(");
-        StringBuffer exp;
+        StringBuffer aux = new StringBuffer();
+        StringBuffer tab = new StringBuffer();
+        Integer i;
+        
+        for (i = 0; i < tabs; i++) {
+            tab.append("\t");
+        }       
+        
+        aux.append(tab);
+        aux.append("printf(");
         
         if(!lista.isEmpty()){
             if(lista.size() == 1){
-                exp = lista.get(0).genC(tabs);
-                aux.append(exp);
+                aux.append(lista.get(0).genC(tabs));
             }else{
                 for(Expr e:lista){
-                    exp = e.genC(tabs);
-                    aux.append(exp);
+                    aux.append(e.genC(tabs));
                     if(lista.size() != (lista.lastIndexOf(e) - 1)){
                         aux.append(", ");
                     }
                 }
             }
         }
-        aux.append(");");
+        aux.append(");\n");
         
         return aux;
     }

@@ -1,0 +1,8 @@
+// operador ! com inteiro, funciona
+void main(){
+  int a;
+
+  if(!a){
+    a := a;
+  }
+}

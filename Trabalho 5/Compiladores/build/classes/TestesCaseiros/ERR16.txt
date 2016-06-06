@@ -1,0 +1,10 @@
+// NÃO É POSSÍVEL DECLARA UMA FUNÇÃO QUE JA EXISTE
+void ronaldo(){
+
+}
+int ronaldo(){
+
+}
+void main(){
+
+}

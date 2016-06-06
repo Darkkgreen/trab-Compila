@@ -1,0 +1,7 @@
+// ESTOURANDO O LIMITE PRA UM CHAR APENAS
+
+void main(){
+  char c;
+
+  c := "rona092301283091832180";
+}
