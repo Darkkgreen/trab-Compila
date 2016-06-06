@@ -51,6 +51,11 @@ public class Lexer {
 		keywordsTable.put("int", Symbol.INTEGER);
 		keywordsTable.put("double", Symbol.DOUBLE);
 		keywordsTable.put("char", Symbol.CHAR);
+
+		keywordsTable.put("intArray", Symbol.INTEGERARRAY);
+		keywordsTable.put("doubleArray", Symbol.DOUBLEARRAY);
+		keywordsTable.put("charArray", Symbol.CHARARRAY);
+
 		keywordsTable.put("string", Symbol.STRING);
 
 	}
