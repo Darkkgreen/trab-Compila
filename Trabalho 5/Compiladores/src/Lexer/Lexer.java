@@ -6,8 +6,10 @@ import AST.*;
 public class Lexer {
 
 	//public Lexer(char[] input, CompilerError error) {
-	public Lexer(char[] input) {
+	private String nomeArquivo;
+	public Lexer(char[] input, String nome) {
 		this.input = input;
+		this.nomeArquivo = nome;
 		// add an end-of-file label to make it easy to do the lexer
 		input[input.length - 1] = '\0';
 		// number of the current line
@@ -69,7 +71,7 @@ public class Lexer {
 			if (ch == '\n') {
 				lineNumber++;
 			}
-			System.out.print(input[tokenPos]);
+			// System.out.print(input[tokenPos]);
 			tokenPos++;
 		}
 		if (ch == '\0') {
@@ -77,7 +79,7 @@ public class Lexer {
 		} else if (input[tokenPos] == '/' && input[tokenPos + 1] == '/') {
 			// comment found
 			while (input[tokenPos] != '\0' && input[tokenPos] != '\n') {
-				System.out.print(input[tokenPos]);
+				// System.out.print(input[tokenPos]);
 				tokenPos++;
 			}
 
@@ -85,15 +87,15 @@ public class Lexer {
 		} else if (input[tokenPos] == '/' && input[tokenPos + 1] == '*') {
 			// comment found
 			while (input[tokenPos] != '\0' && (input[tokenPos] != '*' || input[tokenPos + 1] != '/')) {
-				System.out.print(input[tokenPos]);
+				// System.out.print(input[tokenPos]);
 				tokenPos++;
 			}
 			if (input[tokenPos] == '\0') {
 				error("Lexer : unterminated comment");
 			}
-			System.out.print(input[tokenPos]);
+			// System.out.print(input[tokenPos]);
 			tokenPos++;
-			System.out.print(input[tokenPos]);
+			// System.out.print(input[tokenPos]);
 			tokenPos++;
 			nextToken();
 		} else if (Character.isLetter(ch)) {
@@ -101,7 +103,7 @@ public class Lexer {
 			StringBuffer ident = new StringBuffer();
 			while (Character.isLetter(input[tokenPos])) {
 				if ((input[tokenPos] >= 'a' && input[tokenPos] <= 'z') || (input[tokenPos] >= 'A' && input[tokenPos] <= 'Z')) {
-					System.out.print(input[tokenPos]);
+					// System.out.print(input[tokenPos]);
 					ident.append(input[tokenPos]);
 					tokenPos++;
 				} else {
@@ -122,16 +124,16 @@ public class Lexer {
 			// get a number
 			StringBuffer number = new StringBuffer();
 			while (Character.isDigit(input[tokenPos])) {
-				System.out.print(input[tokenPos]);
+				// System.out.print(input[tokenPos]);
 				number.append(input[tokenPos]);
 				tokenPos++;
 			}
 			if (input[tokenPos] == '.') {
 				number.append(input[tokenPos]);
-				System.out.print(input[tokenPos]);
+				// System.out.print(input[tokenPos]);
 				tokenPos++;
 				while (Character.isDigit(input[tokenPos])) {
-					System.out.print(input[tokenPos]);
+					// System.out.print(input[tokenPos]);
 					number.append(input[tokenPos]);
 					tokenPos++;
 				}
@@ -142,16 +144,16 @@ public class Lexer {
 				try {
 					numberValue = Integer.valueOf(number.toString()).intValue();
 				} catch (NumberFormatException e) {
-					System.out.println("Number out of limits");
+					// System.out.println("Number out of limits");
 				}
 				stringValue = number.toString();
 				if (numberValue >= MaxValueInteger) {
-					System.out.println("Number out of limits");
+					// System.out.println("Number out of limits");
 				}
 			}
 
 		} else {
-			System.out.print(input[tokenPos]);
+			// System.out.print(input[tokenPos]);
 			tokenPos++;
 
 			switch (ch) {
@@ -175,7 +177,7 @@ public class Lexer {
 				case '|':
 					if (input[tokenPos] == '|') {
 						token = Symbol.OR;
-						System.out.print(input[tokenPos]);
+						// System.out.print(input[tokenPos]);
 						tokenPos++;
 					} else {
 						token = Symbol.PIPE;
@@ -195,7 +197,7 @@ public class Lexer {
 				case '&':
 					if (input[tokenPos] == '&') {
 						token = Symbol.AND;
-						System.out.print(input[tokenPos]);
+						// System.out.print(input[tokenPos]);
 						tokenPos++;
 					} else {
 						token = Symbol.AND;
@@ -257,32 +259,42 @@ public class Lexer {
 					break;
 				case ':':
 					if (input[tokenPos] == '=') {
-						System.out.print(input[tokenPos]);
+						// System.out.print(input[tokenPos]);
 						tokenPos++;
 						token = Symbol.DEFINITION;
 					} else {
 						error("in Lexer : Expected \"=\" after \":\"");
 					}
 					break;
-				case '\'':
-					System.out.print(input[tokenPos]);
-					if (input[tokenPos] == '\'') {
-						error("Expected one character but was found ' ");
-					} else {
-						charValue = Character.toString(input[tokenPos]);
-						tokenPos++;
-						token = Symbol.QUOTE;
-						System.out.print(input[tokenPos]);
+					case '\'':
+						// System.out.print(input[tokenPos]);
+						if (input[tokenPos] == '\'') {
+							error("Expected one character but was found ' ");
+						} else if (input[tokenPos] == '\\') {
+							tokenPos++;
+							if ((input[tokenPos] == '0') || (input[tokenPos] == 'n') || (input[tokenPos] == 't')) {
+								StringBuffer ident = new StringBuffer();
+
+								charValue = "\\"+Character.toString(input[tokenPos]);
+								token = Symbol.QUOTE;
+								tokenPos++;
+							}
+						} else {
+							charValue = Character.toString(input[tokenPos]);
+							tokenPos++;
+							token = Symbol.QUOTE;
+							// System.out.print(input[tokenPos]);
+						}
+
 						if (input[tokenPos] != '\'') {
 							error("Expected ' but was found another characters");
 						} else {
 							tokenPos++;
 						}
-					}
 
-					break;
+						break;
 				case '\"':
-					System.out.print(input[tokenPos]);
+					// System.out.print(input[tokenPos]);
 					if (input[tokenPos] == '\"') {
 						error("Expected a string, but found \" ");
 					} else {
@@ -293,7 +305,7 @@ public class Lexer {
 								error("Não conseguimos achar o outro \"");
 							}
 							tokenPos++;
-							System.out.print(input[tokenPos]);
+							// System.out.print(input[tokenPos]);
 							ident.append(charValue);
 						}
 						stringValue = ident.toString();
@@ -309,7 +321,7 @@ public class Lexer {
 					break;
 
 				default:
-					System.out.println("Invalid Character: '" + ch + "'");
+					// System.out.println("Invalid Character: '" + ch + "'");
 					// error.signal("Invalid Character: '" + ch + "'");
 					throw new RuntimeException("Invalid Character: '" + ch + "'");
 				}
@@ -382,8 +394,7 @@ public class Lexer {
 			tokenPos = input.length;
 		}
 		System.out.println();
-		String strInput = new String(input, tokenPos - 1, input.length - tokenPos + 1);
-		String strError = "Error at \"" + strInput + "\" in " + function + "";
+		String strError = "\n" + nomeArquivo + " : " + getLineNumber() + " : " + function;
 		System.out.println(strError);
 		throw new RuntimeException(strError);
 	}

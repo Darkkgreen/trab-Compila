@@ -17,8 +17,8 @@ public class Program {
 		this.fdecl = fdecl;
 	}
 
-	public StringBuffer genC(String nome, String dir) throws IOException {
-		File file = new File(dir+nome);
+	public StringBuffer genC(String nome) throws IOException {
+		File file = new File(nome);
 		file.getParentFile().mkdirs();
 		FileWriter writer = new FileWriter(file);
 		

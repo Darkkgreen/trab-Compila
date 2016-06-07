@@ -27,7 +27,7 @@ public class Compiler {
 	public ArrayList<Program> compile(char[] p_input, String nome) {
 		this.nomeArquivo = nome;
 		input = p_input;
-		lexer = new Lexer(p_input);
+		lexer = new Lexer(p_input, nome);
 		lexer.nextToken();
 		symbolTable = new SymbolTable();
 		whiles = new Stack();
@@ -916,11 +916,17 @@ public class Compiler {
 							}
 						}
 						if (aux.getType().getType() == Symbol.INTEGERARRAY) {
-							auxType.setType(Symbol.INTEGER);
+							// dessa forma que esta comentado abaixo, ele esta mudando via referência
+							// isso pode complicar quando é feito uma chamada de função, pois como
+							// foi mudada durante execução, o compilador não consegue definir se é um array
+							//auxType.setType(Symbol.INTEGER);
+							auxType = new Type(Symbol.INTEGER, auxType.isArray(), auxType.getSize());
 						} else if (aux.getType().getType() == Symbol.CHARARRAY) {
-							auxType.setType(Symbol.CHAR);
+							//auxType.setType(Symbol.CHAR);
+							auxType = new Type(Symbol.CHAR, auxType.isArray(), auxType.getSize());
 						} else if (aux.getType().getType() == Symbol.DOUBLEARRAY) {
-							auxType.setType(Symbol.DOUBLE);
+							//auxType.setType(Symbol.DOUBLE);
+							auxType = new Type(Symbol.DOUBLE, auxType.isArray(), auxType.getSize());
 						}
 						if (lexer.token == Symbol.RIGHTSQUARE) {
 							lexer.nextToken();
@@ -1090,7 +1096,11 @@ public class Compiler {
 						for (Expr s : listExpr) {
 							auxComp = (CompositeExpr) s;
 							if (auxComp.getType() != listV.get(i).getType().getType()) {
-								error("The parameter number " + (i + 1) + " is not the same type as declared in function" + auxComp.getType() + " " + listV.get(i).getType().getType());
+								if ((auxComp.getType() == Symbol.NUMBER) && (listV.get(i).getType().getType() == Symbol.INTEGER)) {
+									// ok
+								} else {
+									error("The parameter number " + (i + 1) + " is not the same type as declared in function" + auxComp.getType() + " " + listV.get(i).getType().getType());
+								}
 							}
 							i++;
 						}
