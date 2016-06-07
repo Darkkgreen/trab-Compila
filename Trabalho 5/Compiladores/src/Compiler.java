@@ -18,6 +18,7 @@ public class Compiler {
 	private char[] input;
 	private Stack whiles;
 	private Stack exprValido;
+	private Stack returnValido;
 	private int pilha;
 	private boolean relationOP = false;
 	private String nomeArquivo;
@@ -31,6 +32,7 @@ public class Compiler {
 		symbolTable = new SymbolTable();
 		whiles = new Stack();
 		exprValido = new Stack();
+		returnValido = new Stack();
 		pilha = 0;
 
 		return program();
@@ -78,6 +80,8 @@ public class Compiler {
 				type = new Type(Symbol.VOID, false, 0);
 				lexer.nextToken();
 			}
+		} else {
+			returnValido.push(type);
 		}
 
 		if (type != null) {
@@ -128,6 +132,7 @@ public class Compiler {
 
 	private Formals formals() {
 		ArrayList<Variable> listV = null;
+		boolean flag = false;
 
 		Variable aux = variable();
 
@@ -138,13 +143,24 @@ public class Compiler {
 
 			if (lexer.token == Symbol.COMMA) {
 				lexer.nextToken();
-				while ((aux = variable()) != null) {
+				aux = variable();
+
+				if (aux == null) {
+					error("Expected a variable after a comma");
+				}
+				while (aux != null) {
 					listV.add(aux);
 					if (lexer.token == Symbol.COMMA) {
 						lexer.nextToken();
+						flag = true;
 					} else {
+						flag = false;
 						break;
 					}
+					aux = variable();
+				}
+				if (flag == true) {
+					error("Expected a variable after a comma");
 				}
 			}
 
@@ -182,10 +198,20 @@ public class Compiler {
 			}
 			while ((auxiliarStmt = stmt(type)) != null) {
 				stmt.add(auxiliarStmt);
+				if (auxiliarStmt.getReturnFunc() != null) {
+					if (returnValido.isEmpty() == false) {
+						returnValido.pop();
+					}
+				}
 				auxiliarStmt = null;
 			}
 		} else {
 			error("Expected { to open the statement.");
+		}
+
+		if (returnValido.isEmpty() != true) {
+			// quando essa pilha não esta vazia
+			error("Expected a return for this function");
 		}
 
 		if (lexer.token == Symbol.RIGHTBRACKET) {
@@ -738,7 +764,6 @@ public class Compiler {
 
 					} else if (lValue.getType().getType() == Symbol.DOUBLE) {
 						doublee = lexer.getStringValue();
-						System.out.println(expr.getType());
 						if ((expr.getType() == Symbol.INTEGER) || (expr.getType() == Symbol.READINTEGER)) {
 							error("You cannot set in a double a integer value");
 						} else if ((expr.getType() == Symbol.CHAR) || (expr.getType() == Symbol.READCHAR)) {
@@ -755,7 +780,9 @@ public class Compiler {
 
 						if (expr.getType() == Symbol.STRING) {
 							if (lValue.getType().getSize() >= expr.getSimexpr().getTerm().getFactor().getSingleChar().length()) {
-								//tudo bem, da certo
+								if ((lValue.getType().getType() == Symbol.INTEGERARRAY) || (lValue.getType().getType() == Symbol.DOUBLEARRAY)) {
+									error("You cannot set a String into a Integer Array or a Double Array");
+								}
 							} else {
 								error("The size of array isn't enough");
 							}
@@ -776,7 +803,7 @@ public class Compiler {
 		} else if ((lexer.token == Symbol.NUMBER) || (lexer.token == Symbol.DOUBLE)) {
 			Factor aux = null;
 			if (lexer.token == Symbol.NUMBER) {
-				aux = new Factor(null, null, null, lexer.getNumberValue(), null, simpleChar, Symbol.INTEGER, null);
+				aux = new Factor(null, null, null, lexer.getNumberValue(), null, simpleChar, Symbol.NUMBER, null);
 			} else {
 				aux = new Factor(null, null, null, null, lexer.getStringValue(), simpleChar, Symbol.DOUBLE, null);
 			}
@@ -883,19 +910,18 @@ public class Compiler {
 										if (expr.getSimexpr().getTerm().getFactor().getNumber() >= aux.getType().getSize()) {
 											error("The index surpass the array's size");
 										}
-										if (aux.getType().getType() == Symbol.INTEGERARRAY) {
-											auxType.setType(Symbol.INTEGER);
-										} else if (aux.getType().getType() == Symbol.CHARARRAY) {
-											auxType.setType(Symbol.CHAR);
-										} else if (aux.getType().getType() == Symbol.DOUBLEARRAY) {
-											auxType.setType(Symbol.DOUBLE);
-										}
 
 									}
 								}
 							}
 						}
-
+						if (aux.getType().getType() == Symbol.INTEGERARRAY) {
+							auxType.setType(Symbol.INTEGER);
+						} else if (aux.getType().getType() == Symbol.CHARARRAY) {
+							auxType.setType(Symbol.CHAR);
+						} else if (aux.getType().getType() == Symbol.DOUBLEARRAY) {
+							auxType.setType(Symbol.DOUBLE);
+						}
 						if (lexer.token == Symbol.RIGHTSQUARE) {
 							lexer.nextToken();
 							return new LValue(ident, expr, auxType);
@@ -966,19 +992,19 @@ public class Compiler {
 	}
 
 	private void error(String function) {
-		 if (lexer.tokenPos == 0) {
-		 	lexer.tokenPos = 1;
-		 } else if (lexer.tokenPos >= input.length) {
-		 	lexer.tokenPos = input.length;
-		 }
-		 System.out.println();
-		 String strError = "\n" + nomeArquivo + " : "+lexer.getLineNumber()+" : " + function;
-		 System.out.println(strError);
-		 throw new RuntimeException(strError);
+		if (lexer.tokenPos == 0) {
+			lexer.tokenPos = 1;
+		} else if (lexer.tokenPos >= input.length) {
+			lexer.tokenPos = input.length;
+		}
+		System.out.println();
+		String strError = "\n" + nomeArquivo + " : " + lexer.getLineNumber() + " : " + function;
+		System.out.println(strError);
+		throw new RuntimeException(strError);
 
 		//String strInput = new String(input, lexer.tokenPos - 1, input.length - lexer.tokenPos + 1);
-	//	String strError = "Error at file " + nomeArquivo + " \"" + strInput + "\" in " + function + "";
-	//	throw new RuntimeException(strError);
+		//	String strError = "Error at file " + nomeArquivo + " \"" + strInput + "\" in " + function + "";
+		//	throw new RuntimeException(strError);
 	}
 
 	private Expr returnStmt(Symbol type) {
@@ -989,11 +1015,16 @@ public class Compiler {
 				lexer.nextToken();
 				if (expr == null) {
 					return expr;
+				} else if (type == Symbol.INTEGER) {
+					if ((expr.getType() == Symbol.INTEGER) || (expr.getType() == Symbol.NUMBER)) {
+						// vida louca
+						return expr;
+					} else {
+						error("The return value is not the same as the declared function");
+					}
 				} else if (type == expr.getType()) {
 					return expr;
 				} else {
-					//System.out.println(expr.getType());
-					//System.out.println(type);
 					error("The return value is not the same as the declared function");
 				}
 			}
@@ -1059,7 +1090,7 @@ public class Compiler {
 						for (Expr s : listExpr) {
 							auxComp = (CompositeExpr) s;
 							if (auxComp.getType() != listV.get(i).getType().getType()) {
-								error("The parameter number " + (i + 1) + " is not the same type as declared in fucntion");
+								error("The parameter number " + (i + 1) + " is not the same type as declared in function" + auxComp.getType() + " " + listV.get(i).getType().getType());
 							}
 							i++;
 						}
@@ -1075,6 +1106,7 @@ public class Compiler {
 
 				if (lexer.token == Symbol.RIGHTPAR) {
 					lexer.nextToken();
+					exprValido.push(1);
 					return new Call(listExpr, ident);
 				} else {
 					error("Expected a ')' in call statement");

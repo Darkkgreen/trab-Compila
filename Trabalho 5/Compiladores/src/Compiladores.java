@@ -71,8 +71,6 @@ public class Compiladores {
 				System.out.println("==========================================================================");
 
 			} catch (RuntimeException e) {
-				System.out.println();
-				System.out.println(e);
 				System.out.println("==========================================================================");
 			}
 
