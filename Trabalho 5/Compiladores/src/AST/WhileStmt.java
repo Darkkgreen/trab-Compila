@@ -39,27 +39,24 @@ public class WhileStmt {
 
 	public StringBuffer genC(Integer tabs) {
 		StringBuffer aux = new StringBuffer();
-                StringBuffer exp;
-		StringBuffer st;
+                StringBuffer tab = new StringBuffer();
 
 		Integer i;
 		for (i = 0; i < tabs; i++) {
-			aux.append("\t");
+			tab.append("\t");
 		}
+                
+                aux.append(tab);
 		aux.append("while(");
-
-		exp = expr.genC(tabs);
-		aux.append(exp);
+		aux.append(expr.genC(0));
 		aux.append("){\n");
 
 		for (Stmt s : stmt) {
-			st = s.genC(tabs + 1);
-			aux.append(st);
+			aux.append(s.genC(tabs + 1));
 			aux.append("\n");
 		}
-		for (i = 0; i < tabs; i++) {
-			aux.append("\t");
-		}
+                
+                aux.append(tab);
 		aux.append("}\n");
 
 		return aux;

@@ -43,13 +43,13 @@ public class FunctionDecl extends Expr {
 	public StringBuffer genC(Integer tabs) {
 		StringBuffer aux = new StringBuffer();
                 
-                aux.append(type.genC(tabs));
+                aux.append(type.genC(0));
                 aux.append(" ");
                 aux.append(ident);
                 aux.append("(");
-                aux.append(formals.genC(tabs));
+                aux.append(formals.genC(0));
                 aux.append(")");
-                aux.append(stmt.genC(tabs+1));
+                aux.append(stmt.genC(0));
                 
                 return aux;
 	}

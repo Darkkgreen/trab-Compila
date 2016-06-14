@@ -19,15 +19,14 @@ public class Variable extends Expr{
 
 	public StringBuffer genC(Integer tabs){
                 StringBuffer aux = new StringBuffer();
+                StringBuffer tab = new StringBuffer();
 		
 		Integer i;
 		for(i=0;i<tabs;i++)
-			aux.append("\t");
-		
-                StringBuffer tipo;
+			tab.append("\t");
                 
-		tipo = type.genC(tabs);
-                aux.append(tipo);
+		aux.append(tab);
+                aux.append(type.genC(0));
                 aux.append(" ");
 		aux.append(name);
 		aux.append(";");

@@ -26,7 +26,7 @@ public class Compiladores {
 
 		ArrayList<String> nomeArquivos = new ArrayList<String>();
 		String dir = System.getProperty("user.dir");
-		dir = dir.concat("/src/Testes");
+		dir = dir.concat("\\src\\TestesCaseiros");
 
 		System.out.println(dir);
 
@@ -77,7 +77,7 @@ public class Compiladores {
 			if (program != null) {
 				try {
 					for(Program s : program){
-						//s.genC(nome.replace(".txt", ".c"), dir.replace("Testes", "arquivosC/"));
+						s.genC(nome.replace(".txt", ".c"));
 					}
 				} catch (RuntimeException e) {
 					System.out.println("Não foi possível gerar C, erro de " + e);

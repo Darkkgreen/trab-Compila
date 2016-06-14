@@ -52,19 +52,14 @@ public class Term extends Expr{
 
 	public StringBuffer genC(Integer tabs){
             StringBuffer aux = new StringBuffer();
-            StringBuffer fact;
             Integer contador = 0;
-            Factor fac = null;
 	    
-            fact = factor.genC(tabs);
-            aux.append(fact);
+            aux.append(factor.genC(tabs));
             
             if(muloplist != null && !muloplist.isEmpty()){
                 for(String s: muloplist){
                     aux.append(" " + s);
-                    fac = factorlist.get(contador);
-                    fact = fac.genC(tabs);
-                    aux.append(" " + fact);
+                    aux.append(" " + factorlist.get(contador).genC(0));
                     contador++;
                 }
             }

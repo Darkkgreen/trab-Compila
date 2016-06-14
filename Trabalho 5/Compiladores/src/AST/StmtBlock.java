@@ -33,8 +33,13 @@ public class StmtBlock extends Expr{
 	public StringBuffer genC(Integer tabs) {
                 StringBuffer aux = new StringBuffer();
                 StringBuffer tab = new StringBuffer();
-                Integer i = 0;
                 
+                Integer i;
+		for (i = 0; i < tabs; i++) {
+			tab.append("\t");
+		}
+                
+                aux.append(tab);
                 aux.append("{\n");
                 
                 for (Variable var : listV){
@@ -47,8 +52,10 @@ public class StmtBlock extends Expr{
 			aux.append("\n");
                 }
                 
+                aux.append(tab);
                 aux.append("}\n");
-		return null;
+                
+		return aux;
 	}
 
 }

@@ -49,8 +49,8 @@ public class IfStmt {
 
 	public StringBuffer genC(Integer tabs) {
 		StringBuffer aux = new StringBuffer("\n");
-                Integer i;
                 StringBuffer tab = new StringBuffer();
+                Integer i;
                 
                 for (i = 0; i < tabs; i++) {
                     tab.append("\t");
@@ -58,7 +58,7 @@ public class IfStmt {
                 
                 aux.append(tab);
 		aux.append("if(");
-		aux.append(expr.genC(tabs));
+		aux.append(expr.genC(0));
 		aux.append("){\n");
 
 		for (Stmt princ : stmt) {

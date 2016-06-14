@@ -102,8 +102,6 @@ public class Factor extends Expr {
 
 	public StringBuffer genC(Integer tabs) {
 		StringBuffer aux = new StringBuffer();
-		StringBuffer lvalu;
-		StringBuffer exp;
 
 		Integer i;
 		if ((lvalue != null) && (expr != null)) {
@@ -114,27 +112,23 @@ public class Factor extends Expr {
 				aux.append(expr.genC(tabs));
 				aux.append(lvalue.genC(tabs) + ")");
 			} else {
-				lvalu = lvalue.genC(tabs);
-				exp = expr.genC(tabs);
 				for (i = 0; i < tabs; i++) {
 					aux.append("\t");
 				}
-				aux.append(lvalu);
+				aux.append(lvalue.genC(tabs));
 				aux.append(" = ");
-				aux.append(exp);
+				aux.append(expr.genC(tabs));
 			}
 
 		} else if (lvalue != null) {
-			lvalu = lvalue.genC(tabs);
-			aux.append(lvalu);
+			aux.append(lvalue.genC(0));
 		} else if (number != null) {
 			aux.append(number);
 		} else if (numberDouble != null) {
 			aux.append(numberDouble);
 		} else if (expr != null) {
 			aux.append('(');
-			exp = expr.genC(tabs);
-			aux.append(exp);
+			aux.append(expr.genC(0));
 			aux.append(')');
 		} else if (function != null) {
 			if (function.equals("readChar()")) {

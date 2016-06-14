@@ -41,16 +41,19 @@ public class CompositeExpr extends Expr{
 
 	public StringBuffer genC(Integer tabs) {
                 StringBuffer aux = new StringBuffer();
-                StringBuffer simp;
-                StringBuffer exp;
+                StringBuffer tab = new StringBuffer();
+                Integer i;
                 
-		simp = simexpr.genC(tabs);
-                aux.append(simp);
+                for (i = 0; i < tabs; i++) {
+                    tab.append("\t");
+		}
+                
+                aux.append(tab);
+                aux.append(simexpr.genC(0));
                 
                 if(relOp != null && expr != null){
                     aux.append(" "+ relOp +" ");
-                    exp = expr.genC(tabs);
-                    aux.append(exp);
+                    aux.append(expr.genC(0));
                 }
                 
                 return aux;

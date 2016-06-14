@@ -17,23 +17,25 @@ public class SimExpr extends Expr {
 
 	public StringBuffer genC(Integer tabs){
                 StringBuffer aux = new StringBuffer();
-                StringBuffer ter;
+                StringBuffer tab = new StringBuffer();
                 Integer contador = 0;
-                Term termo = null;
+                
+                Integer i;
+		for (i = 0; i < tabs; i++) {
+			tab.append("\t");
+		}
+                
+                aux.append(tab);
                 
                 if(unary != null)
                     aux.append(unary);
-		
-		
-                ter = term.genC(tabs);
-                aux.append(ter);
+                
+                aux.append(term.genC(0));
                 
                 if(addop != null && !addop.isEmpty()){
                     for(String s: addop){
                         aux.append(" " + s);
-                        termo = termList.get(contador);
-                        ter = termo.genC(tabs);
-                        aux.append(" " + ter);
+                        aux.append(" " + termList.get(contador).genC(0));
                         contador++;
                     }
                 }

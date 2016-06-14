@@ -17,19 +17,18 @@ public class Program {
 		this.fdecl = fdecl;
 	}
 
-	public StringBuffer genC(String nome) throws IOException {
+	public void genC(String nome) throws IOException {
 		File file = new File(nome);
 		file.getParentFile().mkdirs();
 		FileWriter writer = new FileWriter(file);
 		
 		StringBuffer aux = new StringBuffer();
-
                 aux = fdecl.genC(0);
+                
+                System.out.println(aux);
 		
 		writer.append(aux);
 		writer.close();
-
-		return aux;
 	}
 
 }

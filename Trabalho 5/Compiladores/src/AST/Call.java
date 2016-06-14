@@ -31,7 +31,31 @@ public class Call extends Expr{
 
 	@Override
 	public StringBuffer genC(Integer tabs) {
-		return null;
+            StringBuffer aux = new StringBuffer();
+            StringBuffer tab = new StringBuffer();
+            Integer i;
+            
+            for (i = 0; i < tabs; i++) {
+                tab.append("\t");
+            }
+            
+            aux.append(ident);
+            aux.append("(");
+            
+            if(actuals.size() == 1){
+                aux.append(actuals.get(0).genC(0));
+            }else{
+                for(Expr e:actuals){
+                    aux.append(e.genC(0));
+                    if(actuals.size() != (actuals.lastIndexOf(e) - 1)){
+                        aux.append(", ");
+                    }
+                }
+            }
+            
+            aux.append(")\n");
+            
+            return aux;
 	}
 	
 }

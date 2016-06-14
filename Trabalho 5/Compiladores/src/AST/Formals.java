@@ -32,7 +32,22 @@ public class Formals extends Expr{
 
 	@Override
 	public StringBuffer genC(Integer tabs) {
-		return null;
+            StringBuffer aux = new StringBuffer();
+            
+            if(!listV.isEmpty()){
+                if(listV.size() == 1){
+                    aux.append(listV.get(0).genC(0));
+                }else{
+                    for(Variable v:listV){
+                        aux.append(v.genC(0));
+                        if(listV.size() != (listV.lastIndexOf(v) - 1)){
+                            aux.append(", ");
+                        }
+                    }
+                }
+            }
+            
+            return aux;
 	}
 	
 }

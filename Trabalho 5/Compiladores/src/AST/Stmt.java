@@ -79,19 +79,19 @@ public class Stmt extends Expr {
                 for(i = 0; i < tabs; i++){
                     tab.append("\t");
                 }
-                
-                aux.append(tab);
 
 		if (this.se != null) {
 			aux.append(se.genC(tabs));
 		} else if (this.enquanto != null) {
 			aux.append(enquanto.genC(tabs));
 		} else if (this.parada != false) {
+                        aux.append(tab);
                         aux.append("break;\n");
 		} else if (this.escrever != null) {
 			aux.append(escrever.genC(tabs));
 		} else if (this.expressao != null) {
-			aux.append(expressao.genC(tabs));
+                        aux.append(tab);
+			aux.append(expressao.genC(0));
 			aux.append(";\n");
 		}
 
