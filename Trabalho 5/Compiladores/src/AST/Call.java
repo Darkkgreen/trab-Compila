@@ -47,13 +47,13 @@ public class Call extends Expr{
             }else{
                 for(Expr e:actuals){
                     aux.append(e.genC(0));
-                    if(actuals.size() != (actuals.lastIndexOf(e) - 1)){
+                    if(actuals.size() != (actuals.lastIndexOf(e) + 1)){
                         aux.append(", ");
                     }
                 }
             }
             
-            aux.append(")\n");
+            aux.append(")");
             
             return aux;
 	}

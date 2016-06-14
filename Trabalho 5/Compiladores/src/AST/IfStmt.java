@@ -48,7 +48,7 @@ public class IfStmt {
 	}
 
 	public StringBuffer genC(Integer tabs) {
-		StringBuffer aux = new StringBuffer("\n");
+		StringBuffer aux = new StringBuffer();
                 StringBuffer tab = new StringBuffer();
                 Integer i;
                 

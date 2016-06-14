@@ -56,7 +56,7 @@ public class Main {
 		if (program != null) {
 			try {
 				for (Program s : program) {
-					s.genC(nomeC);
+//					s.genC(nomeC);
 				}
 			} catch (RuntimeException e) {
 				System.out.println("Não foi possível gerar C, erro de " + e);

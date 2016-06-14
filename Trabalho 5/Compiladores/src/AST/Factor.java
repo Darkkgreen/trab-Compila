@@ -119,9 +119,10 @@ public class Factor extends Expr {
 				aux.append(" = ");
 				aux.append(expr.genC(tabs));
 			}
-
 		} else if (lvalue != null) {
 			aux.append(lvalue.genC(0));
+                } else if (call != null){
+                        aux.append(call.genC(0));
 		} else if (number != null) {
 			aux.append(number);
 		} else if (numberDouble != null) {

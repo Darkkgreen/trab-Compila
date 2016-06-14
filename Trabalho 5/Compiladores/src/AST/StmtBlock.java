@@ -47,6 +47,8 @@ public class StmtBlock extends Expr{
 			aux.append("\n");
                 }
                 
+                aux.append("\n");
+                
                 for (Stmt princ : listS) {
 			aux.append(princ.genC(tabs+1));
 			aux.append("\n");

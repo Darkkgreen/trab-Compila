@@ -40,7 +40,7 @@ public class Formals extends Expr{
                 }else{
                     for(Variable v:listV){
                         aux.append(v.genC(0));
-                        if(listV.size() != (listV.lastIndexOf(v) - 1)){
+                        if(listV.size() != (listV.lastIndexOf(v) + 1)){
                             aux.append(", ");
                         }
                     }

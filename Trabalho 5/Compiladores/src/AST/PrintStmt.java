@@ -13,6 +13,7 @@ import java.util.ArrayList;
  */
 public class PrintStmt {
     private ArrayList<Expr> lista;
+    private String escrita;
     
     public ArrayList<Expr> getLista() {
         return lista;
@@ -22,8 +23,9 @@ public class PrintStmt {
         this.lista.add(expr);
     }
 
-    public PrintStmt(ArrayList<Expr> lista) {
+    public PrintStmt(ArrayList<Expr> lista, String escrita) {
         this.lista = lista;
+        this.escrita = escrita;
     }
     
      public StringBuffer genC(Integer tabs){
@@ -38,7 +40,13 @@ public class PrintStmt {
         aux.append(tab);
         aux.append("printf(");
         
-        if(!lista.isEmpty()){
+        if(escrita != null){
+            aux.append("\"" + escrita + "\"");
+            if(lista.size() != 0)
+                aux.append(", ");
+        }
+        
+        if(lista.size() != 0){
             if(lista.size() == 1){
                 aux.append(lista.get(0).genC(tabs));
             }else{

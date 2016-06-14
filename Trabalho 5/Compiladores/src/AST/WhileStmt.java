@@ -53,11 +53,11 @@ public class WhileStmt {
 
 		for (Stmt s : stmt) {
 			aux.append(s.genC(tabs + 1));
-			aux.append("\n");
+                        aux.append("\n");
 		}
                 
                 aux.append(tab);
-		aux.append("}\n");
+		aux.append("}");
 
 		return aux;
 	}

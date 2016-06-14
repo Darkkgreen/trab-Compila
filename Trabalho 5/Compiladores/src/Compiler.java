@@ -42,6 +42,7 @@ public class Compiler {
 	private ArrayList<Program> program() {
 		ArrayList<Program> listProgram = new ArrayList<Program>();
 		boolean flag = false;
+                Integer i = 0;
 
 		Program aux = null;
 
@@ -134,7 +135,7 @@ public class Compiler {
 		ArrayList<Variable> listV = null;
 		boolean flag = false;
 
-		Variable aux = variable();
+		Variable aux = variable(true);
 
 		if (aux != null) {
 			listV = new ArrayList<Variable>();
@@ -143,7 +144,7 @@ public class Compiler {
 
 			if (lexer.token == Symbol.COMMA) {
 				lexer.nextToken();
-				aux = variable();
+				aux = variable(true);
 
 				if (aux == null) {
 					error("Expected a variable after a comma");
@@ -157,7 +158,7 @@ public class Compiler {
 						flag = false;
 						break;
 					}
-					aux = variable();
+					aux = variable(true);
 				}
 				if (flag == true) {
 					error("Expected a variable after a comma");
@@ -226,7 +227,7 @@ public class Compiler {
 
 	//VariableDecl ::= Variable ';'
 	private Variable variableDecl() {
-		Variable aux = variable();
+		Variable aux = variable(false);
 		if (aux != null) {
 			if (lexer.token == Symbol.SEMICOLON) {
 				lexer.nextToken();
@@ -241,7 +242,7 @@ public class Compiler {
 	}
 
 	// Variable ::= Type Ident
-	private Variable variable() {
+	private Variable variable(Boolean formals) {
 		Variable aux = null;
 		Type type = null;
 		String name = null;
@@ -253,7 +254,7 @@ public class Compiler {
 				if (symbolTable.getInLocal(name) != null) {
 					error("Variable \"" + name + "\" already exists!");
 				}
-				aux = new Variable(name, type);
+				aux = new Variable(name, type, formals);
 				symbolTable.putInLocal(name, aux);
 				return aux;
 			} else {
@@ -507,13 +508,19 @@ public class Compiler {
 	private PrintStmt printStmt() {
 		ArrayList<Expr> listaExp = new ArrayList<Expr>();
 		Expr aux;
+                String escrita;
 
 		if (lexer.token == Symbol.PRINT) {
 			lexer.nextToken();
 			if (lexer.token == Symbol.LEFTPAR) {
 				lexer.nextToken();
-				if ((aux = expr(true)) != null) {
-					listaExp.add(aux);
+                                if(!lexer.getStringValue().isEmpty())
+                                    escrita = lexer.getStringValue();
+                                else
+                                    escrita = null;
+				if ((aux = expr(true)) != null || escrita != null) {
+                                        if(aux != null)
+                                            listaExp.add(aux);
 					aux = null;
 					while (lexer.token == Symbol.COMMA) {
 						lexer.nextToken();
@@ -529,7 +536,7 @@ public class Compiler {
 						lexer.nextToken();
 						if (lexer.token == Symbol.SEMICOLON) {
 							lexer.nextToken();
-							PrintStmt imprime = new PrintStmt(listaExp);
+							PrintStmt imprime = new PrintStmt(listaExp, escrita);
 							return imprime;
 						} else {
 							error("Expected ';' in print statement");

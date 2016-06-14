@@ -5,7 +5,9 @@
  */
 import AST.Program;
 import java.io.BufferedReader;
+import java.io.File;
 import java.io.FileReader;
+import java.io.FileWriter;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
@@ -26,7 +28,10 @@ public class Compiladores {
 
 		ArrayList<String> nomeArquivos = new ArrayList<String>();
 		String dir = System.getProperty("user.dir");
+                String dirTestes = System.getProperty("user.dir");
 		dir = dir.concat("\\src\\TestesCaseiros");
+                dirTestes = dir.concat("\\GenC");
+                Boolean criaArq;
 
 		System.out.println(dir);
 
@@ -40,6 +45,7 @@ public class Compiladores {
 		Collections.sort(nomeArquivos);
 
 		for (String nome : nomeArquivos) {
+                        criaArq = false;
 			System.out.println(nome);
 			String entrada = new String();
 			String linha = null;
@@ -68,21 +74,34 @@ public class Compiladores {
 			try {
 				program = compiler.compile(input, nome);
 				System.out.println("OK!!!!");
-				System.out.println("==========================================================================");
-
+                                criaArq = true;
 			} catch (RuntimeException e) {
-				System.out.println("==========================================================================");
+                                criaArq = false;
 			}
+                        
+                        if(criaArq == true){
+                            File file = new File(dirTestes + "/" + nome.replace(".txt", ".c"));
+                            file.getParentFile().mkdirs();
+                            FileWriter writer = new FileWriter(file);
+                            StringBuffer aux;
+                            Integer i = 0;
 
-			if (program != null) {
-				try {
-					for(Program s : program){
-						s.genC(nome.replace(".txt", ".c"));
-					}
-				} catch (RuntimeException e) {
-					System.out.println("Não foi possível gerar C, erro de " + e);
-				}
-			}
+                            if (program != null) {
+                                    try {
+                                            for(Program s : program){
+                                                    if(i != 0)
+                                                        writer.append("\n");
+                                                    aux = s.genC(0);
+                                                    writer.append(aux);
+                                                    i++;
+                                            }
+                                    } catch (RuntimeException e) {
+                                            System.out.println("Não foi possível gerar C, erro de " + e);
+                                    }
+                                    writer.close();
+                            }
+                        }
+                        System.out.println("==========================================================================");
 
 		}
 	}

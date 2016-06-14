@@ -86,13 +86,13 @@ public class Stmt extends Expr {
 			aux.append(enquanto.genC(tabs));
 		} else if (this.parada != false) {
                         aux.append(tab);
-                        aux.append("break;\n");
+                        aux.append("break;");
 		} else if (this.escrever != null) {
 			aux.append(escrever.genC(tabs));
 		} else if (this.expressao != null) {
                         aux.append(tab);
 			aux.append(expressao.genC(0));
-			aux.append(";\n");
+			aux.append(";");
 		}
 
 		return aux;

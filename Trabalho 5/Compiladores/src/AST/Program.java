@@ -17,18 +17,11 @@ public class Program {
 		this.fdecl = fdecl;
 	}
 
-	public void genC(String nome) throws IOException {
-		File file = new File(nome);
-		file.getParentFile().mkdirs();
-		FileWriter writer = new FileWriter(file);
-		
+	public StringBuffer genC(Integer tabs) throws IOException {
 		StringBuffer aux = new StringBuffer();
                 aux = fdecl.genC(0);
                 
-                System.out.println(aux);
-		
-		writer.append(aux);
-		writer.close();
+                return aux;
 	}
 
 }

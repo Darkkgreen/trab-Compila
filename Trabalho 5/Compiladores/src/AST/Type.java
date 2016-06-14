@@ -46,7 +46,18 @@ public class Type extends Expr{
 	}
 	
 	public StringBuffer genC(Integer tabs){
-                StringBuffer aux = new StringBuffer(type.toString());
+                StringBuffer aux = new StringBuffer();
+                
+                if(type.toString() == Symbol.INTEGERARRAY.toString()){
+                    aux.append("int");
+                }else if(type.toString() == Symbol.DOUBLEARRAY.toString()){
+                    aux.append("double");
+                }else if(type.toString() == Symbol.CHARARRAY.toString()){
+                    aux.append("char");
+                }else if(type.toString() ==  Symbol.VOID.toString()){
+                    aux.append("void");
+                }else
+                    aux.append(type.toString());
                 
 		if(this.isArray() == true){
 			aux.append("["+this.getSize()+"]");

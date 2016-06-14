@@ -47,7 +47,8 @@ public class FunctionDecl extends Expr {
                 aux.append(" ");
                 aux.append(ident);
                 aux.append("(");
-                aux.append(formals.genC(0));
+                if(formals != null)
+                    aux.append(formals.genC(0));
                 aux.append(")");
                 aux.append(stmt.genC(0));
                 
