@@ -32,6 +32,9 @@ public class SimExpr extends Expr {
                 
                 aux.append(term.genC(0));
                 
+                
+                
+               
                 if(addop != null && !addop.isEmpty()){
                     for(String s: addop){
                         aux.append(" " + s);

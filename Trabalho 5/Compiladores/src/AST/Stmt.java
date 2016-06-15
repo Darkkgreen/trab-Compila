@@ -93,7 +93,11 @@ public class Stmt extends Expr {
                         aux.append(tab);
 			aux.append(expressao.genC(0));
 			aux.append(";");
-		}
+		} else if (returnFunc != null){
+                        aux.append(tab);
+                        aux.append("return " + returnFunc.genC(0));
+                        aux.append(";");                    
+                }
 
 		return aux;
 	}

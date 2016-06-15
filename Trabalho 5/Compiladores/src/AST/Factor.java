@@ -117,7 +117,13 @@ public class Factor extends Expr {
 				}
 				aux.append(lvalue.genC(tabs));
 				aux.append(" = ");
-				aux.append(expr.genC(tabs));
+                                if(expr.getType() == Symbol.CHAR){
+                                    aux.append("\'");
+                                    aux.append(expr.getSimexpr().getTerm().getFactor().getSingleChar());
+                                    aux.append("\'");
+                                }else{
+                                    aux.append(expr.genC(tabs));
+                                }
 			}
 		} else if (lvalue != null) {
 			aux.append(lvalue.genC(0));

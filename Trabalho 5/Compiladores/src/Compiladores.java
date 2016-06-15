@@ -29,8 +29,8 @@ public class Compiladores {
 		ArrayList<String> nomeArquivos = new ArrayList<String>();
 		String dir = System.getProperty("user.dir");
                 String dirTestes = System.getProperty("user.dir");
-		dir = dir.concat("\\src\\TestesCaseiros");
-                dirTestes = dir.concat("\\GenC");
+		dir = dir.concat("/src/TestesCaseiros");
+                dirTestes = dir.concat("/GenC");
                 Boolean criaArq;
 
 		System.out.println(dir);
