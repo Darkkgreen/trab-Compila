@@ -51,7 +51,7 @@ public class PrintStmt {
                 aux.append("%s");
             }else if(((CompositeExpr)lista.get(i)).getType() == Symbol.DOUBLE){
                 aux.append("%f");
-            }else if(((CompositeExpr)lista.get(i)).getType() == Symbol.INTEGER){
+            }else if((((CompositeExpr)lista.get(i)).getType() == Symbol.INTEGER)||(((CompositeExpr)lista.get(i)).getType() == Symbol.NUMBER)){
                 aux.append("%d");
             }
             aux2.append(", ");

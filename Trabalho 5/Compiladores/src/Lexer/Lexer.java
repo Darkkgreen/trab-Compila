@@ -393,9 +393,9 @@ public class Lexer {
 		} else if (tokenPos >= input.length) {
 			tokenPos = input.length;
 		}
-		System.out.println();
-		String strError = "\n" + nomeArquivo + " : " + getLineNumber() + " : " + function;
-		System.out.println(strError);
+		//System.out.println();
+		String strError = nomeArquivo + " : " + getLineNumber() + " : " + function + "\n" + getCurrentLine()+"\n";
+		//System.out.println(strError);
 		throw new RuntimeException(strError);
 	}
 

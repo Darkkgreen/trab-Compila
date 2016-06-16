@@ -35,7 +35,11 @@ public class Compiler {
         returnValido = new Stack();
         pilha = 0;
 
+        try{
         return program();
+        }catch (RuntimeException e){
+            throw new RuntimeException(e);
+        }
     }
 
     //Program ::= Decl
@@ -1009,9 +1013,9 @@ public class Compiler {
         } else if (lexer.tokenPos >= input.length) {
             lexer.tokenPos = input.length;
         }
-        System.out.println();
-        String strError = "\n" + nomeArquivo + " : " + lexer.getLineNumber() + " : " + function;
-        System.out.println(strError);
+        //System.out.println();
+        String strError = "\n" + nomeArquivo + " : " + lexer.getLineNumber() + " : " + function + "\n" + lexer.getCurrentLine()+"\n";
+        //System.out.println(strError);
         throw new RuntimeException(strError);
 
         //String strInput = new String(input, lexer.tokenPos - 1, input.length - lexer.tokenPos + 1);

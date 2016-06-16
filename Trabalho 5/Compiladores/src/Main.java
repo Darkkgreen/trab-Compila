@@ -54,7 +54,12 @@ public class Main {
         Compiler compiler = new Compiler();
 
         ArrayList<Program> program = null;
+        try{
         program = compiler.compile(input, nome);
+        }catch (RuntimeException e){
+            System.out.println();
+            System.out.print(e);
+        }
 
         File file = new File(nomeC);
 

@@ -87,7 +87,6 @@ public class Compiladores {
                 Integer i = 0;
 
                 if (program != null) {
-                    try {
                         writer.append("#include <stdio.h>\n");
                         writer.append("#include <stdlib.h>\n\n");
                         for (Program s : program) {
@@ -98,9 +97,7 @@ public class Compiladores {
                             writer.append(aux);
                             i++;
                         }
-                    } catch (RuntimeException e) {
-                        System.out.println("Não foi possível gerar C, erro de " + e);
-                    }
+
                     writer.close();
                 }
             }
