@@ -1,3 +1,9 @@
+
+/* 
+* Trabalho de Compiladores - Final
+* Gustavo Rodrigues RA 489999
+* Henrique Teruo Eihara RA 490016
+ */
 package Lexer;
 
 public enum Symbol {

@@ -1,7 +1,7 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
+/* 
+* Trabalho de Compiladores - Final
+* Gustavo Rodrigues RA 489999
+* Henrique Teruo Eihara RA 490016
  */
 import AST.Program;
 import java.io.BufferedReader;
@@ -45,6 +45,7 @@ public class Main {
         } catch (IOException e) {
             System.err.printf("Erro na abertura do arquivo: %s.\n",
                     e.getMessage());
+            System.exit(0);
         }
         
 
@@ -59,6 +60,7 @@ public class Main {
         }catch (RuntimeException e){
             System.out.println();
             System.out.print(e);
+            System.exit(0);
         }
 
         File file = new File(nomeC);

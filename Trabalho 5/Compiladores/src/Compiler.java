@@ -1030,7 +1030,7 @@ public class Compiler {
             if (lexer.token == Symbol.SEMICOLON) {
                 lexer.nextToken();
                 if (expr == null) {
-                    return expr;
+                    return new CompositeExpr(null,null,null,null);
                 } else if (type == Symbol.INTEGER) {
                     if ((expr.getType() == Symbol.INTEGER) || (expr.getType() == Symbol.NUMBER)) {
                         // vida louca
