@@ -147,7 +147,9 @@ public class Factor extends Expr {
 			}
 		} else if (singleChar.equals('\0')) {
 			aux.append("\'" + singleChar + "\'");
-		}
+		}else if(singleChar.equals('\0') == false){
+                    aux.append("\""+singleChar+"\"");
+                }
 
 		return aux;
 	}

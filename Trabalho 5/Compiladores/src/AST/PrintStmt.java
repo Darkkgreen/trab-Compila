@@ -5,6 +5,7 @@
  */
 package AST;
 
+import Lexer.Symbol;
 import java.util.ArrayList;
 
 /**
@@ -31,7 +32,9 @@ public class PrintStmt {
 
     public StringBuffer genC(Integer tabs) {
         StringBuffer aux = new StringBuffer();
+        StringBuffer aux2 = new StringBuffer();
         StringBuffer tab = new StringBuffer();
+
         Integer i;
 
         for (i = 0; i < tabs; i++) {
@@ -39,24 +42,23 @@ public class PrintStmt {
         }
 
         aux.append(tab);
-        aux.append("printf(");
+        aux.append("printf(\"");
 
-        if (escrita != null) {
-            aux.append("\"" + escrita + "\"");
-        }
-
-        if (lista.size() != 0) {
-            if (lista.size() == 1) {
-                aux.append(", ");
-                aux.append(lista.get(0).genC(0));
-            } else if (lista.size() > 1) {
-                for (i = 1; i < lista.size(); i++) {
-                    aux.append(", ");
-                    aux.append(lista.get(i).genC(0));
-
-                }
+        for (i = 0; i < lista.size(); i++) {
+            if(((CompositeExpr)lista.get(i)).getType() == Symbol.CHAR){
+                aux.append("%c");
+            }else if(((CompositeExpr)lista.get(i)).getType() == Symbol.STRING){
+                aux.append("%s");
+            }else if(((CompositeExpr)lista.get(i)).getType() == Symbol.DOUBLE){
+                aux.append("%f");
+            }else if(((CompositeExpr)lista.get(i)).getType() == Symbol.INTEGER){
+                aux.append("%d");
             }
+            aux2.append(", ");
+            aux2.append(lista.get(i).genC(0));
         }
+        aux.append("\"");
+        aux.append(aux2);        
         aux.append(");\n");
 
         return aux;
