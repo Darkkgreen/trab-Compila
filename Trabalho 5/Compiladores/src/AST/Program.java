@@ -19,7 +19,7 @@ public class Program {
 
 	public StringBuffer genC(Integer tabs) throws IOException {
 		StringBuffer aux = new StringBuffer();
-                aux = fdecl.genC(0);
+                aux.append(fdecl.genC(0));
                 
                 return aux;
 	}

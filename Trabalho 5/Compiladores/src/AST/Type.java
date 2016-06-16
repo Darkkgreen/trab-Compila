@@ -59,10 +59,6 @@ public class Type extends Expr{
                 }else
                     aux.append(type.toString());
                 
-		if(this.isArray() == true){
-			aux.append("["+this.getSize()+"]");
-		}
-                
                 return aux;
 	}
 }

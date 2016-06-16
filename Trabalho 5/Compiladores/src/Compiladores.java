@@ -21,89 +21,92 @@ import java.util.Scanner;
  */
 public class Compiladores {
 
-	/**
-	 * @param args the command line arguments
-	 */
-	public static void main(String[] args) throws IOException {
+    /**
+     * @param args the command line arguments
+     */
+    public static void main(String[] args) throws IOException {
 
-		ArrayList<String> nomeArquivos = new ArrayList<String>();
-		String dir = System.getProperty("user.dir");
-                String dirTestes = System.getProperty("user.dir");
-		dir = dir.concat("/src/TestesCaseiros");
-                dirTestes = dir.concat("/GenC");
-                Boolean criaArq;
+        ArrayList<String> nomeArquivos = new ArrayList<String>();
+        String dir = System.getProperty("user.dir");
+        String dirTestes = System.getProperty("user.dir");
+        dir = dir.concat("/src/TestesCaseiros");
+        dirTestes = dir.concat("/GenC");
+        Boolean criaArq;
 
-		System.out.println(dir);
+        System.out.println(dir);
 
-		// pega todos os arquivos e adiciona um arrayList
-		// de forma recursiva
-		Files.walk(Paths.get(dir)).forEach(filePath -> {
-			if (Files.isRegularFile(filePath)) {
-				nomeArquivos.add(filePath.getFileName().toString());
-			}
-		});
-		Collections.sort(nomeArquivos);
+        // pega todos os arquivos e adiciona um arrayList
+        // de forma recursiva
+        Files.walk(Paths.get(dir)).forEach(filePath -> {
+            if (Files.isRegularFile(filePath)) {
+                nomeArquivos.add(filePath.getFileName().toString());
+            }
+        });
+        Collections.sort(nomeArquivos);
 
-		for (String nome : nomeArquivos) {
-                        criaArq = false;
-			System.out.println(nome);
-			String entrada = new String();
-			String linha = null;
-			try {
-				FileReader arq = new FileReader(dir + "/" + nome);
-				BufferedReader lerArq = new BufferedReader(arq);
+        for (String nome : nomeArquivos) {
+            criaArq = false;
+            System.out.println(nome);
+            String entrada = new String();
+            String linha = null;
+            try {
+                FileReader arq = new FileReader(dir + "/" + nome);
+                BufferedReader lerArq = new BufferedReader(arq);
 
-				linha = lerArq.readLine();
-				while (linha != null) {
-					entrada = entrada.concat(linha).concat("\n");
-					linha = lerArq.readLine();
+                linha = lerArq.readLine();
+                while (linha != null) {
+                    entrada = entrada.concat(linha).concat("\n");
+                    linha = lerArq.readLine();
 
-				}
-				arq.close();
-			} catch (IOException e) {
-				System.err.printf("Erro na abertura do arquivo: %s.\n",
-					e.getMessage());
-			}
+                }
+                arq.close();
+            } catch (IOException e) {
+                System.err.printf("Erro na abertura do arquivo: %s.\n",
+                        e.getMessage());
+            }
 
-			entrada = entrada.concat(" ");
+            entrada = entrada.concat(" ");
 
-			char[] input = entrada.toCharArray();
-			Compiler compiler = new Compiler();
+            char[] input = entrada.toCharArray();
+            Compiler compiler = new Compiler();
 
-			ArrayList<Program> program = null;
-			try {
-				program = compiler.compile(input, nome);
-				System.out.println("OK!!!!");
-                                criaArq = true;
-			} catch (RuntimeException e) {
-                                criaArq = false;
-			}
-                        
-                        if(criaArq == true){
-                            File file = new File(dirTestes + "/" + nome.replace(".txt", ".c"));
-                            file.getParentFile().mkdirs();
-                            FileWriter writer = new FileWriter(file);
-                            StringBuffer aux;
-                            Integer i = 0;
+            ArrayList<Program> program = null;
+            try {
+                program = compiler.compile(input, nome);
+                System.out.println("OK!!!!");
+                criaArq = true;
+            } catch (RuntimeException e) {
+                criaArq = false;
+            }
 
-                            if (program != null) {
-                                    try {
-                                            for(Program s : program){
-                                                    if(i != 0)
-                                                        writer.append("\n");
-                                                    aux = s.genC(0);
-                                                    writer.append(aux);
-                                                    i++;
-                                            }
-                                    } catch (RuntimeException e) {
-                                            System.out.println("Não foi possível gerar C, erro de " + e);
-                                    }
-                                    writer.close();
+            if (criaArq == true) {
+                File file = new File(dirTestes + "/" + nome.replace(".txt", ".c"));
+                file.getParentFile().mkdirs();
+                FileWriter writer = new FileWriter(file);
+                StringBuffer aux;
+                Integer i = 0;
+
+                if (program != null) {
+                    try {
+                        writer.append("#include <stdio.h>\n");
+                        writer.append("#include <stdlib.h>\n\n");
+                        for (Program s : program) {
+                            if (i != 0) {
+                                writer.append("\n");
                             }
+                            aux = s.genC(0);
+                            writer.append(aux);
+                            i++;
                         }
-                        System.out.println("==========================================================================");
+                    } catch (RuntimeException e) {
+                        System.out.println("Não foi possível gerar C, erro de " + e);
+                    }
+                    writer.close();
+                }
+            }
+            System.out.println("==========================================================================");
 
-		}
-	}
+        }
+    }
 
 }
